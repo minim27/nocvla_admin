@@ -7,6 +7,7 @@ class MyImage extends StatelessWidget {
   const MyImage({
     super.key,
     this.scale = 1,
+    this.width,
     required this.image,
     this.fit = BoxFit.cover,
     this.errorWidget,
@@ -15,6 +16,7 @@ class MyImage extends StatelessWidget {
   });
 
   final double scale;
+  final double? width;
   final String image;
   final Alignment alignment;
   final BoxFit fit;
@@ -26,6 +28,7 @@ class MyImage extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: CachedNetworkImage(
+        width: width,
         imageUrl: image,
         fit: fit,
         scale: scale,
