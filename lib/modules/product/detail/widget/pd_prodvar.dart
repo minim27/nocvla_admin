@@ -211,82 +211,86 @@ class PDProdVar extends StatelessWidget {
                                         hex,
                                       );
 
-                                      return Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          SizedBox(
-                                            width: 100,
-                                            child: Center(
-                                              child: MyText(
-                                                text: controller
-                                                    .selectedColor[indexx]["name"],
+                                      return SingleChildScrollView(
+                                        padding: EdgeInsets.zero,
+                                        scrollDirection: Axis.horizontal,
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            SizedBox(
+                                              width: 100,
+                                              child: Center(
+                                                child: MyText(
+                                                  text: controller
+                                                      .selectedColor[indexx]["name"],
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                          VerticalDivider(width: 20),
-                                          SizedBox(
-                                            width: 200,
-                                            child: MyTextFormField(
-                                              controller: controller
-                                                  .printPrimaryCtrls[k],
-                                              hintText: "#000000",
+                                            VerticalDivider(width: 20),
+                                            SizedBox(
+                                              width: 200,
+                                              child: MyTextFormField(
+                                                controller: controller
+                                                    .printPrimaryCtrls[k],
+                                                hintText: "#000000",
+                                              ),
                                             ),
-                                          ),
-                                          VerticalDivider(width: 20),
-                                          SizedBox(
-                                            width: 200,
-                                            child: MyTextFormField(
-                                              controller: controller
-                                                  .printSecondaryCtrls[k],
-                                              hintText: "#000000",
+                                            VerticalDivider(width: 20),
+                                            SizedBox(
+                                              width: 200,
+                                              child: MyTextFormField(
+                                                controller: controller
+                                                    .printSecondaryCtrls[k],
+                                                hintText: "#000000",
+                                              ),
                                             ),
-                                          ),
-                                          VerticalDivider(width: 20),
-                                          SizedBox(
-                                            width: 200,
-                                            child: MyTextFormField(
-                                              controller:
-                                                  controller.regPriceCtrls[k],
-                                              keyboardType:
-                                                  TextInputType.number,
-                                              inputFormatters: [
-                                                FilteringTextInputFormatter
-                                                    .digitsOnly,
-                                                NoLeadingZeroTextInputFormatter(),
-                                              ],
+                                            VerticalDivider(width: 20),
+                                            SizedBox(
+                                              width: 200,
+                                              child: MyTextFormField(
+                                                controller:
+                                                    controller.regPriceCtrls[k],
+                                                keyboardType:
+                                                    TextInputType.number,
+                                                inputFormatters: [
+                                                  FilteringTextInputFormatter
+                                                      .digitsOnly,
+                                                  NoLeadingZeroTextInputFormatter(),
+                                                ],
+                                              ),
                                             ),
-                                          ),
-                                          VerticalDivider(width: 20),
-                                          SizedBox(
-                                            width: 200,
-                                            child: MyTextFormField(
-                                              controller: controller
-                                                  .discPriceCtrls[k],
-                                              keyboardType:
-                                                  TextInputType.number,
-                                              inputFormatters: [
-                                                FilteringTextInputFormatter
-                                                    .digitsOnly,
-                                                NoLeadingZeroTextInputFormatter(),
-                                              ],
+                                            VerticalDivider(width: 20),
+                                            SizedBox(
+                                              width: 200,
+                                              child: MyTextFormField(
+                                                controller: controller
+                                                    .discPriceCtrls[k],
+                                                keyboardType:
+                                                    TextInputType.number,
+                                                inputFormatters: [
+                                                  FilteringTextInputFormatter
+                                                      .digitsOnly,
+                                                  NoLeadingZeroTextInputFormatter(),
+                                                ],
+                                              ),
                                             ),
-                                          ),
-                                          VerticalDivider(width: 20),
-                                          SizedBox(
-                                            width: 200,
-                                            child: MyTextFormField(
-                                              controller:
-                                                  controller.stockCtrls[k],
-                                              keyboardType:
-                                                  TextInputType.number,
-                                              inputFormatters: [
-                                                FilteringTextInputFormatter
-                                                    .digitsOnly,
-                                                NoLeadingZeroTextInputFormatter(),
-                                              ],
+                                            VerticalDivider(width: 20),
+                                            SizedBox(
+                                              width: 200,
+                                              child: MyTextFormField(
+                                                controller:
+                                                    controller.stockCtrls[k],
+                                                keyboardType:
+                                                    TextInputType.number,
+                                                inputFormatters: [
+                                                  FilteringTextInputFormatter
+                                                      .digitsOnly,
+                                                  NoLeadingZeroTextInputFormatter(),
+                                                ],
+                                              ),
                                             ),
-                                          ),
-                                        ],
+                                          ],
+                                        ),
                                       );
                                     },
                                     separatorBuilder: (context, index) =>

@@ -1,4 +1,6 @@
 import 'package:get/get.dart';
+import 'package:nocvla_admin/modules/dashboard/dashboard_binding.dart';
+import 'package:nocvla_admin/modules/dashboard/dashboard_page.dart';
 import 'package:nocvla_admin/modules/master/bank/bank_binding.dart';
 import 'package:nocvla_admin/modules/master/bank/bank_page.dart';
 import 'package:nocvla_admin/modules/master/colors/colors_binding.dart';
@@ -14,6 +16,11 @@ import 'my_routes.dart';
 
 class MyPages {
   static final routes = [
+    GetPage(
+      name: MyRoutes.dashboard,
+      page: () => DashboardPage(),
+      binding: DashboardBinding(),
+    ),
     GetPage(
       name: MyRoutes.bank,
       page: () => BankPage(),

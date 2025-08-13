@@ -5,11 +5,14 @@ import 'package:get/get.dart';
 import 'package:nocvla_admin/data/models/master/colors_model.dart';
 import 'package:nocvla_admin/data/models/master/size_model.dart';
 import 'package:nocvla_admin/data/models/master/type_model.dart';
+import 'package:nocvla_admin/data/models/products/product_detail_model.dart';
+import 'package:nocvla_admin/modules/product/detail/product_detail_params.dart';
 
 import '../../../app/core/base_controller.dart';
 import '../../../shared/utils/my_utility.dart';
 
 class ProductDetailController extends BaseController {
+  var resProduct = <ProductDetailModel>[];
   var resType = <TypeModel>[];
   var resSize = <SizeModel>[];
   var resColor = <ColorsModel>[];
@@ -42,8 +45,6 @@ class ProductDetailController extends BaseController {
   @override
   void onInit() {
     super.onInit();
-
-    txtGallery.add("".obs);
     fetchApi();
   }
 
@@ -98,6 +99,92 @@ class ProductDetailController extends BaseController {
       },
       err: (err) => showErrSnackbar(msg: err),
     );
+
+    ProductDetailParams params = ProductDetailParams.fromMap(Get.parameters);
+
+    if (params.slug == null) {
+      txtGallery.add("".obs);
+    } else {
+      var reqProduct = await productRepo.detailProduct(slug: params.slug);
+      await reqProduct.responseHandler(
+        res: (res) {
+          resProduct.add(ProductDetailModel.fromJson(res["data"]));
+
+          txtName.text = resProduct[0].name;
+          txtIdentity.text = resProduct[0].identity;
+          selectedGender.value = {
+            "name": resProduct[0].gender["name"],
+            "value": resProduct[0].gender["value"],
+          };
+          selectedType.value = {
+            "id": resProduct[0].type["id"],
+            "title": resProduct[0].type["name"],
+          };
+          txtDescription.text = resProduct[0].description;
+
+          for (var data in resProduct[0].gallery) {
+            txtGallery.add((data ?? "").toString().obs);
+          }
+          txtGallery.add("".obs);
+
+          for (var size in resProduct[0].variation) {
+            final sizeName = size["name"];
+            selectedSize.add(sizeName);
+
+            final iSize = resSize.indexWhere((s) => s.name == size["name"]);
+            if (iSize != -1) {
+              resSize[iSize].selected.value = true;
+            }
+
+            for (var color in size["color"]) {
+              final hex = color["hex"];
+              final name = color["name"];
+              final iColorSelected = selectedColor.indexWhere(
+                (c) => c['hex'] == hex,
+              );
+
+              if (iColorSelected == -1) {
+                final iColor = resColor.indexWhere((s) => s.name == name);
+                if (iColor != -1) {
+                  resColor[iColor].selected.value = true;
+                }
+                selectedColor.add({'hex': hex, 'name': name});
+              }
+            }
+          }
+
+          for (var size in resProduct[0].variation) {
+            final sizeName = size["name"];
+
+            for (var color in size["color"]) {
+              final hex = color["hex"];
+
+              for (var print in color["print"]) {
+                final k = keyFor(sizeName, hex);
+
+                regPriceCtrls[k] = TextEditingController(
+                  text: print["price"]["regular"].toString(),
+                );
+                discPriceCtrls[k] = TextEditingController(
+                  text: print["price"]["discount"].toString(),
+                );
+                stockCtrls[k] = TextEditingController(
+                  text: print["stock"].toString(),
+                );
+                printPrimaryCtrls[k] = TextEditingController(
+                  text: print["primary_hex"].toString(),
+                );
+                printSecondaryCtrls[k] = TextEditingController(
+                  text: print["secondary_hex"].toString(),
+                );
+              }
+            }
+          }
+        },
+        err: (err) => showErrSnackbar(msg: err),
+      );
+    }
+
     isLoading.value = false;
   }
 
@@ -193,7 +280,7 @@ class ProductDetailController extends BaseController {
   }
 
   void save() async {
-    // isLoadingAction.value = true;
+    isLoadingAction.value = true;
 
     List<Map<String, dynamic>> variations = [];
 
@@ -235,6 +322,28 @@ class ProductDetailController extends BaseController {
       "variation": variations,
     };
     print(jsonEncode(body));
+
+    ProductDetailParams params = ProductDetailParams.fromMap(Get.parameters);
+
+    if (params.id == null) {
+      var req = await productRepo.addProduct(data: body);
+      await req.responseHandler(
+        res: (res) {
+          Get.back();
+          showSnackbar(msg: res["message"]);
+        },
+        err: (err) => showErrSnackbar(msg: err),
+      );
+    } else {
+      var req = await productRepo.addProduct(data: body);
+      await req.responseHandler(
+        res: (res) {
+          Get.back();
+          showSnackbar(msg: res["message"]);
+        },
+        err: (err) => showErrSnackbar(msg: err),
+      );
+    }
 
     isLoadingAction.value = false;
   }

@@ -51,7 +51,7 @@ class ColorsPage extends GetView<ColorsController> {
                         Expanded(
                           child: MyText(
                             text: "Name",
-                            color: const Color.fromARGB(255, 125, 124, 124),
+                            color: MyColors.primary,
                             fontWeight: FontWeight.w500,
                           ),
                         ),

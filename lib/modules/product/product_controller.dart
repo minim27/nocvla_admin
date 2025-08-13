@@ -1,8 +1,13 @@
 import 'package:get/get.dart';
+import 'package:nocvla_admin/app/routes/my_routes.dart';
+import 'package:nocvla_admin/data/models/products/product_list_model.dart';
+import 'package:nocvla_admin/shared/utils/my_utility.dart';
 
 import '../../../app/core/base_controller.dart';
 
 class ProductController extends BaseController {
+  var res = <ProductModel>[];
+
   var isLoading = false.obs;
   var isLoadingAction = false.obs;
 
@@ -12,11 +17,33 @@ class ProductController extends BaseController {
     fetchApi();
   }
 
-  fetchApi({bool isRefresh = false}) async {}
+  fetchApi({bool isRefresh = false}) async {
+    isLoading.value = true;
 
-  add() async => null;
+    if (isRefresh) res.clear();
 
-  edit({required int id}) => null;
+    var req = await productRepo.list();
+    await req.responseHandler(
+      res: (res) {
+        for (var data in res["data"]) {
+          this.res.add(ProductModel.fromJson(data));
+        }
+      },
+      err: (err) => showErrSnackbar(msg: err),
+    );
+
+    isLoading.value = false;
+  }
+
+  add() async {
+    await Get.toNamed(MyRoutes.productDetail);
+    fetchApi(isRefresh: true);
+  }
+
+  edit({required String slug}) async {
+    await Get.toNamed(MyRoutes.productDetail, parameters: {"slug": slug});
+    fetchApi(isRefresh: true);
+  }
 
   delete({required int id}) async => null;
 }

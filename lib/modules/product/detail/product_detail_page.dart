@@ -15,11 +15,11 @@ class ProductDetailPage extends GetView<ProductDetailController> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Obx(() {
-          if (controller.isLoading.value) return MyLoading();
+        MyScaffold(
+          body: Obx(() {
+            if (controller.isLoading.value) return MyLoading();
 
-          return MyScaffold(
-            body: ListView(
+            return ListView(
               padding: EdgeInsets.symmetric(horizontal: 16, vertical: 24),
               children: [
                 PDProdInfo(controller: controller),
@@ -28,9 +28,10 @@ class ProductDetailPage extends GetView<ProductDetailController> {
                 SizedBox(height: 36),
                 MyButton(text: "Save", onTap: () => controller.save()),
               ],
-            ),
-          );
-        }),
+            );
+          }),
+        ),
+
         Obx(
           () => Visibility(
             visible: controller.isLoadingAction.value,

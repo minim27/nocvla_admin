@@ -74,38 +74,54 @@ class PDProdInfo extends StatelessWidget {
           ),
         ),
         SizedBox(height: 24),
-        MyTextFormField(
-          controller: controller.txtName,
-          label: "Product Name",
-          keyboardType: TextInputType.text,
-          textInputAction: TextInputAction.next,
+        Row(
+          spacing: 24,
+          children: [
+            Expanded(
+              child: MyTextFormField(
+                controller: controller.txtName,
+                label: "Product Name",
+                keyboardType: TextInputType.text,
+                textInputAction: TextInputAction.next,
+              ),
+            ),
+            Expanded(
+              child: MyTextFormField(
+                controller: controller.txtIdentity,
+                label: "Identity",
+                keyboardType: TextInputType.text,
+                textInputAction: TextInputAction.next,
+              ),
+            ),
+          ],
         ),
         SizedBox(height: 24),
-        MyTextFormField(
-          controller: controller.txtIdentity,
-          label: "Identity",
-          keyboardType: TextInputType.text,
-          textInputAction: TextInputAction.next,
-        ),
-        SizedBox(height: 24),
-        Obx(
-          () => MyDropdown(
-            label: "Gender",
-            items: (filter, loadProps) => controller.gender,
-            itemAsString: (item) => item["name"],
-            selectedItem: controller.selectedGender["name"],
-            onChanged: (value) => controller.selectGender(val: value),
-          ),
-        ),
-        SizedBox(height: 24),
-        Obx(
-          () => MyDropdown(
-            label: "Type",
-            items: (filter, loadProps) => controller.resType,
-            itemAsString: (item) => item.title,
-            selectedItem: controller.selectedType["title"],
-            onChanged: (value) => controller.selectType(res: value),
-          ),
+        Row(
+          spacing: 24,
+          children: [
+            Expanded(
+              child: Obx(
+                () => MyDropdown(
+                  label: "Gender",
+                  items: (filter, loadProps) => controller.gender,
+                  itemAsString: (item) => item["name"],
+                  selectedItem: controller.selectedGender["name"],
+                  onChanged: (value) => controller.selectGender(val: value),
+                ),
+              ),
+            ),
+            Expanded(
+              child: Obx(
+                () => MyDropdown(
+                  label: "Type",
+                  items: (filter, loadProps) => controller.resType,
+                  itemAsString: (item) => item.title,
+                  selectedItem: controller.selectedType["title"],
+                  onChanged: (value) => controller.selectType(res: value),
+                ),
+              ),
+            ),
+          ],
         ),
         SizedBox(height: 24),
         MyTextFormField(
