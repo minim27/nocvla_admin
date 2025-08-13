@@ -78,221 +78,231 @@ class PDProdVar extends StatelessWidget {
           child: SingleChildScrollView(
             padding: EdgeInsets.zero,
             scrollDirection: Axis.horizontal,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: 8,
-              mainAxisSize: MainAxisSize.min,
+            child: Row(
               children: [
-                IntrinsicHeight(
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      SizedBox(
-                        width: 100,
-                        height: 20,
-                        child: Center(
-                          child: MyText(
-                            text: "Size",
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ),
-                      VerticalDivider(width: 6),
-                      SizedBox(
-                        width: 100,
-                        height: 20,
-                        child: Center(
-                          child: MyText(
-                            text: "Color",
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ),
-                      VerticalDivider(width: 20),
-                      SizedBox(
-                        width: 200,
-                        height: 20,
-                        child: Center(
-                          child: MyText(
-                            text: "Print P Color",
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ),
-                      VerticalDivider(width: 20),
-                      SizedBox(
-                        width: 200,
-                        height: 20,
-                        child: Center(
-                          child: MyText(
-                            text: "Print S Color",
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ),
-                      VerticalDivider(width: 20),
-                      SizedBox(
-                        width: 200,
-                        height: 20,
-                        child: Center(
-                          child: MyText(
-                            text: "Regular Price",
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ),
-                      VerticalDivider(width: 20),
-                      SizedBox(
-                        width: 200,
-                        height: 20,
-                        child: Center(
-                          child: MyText(
-                            text: "Discount Price",
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ),
-                      VerticalDivider(width: 20),
-                      SizedBox(
-                        width: 200,
-                        height: 20,
-                        child: Center(
-                          child: MyText(
-                            text: "Stock",
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Container(height: 1, color: Colors.grey, width: Get.size.width),
-                SizedBox(
-                  width: 1500,
-                  child: Obx(
-                    () => ListView.separated(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemBuilder: (context, index) => Row(
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 8,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IntrinsicHeight(
+                      child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           SizedBox(
                             width: 100,
+                            height: 20,
                             child: Center(
                               child: MyText(
-                                text: controller.selectedSize[index],
+                                text: "Size",
+                                fontWeight: FontWeight.w700,
                               ),
                             ),
                           ),
-                          Container(
-                            margin: EdgeInsets.symmetric(horizontal: 3),
-                            color: Colors.grey,
-                            width: 1,
-                            height: 112,
-                          ),
+                          VerticalDivider(width: 6),
                           SizedBox(
-                            width: Get.size.width,
-                            child: Obx(
-                              () => ListView.separated(
-                                shrinkWrap: true,
-                                physics: NeverScrollableScrollPhysics(),
-                                itemBuilder: (context, indexx) {
-                                  final color =
-                                      controller.selectedColor[indexx];
-                                  final hex = color['hex']!;
-                                  final k = controller.keyFor(
-                                    controller.selectedSize[index],
-                                    hex,
-                                  );
-
-                                  return IntrinsicHeight(
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        SizedBox(
-                                          width: 100,
-                                          child: Center(
-                                            child: MyText(
-                                              text: controller
-                                                  .selectedColor[indexx]["name"],
-                                            ),
-                                          ),
-                                        ),
-                                        VerticalDivider(width: 20),
-                                        SizedBox(
-                                          width: 200,
-                                          child: MyTextFormField(
-                                            controller:
-                                                controller.printPrimaryCtrls[k],
-                                            hintText: "#000000",
-                                          ),
-                                        ),
-                                        VerticalDivider(width: 20),
-                                        SizedBox(
-                                          width: 200,
-                                          child: MyTextFormField(
-                                            controller: controller
-                                                .printSecondaryCtrls[k],
-                                            hintText: "#000000",
-                                          ),
-                                        ),
-                                        VerticalDivider(width: 20),
-                                        SizedBox(
-                                          width: 200,
-                                          child: MyTextFormField(
-                                            controller:
-                                                controller.regPriceCtrls[k],
-                                            keyboardType: TextInputType.number,
-                                            inputFormatters: [
-                                              FilteringTextInputFormatter
-                                                  .digitsOnly,
-                                              NoLeadingZeroTextInputFormatter(),
-                                            ],
-                                          ),
-                                        ),
-                                        VerticalDivider(width: 20),
-                                        SizedBox(
-                                          width: 200,
-                                          child: MyTextFormField(
-                                            controller:
-                                                controller.discPriceCtrls[k],
-                                            keyboardType: TextInputType.number,
-                                            inputFormatters: [
-                                              FilteringTextInputFormatter
-                                                  .digitsOnly,
-                                              NoLeadingZeroTextInputFormatter(),
-                                            ],
-                                          ),
-                                        ),
-                                        VerticalDivider(width: 20),
-                                        SizedBox(
-                                          width: 200,
-                                          child: MyTextFormField(
-                                            controller:
-                                                controller.stockCtrls[k],
-                                            keyboardType: TextInputType.number,
-                                            inputFormatters: [
-                                              FilteringTextInputFormatter
-                                                  .digitsOnly,
-                                              NoLeadingZeroTextInputFormatter(),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                },
-                                separatorBuilder: (context, index) => Divider(),
-                                itemCount: controller.selectedColor.length,
+                            width: 100,
+                            height: 20,
+                            child: Center(
+                              child: MyText(
+                                text: "Color",
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                          VerticalDivider(width: 20),
+                          SizedBox(
+                            width: 200,
+                            height: 20,
+                            child: Center(
+                              child: MyText(
+                                text: "Print P Color",
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                          VerticalDivider(width: 20),
+                          SizedBox(
+                            width: 200,
+                            height: 20,
+                            child: Center(
+                              child: MyText(
+                                text: "Print S Color",
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                          VerticalDivider(width: 20),
+                          SizedBox(
+                            width: 200,
+                            height: 20,
+                            child: Center(
+                              child: MyText(
+                                text: "Regular Price",
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                          VerticalDivider(width: 20),
+                          SizedBox(
+                            width: 200,
+                            height: 20,
+                            child: Center(
+                              child: MyText(
+                                text: "Discount Price",
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                          VerticalDivider(width: 20),
+                          SizedBox(
+                            width: 200,
+                            height: 20,
+                            child: Center(
+                              child: MyText(
+                                text: "Stock",
+                                fontWeight: FontWeight.w700,
                               ),
                             ),
                           ),
                         ],
                       ),
-                      separatorBuilder: (context, index) => Divider(),
-                      itemCount: controller.selectedSize.length,
                     ),
-                  ),
+                    Container(
+                      height: 1,
+                      color: Colors.grey,
+                      width: Get.size.width,
+                    ),
+                    SizedBox(
+                      width: 1800,
+                      child: Obx(
+                        () => ListView.separated(
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          itemBuilder: (context, index) => Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              SizedBox(
+                                width: 100,
+                                child: Center(
+                                  child: MyText(
+                                    text: controller.selectedSize[index],
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                margin: EdgeInsets.symmetric(horizontal: 3),
+                                color: Colors.grey,
+                                width: 1,
+                                height: 112,
+                              ),
+                              SizedBox(
+                                width: Get.size.width,
+                                child: Obx(
+                                  () => ListView.separated(
+                                    shrinkWrap: true,
+                                    physics: NeverScrollableScrollPhysics(),
+                                    itemBuilder: (context, indexx) {
+                                      final color =
+                                          controller.selectedColor[indexx];
+                                      final hex = color['hex']!;
+                                      final k = controller.keyFor(
+                                        controller.selectedSize[index],
+                                        hex,
+                                      );
+
+                                      return Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          SizedBox(
+                                            width: 100,
+                                            child: Center(
+                                              child: MyText(
+                                                text: controller
+                                                    .selectedColor[indexx]["name"],
+                                              ),
+                                            ),
+                                          ),
+                                          VerticalDivider(width: 20),
+                                          SizedBox(
+                                            width: 200,
+                                            child: MyTextFormField(
+                                              controller: controller
+                                                  .printPrimaryCtrls[k],
+                                              hintText: "#000000",
+                                            ),
+                                          ),
+                                          VerticalDivider(width: 20),
+                                          SizedBox(
+                                            width: 200,
+                                            child: MyTextFormField(
+                                              controller: controller
+                                                  .printSecondaryCtrls[k],
+                                              hintText: "#000000",
+                                            ),
+                                          ),
+                                          VerticalDivider(width: 20),
+                                          SizedBox(
+                                            width: 200,
+                                            child: MyTextFormField(
+                                              controller:
+                                                  controller.regPriceCtrls[k],
+                                              keyboardType:
+                                                  TextInputType.number,
+                                              inputFormatters: [
+                                                FilteringTextInputFormatter
+                                                    .digitsOnly,
+                                                NoLeadingZeroTextInputFormatter(),
+                                              ],
+                                            ),
+                                          ),
+                                          VerticalDivider(width: 20),
+                                          SizedBox(
+                                            width: 200,
+                                            child: MyTextFormField(
+                                              controller: controller
+                                                  .discPriceCtrls[k],
+                                              keyboardType:
+                                                  TextInputType.number,
+                                              inputFormatters: [
+                                                FilteringTextInputFormatter
+                                                    .digitsOnly,
+                                                NoLeadingZeroTextInputFormatter(),
+                                              ],
+                                            ),
+                                          ),
+                                          VerticalDivider(width: 20),
+                                          SizedBox(
+                                            width: 200,
+                                            child: MyTextFormField(
+                                              controller:
+                                                  controller.stockCtrls[k],
+                                              keyboardType:
+                                                  TextInputType.number,
+                                              inputFormatters: [
+                                                FilteringTextInputFormatter
+                                                    .digitsOnly,
+                                                NoLeadingZeroTextInputFormatter(),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                    separatorBuilder: (context, index) =>
+                                        Divider(),
+                                    itemCount: controller.selectedColor.length,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          separatorBuilder: (context, index) => Divider(),
+                          itemCount: controller.selectedSize.length,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),

@@ -17,6 +17,7 @@ class ProductDetailController extends BaseController {
   var gender = <Map<String, dynamic>>[
     {"name": "Male", "value": "m"},
     {"name": "Female", "value": "f"},
+    {"name": "Unisex", "value": "u"},
   ];
 
   var isLoading = false.obs;
