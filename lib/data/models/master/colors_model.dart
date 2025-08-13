@@ -1,6 +1,8 @@
+import 'package:get/get.dart';
+
 class ColorsModel {
   dynamic id, name, active, hex, createdAt, updatedAt;
-
+  RxBool selected;
   ColorsModel({
     this.id,
     this.name,
@@ -8,9 +10,10 @@ class ColorsModel {
     this.hex,
     this.createdAt,
     this.updatedAt,
-  });
+    bool? selected,
+  }) : selected = RxBool(selected ?? false);
 
-  ColorsModel.fromJson(Map<String, dynamic> json) {
+  ColorsModel.fromJson(Map<String, dynamic> json) : selected = RxBool(false) {
     id = json["id"];
     name = json["name"];
     active = json["active"];

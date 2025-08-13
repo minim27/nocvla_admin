@@ -5,6 +5,10 @@ import 'package:nocvla_admin/modules/master/colors/colors_binding.dart';
 import 'package:nocvla_admin/modules/master/colors/colors_page.dart';
 import 'package:nocvla_admin/modules/master/size/size_binding.dart';
 import 'package:nocvla_admin/modules/master/size/size_page.dart';
+import 'package:nocvla_admin/modules/product/detail/product_detail_binding.dart';
+import 'package:nocvla_admin/modules/product/detail/product_detail_page.dart';
+import 'package:nocvla_admin/modules/product/product_binding.dart';
+import 'package:nocvla_admin/modules/product/product_page.dart';
 
 import 'my_routes.dart';
 
@@ -24,6 +28,16 @@ class MyPages {
       name: MyRoutes.size,
       page: () => SizePage(),
       binding: SizeBinding(),
+    ),
+    GetPage(
+      name: MyRoutes.product,
+      page: () => ProductPage(),
+      binding: ProductBinding(),
+    ),
+    GetPage(
+      name: MyRoutes.productDetail,
+      page: () => ProductDetailPage(),
+      binding: ProductDetailBinding(),
     ),
   ];
 }

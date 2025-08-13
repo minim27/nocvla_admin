@@ -35,9 +35,8 @@ class MyApp extends StatelessWidget {
           surfaceTintColor: MyColors.primary,
         ),
       ),
-      initialRoute: MyRoutes.size,
+      initialRoute: MyRoutes.productDetail,
       getPages: MyPages.routes,
-      // home: const AgoraPage(),
     );
   }
 }

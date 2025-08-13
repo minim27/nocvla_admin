@@ -80,7 +80,6 @@ class SizeController extends BaseController {
   );
 
   edit({required int id}) async {
-    
     var reqBank = await sizeRepo.list(id: id);
     await reqBank.responseHandler(
       res: (res) async {

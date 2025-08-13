@@ -11,7 +11,7 @@ class MyDropdown extends StatefulWidget {
     super.key,
     this.selectedItem,
     this.label,
-    this.labelFontSize = 12,
+    this.labelFontSize = 14,
     this.labelFontWeight = FontWeight.w400,
     this.textColor = MyColors.primary,
     this.labelColor = MyColors.secondary,
@@ -114,7 +114,6 @@ class _MyDropdownState extends State<MyDropdown> {
                     color: widget.textColor,
                   ),
                   keyboardType: TextInputType.text,
-
                   textInputAction: TextInputAction.search,
                   decoration: InputDecoration(
                     hintText: (widget.hintTextSearch == null)

@@ -224,3 +224,10 @@ selectImageFrom({
 
   isLoading.value = false;
 }
+
+String formatHex(String input) {
+  input = input.trim();
+  if (!input.startsWith('#')) return '#$input';
+
+  return input;
+}
