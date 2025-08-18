@@ -1,7 +1,7 @@
 class ProductModel {
   dynamic id,
-      image,
       aliasName,
+      image,
       name,
       identity,
       slug,
@@ -11,9 +11,9 @@ class ProductModel {
 
   ProductModel({
     this.id,
+    this.aliasName,
     this.image,
     this.name,
-    this.aliasName,
     this.slug,
     this.identity,
     this.description,
@@ -23,8 +23,8 @@ class ProductModel {
 
   ProductModel.fromJson(Map<String, dynamic> json) {
     id = json["id"];
-    image = json["image"];
     aliasName = json["alias_name"];
+    image = json["image"];
     name = json["name"];
     identity = json["identity"];
     slug = json["slug"];

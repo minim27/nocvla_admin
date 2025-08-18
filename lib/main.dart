@@ -1,6 +1,8 @@
 import 'package:chucker_flutter/chucker_flutter.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_quill/flutter_quill.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
@@ -24,6 +26,16 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       navigatorObservers: [ChuckerFlutter.navigatorObserver],
+      locale: const Locale('en'), // <-- optional
+      supportedLocales: const [
+        Locale('en'), // <-- minimal 1 locale
+      ],
+      localizationsDelegates: const [
+        FlutterQuillLocalizations.delegate, // <<=== tambahkan ini
+        DefaultWidgetsLocalizations.delegate,
+        DefaultMaterialLocalizations.delegate,
+        DefaultCupertinoLocalizations.delegate,
+      ],
       theme: ThemeData(
         scaffoldBackgroundColor: MyColors.primary,
         appBarTheme: AppBarTheme(

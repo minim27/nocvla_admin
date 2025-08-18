@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_quill/flutter_quill.dart';
 import 'package:get/get.dart';
 
 import '../../../../shared/utils/my_colors.dart';
@@ -124,12 +125,37 @@ class PDProdInfo extends StatelessWidget {
           ],
         ),
         SizedBox(height: 24),
-        MyTextFormField(
-          controller: controller.txtDescription,
-          label: "Description",
-          keyboardType: TextInputType.text,
-          textInputAction: TextInputAction.next,
-          maxLines: 10,
+        // MyTextFormField(
+        //   controller: controller.txtDescription,
+        //   label: "Description",
+        //   keyboardType: TextInputType.text,
+        //   textInputAction: TextInputAction.next,
+        //   maxLines: 10,
+        // ),
+        MyText(text: "Description"),
+        SizedBox(height: 8),
+        Container(
+          color: MyColors.secondary,
+          child: QuillSimpleToolbar(
+            controller: controller.quillController,
+            config: const QuillSimpleToolbarConfig(
+              color: MyColors.green,
+              showBackgroundColorButton: true,
+            ),
+          ),
+        ),
+        Container(
+          height: 400,
+          decoration: BoxDecoration(
+            color: MyColors.secondary,
+            borderRadius: BorderRadius.all(Radius.circular(6)),
+          ),
+          child: QuillEditor.basic(
+            controller: controller.quillController,
+            config: const QuillEditorConfig(
+              padding: EdgeInsetsGeometry.all(12),
+            ),
+          ),
         ),
       ],
     );

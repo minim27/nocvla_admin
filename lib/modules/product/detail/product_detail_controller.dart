@@ -1,12 +1,15 @@
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_quill/flutter_quill.dart';
+import 'package:flutter_quill/quill_delta.dart';
 import 'package:get/get.dart';
 import 'package:nocvla_admin/data/models/master/colors_model.dart';
 import 'package:nocvla_admin/data/models/master/size_model.dart';
 import 'package:nocvla_admin/data/models/master/type_model.dart';
 import 'package:nocvla_admin/data/models/products/product_detail_model.dart';
 import 'package:nocvla_admin/modules/product/detail/product_detail_params.dart';
+import 'package:vsc_quill_delta_to_html/vsc_quill_delta_to_html.dart';
 
 import '../../../app/core/base_controller.dart';
 import '../../../shared/utils/my_utility.dart';
@@ -32,6 +35,8 @@ class ProductDetailController extends BaseController {
   var selectedType = {}.obs;
   var txtDescription = TextEditingController();
   var txtGallery = <RxString>[].obs;
+
+  QuillController quillController = QuillController.basic();
 
   var selectedSize = <String>[].obs;
   var selectedColor = <Map<String, dynamic>>[].obs;
@@ -120,7 +125,34 @@ class ProductDetailController extends BaseController {
             "id": resProduct[0].type["id"],
             "title": resProduct[0].type["name"],
           };
-          txtDescription.text = resProduct[0].description;
+          // txtDescription.text = resProduct[0].description;
+          final rawDescription = resProduct[0].description;
+
+          try {
+            // coba decode sebagai delta JSON
+            final decoded = jsonDecode(rawDescription);
+
+            // kalau berhasil dan berupa List, anggap dia delta
+            if (decoded is List) {
+              final delta = Delta.fromJson(decoded);
+              quillController = QuillController(
+                document: Document.fromDelta(delta),
+                selection: const TextSelection.collapsed(offset: 0),
+              );
+            } else {
+              // fallback ke plain text
+              quillController = QuillController(
+                document: Document()..insert(0, rawDescription),
+                selection: const TextSelection.collapsed(offset: 0),
+              );
+            }
+          } catch (e) {
+            // jsonDecode gagal → berarti plain text
+            quillController = QuillController(
+              document: Document()..insert(0, rawDescription),
+              selection: const TextSelection.collapsed(offset: 0),
+            );
+          }
 
           for (var data in resProduct[0].gallery) {
             txtGallery.add((data ?? "").toString().obs);
@@ -309,12 +341,16 @@ class ProductDetailController extends BaseController {
       variations.add({"size": size, "color": colors});
     }
 
+    final delta = quillController.document.toDelta();
+    final converter = QuillDeltaToHtmlConverter(delta.toJson());
+    final htmlDesc = converter.convert();
+
     var body = {
       "name": txtName.text,
       "identity": txtIdentity.text,
       "gender": selectedGender["value"],
       "type_id": selectedType["id"],
-      "description": txtDescription.text,
+      "description": htmlDesc,
       "gallery": txtGallery
           .where((e) => e.value.trim().isNotEmpty)
           .map((e) => e.value)

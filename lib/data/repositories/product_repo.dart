@@ -16,4 +16,7 @@ class ProductRepository extends BaseRepository {
     required int id,
     required Map<String, dynamic> data,
   }) async => await putJson(endPoint: "/products/$id", data: data);
+
+  Future<ResponseHandler<dynamic>> remove({required int id}) async =>
+      await delete(endPoint: "/products/$id");
 }

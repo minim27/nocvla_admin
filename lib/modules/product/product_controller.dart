@@ -45,5 +45,15 @@ class ProductController extends BaseController {
     fetchApi(isRefresh: true);
   }
 
-  delete({required int id}) async => null;
+  delete({required int id}) async {
+    isLoadingAction.value = true;
+
+    var req = await productRepo.remove(id: id);
+    await req.responseHandler(
+      res: (res) => fetchApi(isRefresh: true),
+      err: (err) => showErrSnackbar(msg: err),
+    );
+
+    isLoadingAction.value = false;
+  }
 }
