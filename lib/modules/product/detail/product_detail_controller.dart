@@ -35,6 +35,9 @@ class ProductDetailController extends BaseController {
   var selectedType = {}.obs;
   var txtDescription = TextEditingController();
   var txtGallery = <RxString>[].obs;
+  var txtUrlShopee = TextEditingController();
+  var txtUrlTiktokShop = TextEditingController();
+  var txtUrlTokped = TextEditingController();
 
   QuillController quillController = QuillController.basic();
 
@@ -158,6 +161,9 @@ class ProductDetailController extends BaseController {
             txtGallery.add((data ?? "").toString().obs);
           }
           txtGallery.add("".obs);
+          txtUrlShopee.text = resProduct[0].urlShopee;
+          txtUrlTiktokShop.text = resProduct[0].urlTiktokshop;
+          txtUrlTokped.text = resProduct[0].urlTokped;
 
           for (var size in resProduct[0].variation) {
             final sizeName = size["name"];
@@ -225,9 +231,7 @@ class ProductDetailController extends BaseController {
   TextEditingController _ensure(
     Map<String, TextEditingController> map,
     String key,
-  ) {
-    return map.putIfAbsent(key, () => TextEditingController());
-  }
+  ) => map.putIfAbsent(key, () => TextEditingController());
 
   void generateControllers() {
     final needed = <String>{};
@@ -355,6 +359,9 @@ class ProductDetailController extends BaseController {
           .where((e) => e.value.trim().isNotEmpty)
           .map((e) => e.value)
           .toList(),
+      "url_shopee": txtUrlShopee.text,
+      "url_tiktokshop": txtUrlTiktokShop.text,
+      "url_tokped": txtUrlTokped.text,
       "variation": variations,
     };
     print(jsonEncode(body));
@@ -371,7 +378,7 @@ class ProductDetailController extends BaseController {
         err: (err) => showErrSnackbar(msg: err),
       );
     } else {
-      var req = await productRepo.addProduct(data: body);
+      var req = await productRepo.updateProduct(id: int.parse(params.id) , data: body);
       await req.responseHandler(
         res: (res) {
           Get.back();

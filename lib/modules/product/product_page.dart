@@ -145,6 +145,7 @@ class ProductPage extends GetView<ProductController> {
                                           children: [
                                             GestureDetector(
                                               onTap: () => controller.edit(
+                                                id: controller.res[index].id,
                                                 slug:
                                                     controller.res[index].slug,
                                               ),

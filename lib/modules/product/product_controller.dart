@@ -40,8 +40,11 @@ class ProductController extends BaseController {
     fetchApi(isRefresh: true);
   }
 
-  edit({required String slug}) async {
-    await Get.toNamed(MyRoutes.productDetail, parameters: {"slug": slug});
+  edit({required int id, required String slug}) async {
+    await Get.toNamed(
+      MyRoutes.productDetail,
+      parameters: {"id": "$id", "slug": slug},
+    );
     fetchApi(isRefresh: true);
   }
 

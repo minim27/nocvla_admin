@@ -132,6 +132,27 @@ class PDProdInfo extends StatelessWidget {
         //   textInputAction: TextInputAction.next,
         //   maxLines: 10,
         // ),
+        MyTextFormField(
+          controller: controller.txtUrlShopee,
+          label: "URL Shopee",
+          keyboardType: TextInputType.url,
+          textInputAction: TextInputAction.next,
+        ),
+        SizedBox(height: 24),
+        MyTextFormField(
+          controller: controller.txtUrlTiktokShop,
+          label: "URL TikTok Shop",
+          keyboardType: TextInputType.url,
+          textInputAction: TextInputAction.next,
+        ),
+        SizedBox(height: 24),
+        MyTextFormField(
+          controller: controller.txtUrlTokped,
+          label: "URL Tokopedia",
+          keyboardType: TextInputType.url,
+          textInputAction: TextInputAction.next,
+        ),
+        SizedBox(height: 24),
         MyText(text: "Description"),
         SizedBox(height: 8),
         Container(
