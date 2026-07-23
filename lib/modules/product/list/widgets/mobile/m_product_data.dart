@@ -26,10 +26,7 @@ class MProductData extends StatelessWidget {
             final items = controller.res[index];
             final mainImage = items.images!.isEmpty
                 ? null
-                : items.images!.firstWhere(
-                    (e) => e.isMain == true,
-                    orElse: () => items.images!.first,
-                  );
+                : items.images!.first;
 
             return Container(
               padding: .all(12),
@@ -63,7 +60,7 @@ class MProductData extends StatelessWidget {
                   SizedBox(height: 8),
                   Row(
                     mainAxisAlignment: .end,
-                    spacing: 12,
+                    spacing: 20,
                     children: [
                       GestureDetector(
                         onTap: () => controller.edit(id: items.id),

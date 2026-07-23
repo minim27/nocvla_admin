@@ -24,7 +24,12 @@ class MAthleteForm extends StatelessWidget {
           fontFamily: MyFonts.libreBaskerville,
         ),
         SizedBox(height: 16),
-        MyText(text: "Photo"),
+        Row(
+          children: [
+            MyText(text: "Photo"),
+            MyText(text: " *", color: MyColors.red),
+          ],
+        ),
         SizedBox(height: 8),
         Obx(() {
           final picture = controller.picture.value;
@@ -91,6 +96,7 @@ class MAthleteForm extends StatelessWidget {
         MyTextFormField(
           controller: controller.txtCode,
           label: "Code",
+          required: true,
           keyboardType: .text,
           textInputAction: .next,
         ),

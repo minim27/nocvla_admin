@@ -28,10 +28,7 @@ class ProductData extends StatelessWidget {
               final items = controller.res[index];
               final mainImage = items.images!.isEmpty
                   ? null
-                  : items.images!.firstWhere(
-                      (e) => e.isMain == true,
-                      orElse: () => items.images!.first,
-                    );
+                  : items.images!.first;
 
               return Column(
                 children: [
@@ -73,7 +70,7 @@ class ProductData extends StatelessWidget {
                       Expanded(child: SizedBox()),
                       Expanded(
                         child: Row(
-                          spacing: 12,
+                          spacing: 20,
                           children: [
                             GestureDetector(
                               onTap: () => controller.edit(id: items.id),

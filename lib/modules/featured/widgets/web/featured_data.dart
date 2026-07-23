@@ -45,10 +45,7 @@ class FeaturedData extends StatelessWidget {
                     final items = controller.res[index];
                     final mainImage = items.images!.isEmpty
                         ? null
-                        : items.images!.firstWhere(
-                            (e) => e.isMain == true,
-                            orElse: () => items.images!.first,
-                          );
+                        : items.images!.first;
 
                     return Row(
                       spacing: 12,

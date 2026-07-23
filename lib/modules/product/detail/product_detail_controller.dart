@@ -33,6 +33,7 @@ class ProductDetailController extends BaseController {
   var stockRows = <Map<String, TextEditingController>>[].obs;
 
   ProductDetailParams get params => ProductDetailParams.fromMap(Get.parameters);
+  bool get isDuplicating => params.id == null && params.duplicateId != null;
 
   @override
   void onInit() {
@@ -107,12 +108,7 @@ class ProductDetailController extends BaseController {
           }
 
           for (final image in product.images ?? []) {
-            gallery.add(
-              GalleryImage(
-                existingPath: image.imageUrl,
-                isMain: image.isMain == true,
-              ),
-            );
+            gallery.add(GalleryImage(existingPath: image.imageUrl));
           }
 
           for (final v in product.variation ?? []) {
@@ -165,31 +161,13 @@ class ProductDetailController extends BaseController {
       if (file.bytes == null) continue;
       gallery.add(GalleryImage(newBytes: file.bytes, newFileName: file.name));
     }
-
-    if (gallery.isNotEmpty && !gallery.any((e) => e.isMain)) {
-      gallery.first.isMain = true;
-      gallery.refresh();
-    }
   }
 
   Future<void> removeImage({required int index}) async {
     final confirmed = await showMyConfirmDialog(title: "Hapus Gambar?");
     if (!confirmed) return;
 
-    final wasMain = gallery[index].isMain;
     gallery.removeAt(index);
-
-    if (wasMain && gallery.isNotEmpty) {
-      gallery.first.isMain = true;
-      gallery.refresh();
-    }
-  }
-
-  void setMainImage({required int index}) {
-    for (var i = 0; i < gallery.length; i++) {
-      gallery[i].isMain = i == index;
-    }
-    gallery.refresh();
   }
 
   void reorderGallery({required int oldIndex, required int newIndex}) {
@@ -198,8 +176,17 @@ class ProductDetailController extends BaseController {
   }
 
   Future<void> save() async {
+    if (gallery.isEmpty) {
+      return showErrSnackbar(msg: "Foto produk wajib diisi");
+    }
     if (txtName.text.trim().isEmpty) {
       return showErrSnackbar(msg: "Nama produk wajib diisi");
+    }
+    if (txtColor.text.trim().isEmpty) {
+      return showErrSnackbar(msg: "Warna wajib diisi");
+    }
+    if (selectedType.value == null) {
+      return showErrSnackbar(msg: "Type wajib diisi");
     }
 
     isLoadingAction.value = true;
@@ -268,11 +255,7 @@ class ProductDetailController extends BaseController {
       }
 
       if (path != null) {
-        imageRows.add({
-          "image_url": path,
-          "is_main": image.isMain,
-          "sort_order": i,
-        });
+        imageRows.add({"image_url": path, "sort_order": i});
       }
     }
 
@@ -361,12 +344,6 @@ class GalleryImage {
   final String? existingPath;
   final Uint8List? newBytes;
   final String? newFileName;
-  bool isMain;
 
-  GalleryImage({
-    this.existingPath,
-    this.newBytes,
-    this.newFileName,
-    this.isMain = false,
-  });
+  GalleryImage({this.existingPath, this.newBytes, this.newFileName});
 }

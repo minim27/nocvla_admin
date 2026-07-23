@@ -47,19 +47,36 @@ class MAthleteData extends StatelessWidget {
                       children: [
                         MyText(text: items.name, fontWeight: .w500),
                         MyText(text: items.code),
+                        if ((items.assignedProducts ?? []).isNotEmpty) ...[
+                          SizedBox(height: 8),
+                          ...items.assignedProducts!.map(
+                            (productName) => Padding(
+                              padding: .only(bottom: 4),
+                              child: MyText(text: productName),
+                            ),
+                          ),
+                        ],
                       ],
                     ),
                   ),
-                  GestureDetector(
-                    onTap: () => controller.edit(id: items.id),
-                    child: Icon(Icons.edit_document, color: MyColors.secondary),
-                  ),
-                  GestureDetector(
-                    onTap: () => controller.delete(id: items.id),
-                    child: Icon(
-                      Icons.delete_outline_rounded,
-                      color: MyColors.secondary,
-                    ),
+                  Row(
+                    spacing: 20,
+                    children: [
+                      GestureDetector(
+                        onTap: () => controller.edit(id: items.id),
+                        child: Icon(
+                          Icons.edit_document,
+                          color: MyColors.secondary,
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () => controller.delete(id: items.id),
+                        child: Icon(
+                          Icons.delete_outline_rounded,
+                          color: MyColors.secondary,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

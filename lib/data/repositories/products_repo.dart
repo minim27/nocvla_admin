@@ -9,7 +9,7 @@ class ProductsRepo extends BaseRepository {
   }) async {
     var query = supabase.from("m_products").select('''
       *,
-      images:m_product_images(image_url, is_main, sort_order),
+      images:m_product_images(image_url, sort_order),
       variation:m_product_stock(size, qty, price)
     ''');
 
@@ -21,7 +21,8 @@ class ProductsRepo extends BaseRepository {
     return ResponseHandler(
       query
           .order("name", ascending: true)
-          .order("sort_order", referencedTable: "images"),
+          .order("color", ascending: true)
+          .order("sort_order", ascending: true, referencedTable: "images"),
     );
   }
 
@@ -31,11 +32,11 @@ class ProductsRepo extends BaseRepository {
             .from("m_products")
             .select('''
       *,
-      images:m_product_images(image_url, is_main, sort_order),
+      images:m_product_images(image_url, sort_order),
       variation:m_product_stock(size, qty, price)
     ''')
             .eq("id", id)
-            .order("sort_order", referencedTable: "images")
+            .order("sort_order", ascending: true, referencedTable: "images")
             .single(),
       );
 

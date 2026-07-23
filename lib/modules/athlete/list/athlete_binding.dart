@@ -5,6 +5,6 @@ import 'athlete_controller.dart';
 class AthleteBinding extends Bindings {
   @override
   void dependencies() {
-    Get.lazyPut<AthleteController>(() => AthleteController());
+    Get.lazyPut<AthleteController>(() => AthleteController(), fenix: true);
   }
 }

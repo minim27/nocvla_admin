@@ -6,7 +6,7 @@ class NoLeadingZeroTextInputFormatter extends TextInputFormatter {
     TextEditingValue oldValue,
     TextEditingValue newValue,
   ) {
-    if (newValue.text.isNotEmpty && newValue.text.startsWith('0')) {
+    if (newValue.text.length > 1 && newValue.text.startsWith('0')) {
       return TextEditingValue(
         text: newValue.text.replaceFirst('0', ''),
         selection: newValue.selection.copyWith(

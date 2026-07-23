@@ -133,8 +133,14 @@ class AthleteDetailController extends BaseController {
   }) => assignments[index].selectedProduct.value = product;
 
   Future<void> save() async {
+    if (picture.value == null) {
+      return showErrSnackbar(msg: "Foto athlete wajib diisi");
+    }
     if (txtName.text.trim().isEmpty) {
       return showErrSnackbar(msg: "Nama athlete wajib diisi");
+    }
+    if (txtCode.text.trim().isEmpty) {
+      return showErrSnackbar(msg: "Code wajib diisi");
     }
 
     final selectedProductIds = assignments

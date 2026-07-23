@@ -25,8 +25,27 @@ class TPDProdInfo extends StatelessWidget {
           fontSize: 22,
           fontFamily: MyFonts.libreBaskerville,
         ),
+        if (controller.isDuplicating) ...[
+          SizedBox(height: 8),
+          Container(
+            padding: .symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: MyColors.yellow,
+              borderRadius: .circular(6),
+            ),
+            child: MyText(
+              text:
+                  "Ini duplikat — akan tersimpan sebagai produk baru saat disimpan.",
+              color: MyColors.primary,
+              fontWeight: .w600,
+              fontSize: 12,
+            ),
+          ),
+        ],
         SizedBox(height: 20),
-        MyText(text: "Product Image (tekan lama untuk drag, bintang = main)"),
+        MyText(
+          text: "Product Image (tekan lama untuk drag, foto pertama = main)",
+        ),
         SizedBox(height: 8),
         SizedBox(
           height: 80,
@@ -54,10 +73,10 @@ class TPDProdInfo extends StatelessWidget {
                                 height: 64,
                                 decoration: BoxDecoration(
                                   border: .all(
-                                    color: image.isMain
+                                    color: index == 0
                                         ? MyColors.red
                                         : MyColors.secondary,
-                                    width: image.isMain ? 2 : 1,
+                                    width: index == 0 ? 2 : 1,
                                   ),
                                 ),
                                 child: image.existingPath != null
@@ -83,30 +102,6 @@ class TPDProdInfo extends StatelessWidget {
                                       Icons.close,
                                       size: 12,
                                       color: MyColors.secondary,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Positioned(
-                                bottom: 2,
-                                left: 2,
-                                child: GestureDetector(
-                                  onTap: () =>
-                                      controller.setMainImage(index: index),
-                                  child: Container(
-                                    padding: .all(2),
-                                    decoration: BoxDecoration(
-                                      color: MyColors.primary,
-                                      shape: .circle,
-                                    ),
-                                    child: Icon(
-                                      image.isMain
-                                          ? Icons.star
-                                          : Icons.star_border,
-                                      size: 12,
-                                      color: image.isMain
-                                          ? MyColors.yellow
-                                          : MyColors.secondary,
                                     ),
                                   ),
                                 ),
@@ -160,6 +155,7 @@ class TPDProdInfo extends StatelessWidget {
               child: MyTextFormField(
                 controller: controller.txtColor,
                 label: "Color",
+                required: true,
                 keyboardType: .text,
                 textInputAction: .next,
               ),
@@ -170,6 +166,7 @@ class TPDProdInfo extends StatelessWidget {
         Obx(
           () => MyDropdown(
             label: "Type",
+            required: true,
             items: (filter, loadProps) => controller.resTypes,
             itemAsString: (item) => item.name,
             selectedItem: controller.selectedType.value?.name,

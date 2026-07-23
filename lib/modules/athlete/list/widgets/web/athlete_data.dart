@@ -26,53 +26,86 @@ class AthleteData extends StatelessWidget {
             itemBuilder: (context, index) {
               final items = controller.res[index];
 
-              return Row(
-                spacing: 12,
-                mainAxisAlignment: .spaceBetween,
+              return Column(
                 children: [
-                  Expanded(
-                    child: items.picture != null
-                        ? Align(
-                            alignment: .centerLeft,
-                            child: Container(
-                              width: 64,
-                              height: 64,
-                              decoration: BoxDecoration(
-                                border: .all(color: MyColors.secondary),
+                  Row(
+                    spacing: 12,
+                    mainAxisAlignment: .spaceBetween,
+                    children: [
+                      Expanded(
+                        child: items.picture != null
+                            ? Align(
+                                alignment: .centerLeft,
+                                child: Container(
+                                  width: 64,
+                                  height: 64,
+                                  decoration: BoxDecoration(
+                                    border: .all(color: MyColors.secondary),
+                                  ),
+                                  child: MyImage(items.picture),
+                                ),
+                              )
+                            : SizedBox(),
+                      ),
+                      Expanded(
+                        flex: 2,
+                        child: MyText(text: items.name, fontWeight: .w500),
+                      ),
+                      Expanded(
+                        child: MyText(text: items.code, fontWeight: .w500),
+                      ),
+                      Expanded(
+                        child: Row(
+                          spacing: 20,
+                          children: [
+                            GestureDetector(
+                              onTap: () => controller.edit(id: items.id),
+                              child: Icon(
+                                Icons.edit_document,
+                                color: MyColors.secondary,
                               ),
-                              child: MyImage(items.picture),
                             ),
-                          )
-                        : SizedBox(),
-                  ),
-                  Expanded(
-                    flex: 2,
-                    child: MyText(text: items.name, fontWeight: .w500),
-                  ),
-                  Expanded(
-                    child: MyText(text: items.code, fontWeight: .w500),
-                  ),
-                  Expanded(
-                    child: Row(
-                      spacing: 12,
-                      children: [
-                        GestureDetector(
-                          onTap: () => controller.edit(id: items.id),
-                          child: Icon(
-                            Icons.edit_document,
-                            color: MyColors.secondary,
-                          ),
+                            GestureDetector(
+                              onTap: () => controller.delete(id: items.id),
+                              child: Icon(
+                                Icons.delete_outline_rounded,
+                                color: MyColors.secondary,
+                              ),
+                            ),
+                          ],
                         ),
-                        GestureDetector(
-                          onTap: () => controller.delete(id: items.id),
-                          child: Icon(
-                            Icons.delete_outline_rounded,
-                            color: MyColors.secondary,
-                          ),
-                        ),
-                      ],
+                      ),
+                    ],
+                  ),
+
+                  if ((items.assignedProducts ?? []).isNotEmpty)
+                    ListView.separated(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      padding: .all(12),
+                      itemBuilder: (context, indexx) {
+                        final productName = items.assignedProducts![indexx];
+
+                        return Row(
+                          spacing: 12,
+                          mainAxisAlignment: .spaceBetween,
+                          children: [
+                            Expanded(child: SizedBox()),
+                            Expanded(
+                              flex: 2,
+                              child: MyText(
+                                text: productName,
+                                fontWeight: .w500,
+                              ),
+                            ),
+                            Expanded(child: SizedBox()),
+                            Expanded(child: SizedBox()),
+                          ],
+                        );
+                      },
+                      separatorBuilder: (context, index) => Divider(),
+                      itemCount: items.assignedProducts!.length,
                     ),
-                  ),
                 ],
               );
             },

@@ -44,13 +44,12 @@ class ProductVariationModel {
 
 class ProductImagesModel {
   String? imageUrl;
-  dynamic isMain, sortOrder;
+  dynamic sortOrder;
 
-  ProductImagesModel({this.imageUrl, this.isMain, this.sortOrder});
+  ProductImagesModel({this.imageUrl, this.sortOrder});
 
   ProductImagesModel.fromJson(Map<String, dynamic> json) {
     imageUrl = json["image_url"];
-    isMain = json["is_main"];
     sortOrder = json["sort_order"];
   }
 }
