@@ -7,9 +7,6 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:dio/dio.dart' as dio;
-import 'package:nocvla_admin/data/models/upload_model.dart';
-import 'package:nocvla_admin/data/repositories/misc_repo.dart';
 
 import '../widgets/my_text.dart';
 import 'my_colors.dart';
@@ -34,6 +31,29 @@ void showErrSnackbar({required String msg}) => Get.rawSnackbar(
     fontFamily: MyFonts.libreBaskerville,
   ),
 );
+
+void showMyErrAPISnackbar(dynamic err) {
+  print(err);
+  print(err["errors"] == null);
+
+  Get.snackbar(
+    (err["errors"] == null) ? "Oopsss..." : err["message"],
+    (err["errors"] == null)
+        ? (err["message"] ?? err["detail"])
+        : "${err["errors"].first["field"]} ${err["errors"].first["message"]}",
+    titleText: MyText(
+      text: (err["errors"] == null) ? "Oopsss..." : err["message"],
+      color: MyColors.secondary,
+    ),
+    messageText: MyText(
+      text: (err["errors"] == null)
+          ? (err["message"] ?? err["detail"])
+          : "${err["errors"].first["field"]} ${err["errors"].first["message"]}",
+      color: MyColors.secondary,
+    ),
+    backgroundColor: MyColors.red,
+  );
+}
 
 Color hexToColor({required String hex}) {
   hex = hex.replaceAll('#', '');
@@ -154,76 +174,76 @@ set imageFile(XFile? value) {
 //   );
 // }
 
-selectImageFrom({
-  required RxString variable,
-  required RxBool isLoading,
-  bool camera = false,
-  bool gallery = false,
-}) async {
-  isLoading.value = true;
+// selectImageFrom({
+//   required RxString variable,
+//   required RxBool isLoading,
+//   bool camera = false,
+//   bool gallery = false,
+// }) async {
+//   isLoading.value = true;
 
-  if (kIsWeb) {
-    // Flutter Web
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.image,
-      allowMultiple: false,
-      withData: true,
-    );
+//   if (kIsWeb) {
+//     // Flutter Web
+//     FilePickerResult? result = await FilePicker.platform.pickFiles(
+//       type: FileType.image,
+//       allowMultiple: false,
+//       withData: true,
+//     );
 
-    if (result != null && result.files.single.bytes != null) {
-      Uint8List fileBytes = result.files.single.bytes!;
-      String fileName = result.files.single.name;
+//     if (result != null && result.files.single.bytes != null) {
+//       Uint8List fileBytes = result.files.single.bytes!;
+//       String fileName = result.files.single.name;
 
-      final formData = dio.FormData.fromMap({
-        "file": dio.MultipartFile.fromBytes(fileBytes, filename: fileName),
-      });
+//       final formData = dio.FormData.fromMap({
+//         "file": dio.MultipartFile.fromBytes(fileBytes, filename: fileName),
+//       });
 
-      final req = await MiscRepository().upload(data: formData);
-      await req.responseHandler(
-        res: (res) {
-          var data = <UploadModel>[];
-          data.add(UploadModel.fromJson(res["data"]));
+//       final req = await MiscRepository().upload(data: formData);
+//       await req.responseHandler(
+//         res: (res) {
+//           var data = <UploadModel>[];
+//           data.add(UploadModel.fromJson(res["data"]));
 
-          print(data[0].url);
-          variable.value = data[0].url;
-          print(variable.value);
-        },
-        err: (err) => showErrSnackbar(msg: err),
-      );
-    }
-  } else {
-    ImagePicker picker = ImagePicker();
-    XFile? pickedFile;
-    if (gallery) {
-      pickedFile = await picker.pickImage(source: ImageSource.gallery);
-    } else if (camera) {
-      pickedFile = await picker.pickImage(source: ImageSource.camera);
-    }
+//           print(data[0].url);
+//           variable.value = data[0].url;
+//           print(variable.value);
+//         },
+//         err: (err) => showErrSnackbar(msg: err),
+//       );
+//     }
+//   } else {
+//     ImagePicker picker = ImagePicker();
+//     XFile? pickedFile;
+//     if (gallery) {
+//       pickedFile = await picker.pickImage(source: ImageSource.gallery);
+//     } else if (camera) {
+//       pickedFile = await picker.pickImage(source: ImageSource.camera);
+//     }
 
-    if (pickedFile != null) {
-      imageFile = pickedFile;
+//     if (pickedFile != null) {
+//       imageFile = pickedFile;
 
-      var formData = dio.FormData.fromMap({
-        "file": await dio.MultipartFile.fromFile(fpFile![0].path),
-      });
+//       var formData = dio.FormData.fromMap({
+//         "file": await dio.MultipartFile.fromFile(fpFile![0].path),
+//       });
 
-      var req = await MiscRepository().upload(data: formData);
-      await req.responseHandler(
-        res: (res) {
-          var data = <UploadModel>[];
-          data.add(UploadModel.fromJson(res["data"]));
+//       var req = await MiscRepository().upload(data: formData);
+//       await req.responseHandler(
+//         res: (res) {
+//           var data = <UploadModel>[];
+//           data.add(UploadModel.fromJson(res["data"]));
 
-          variable.value = data[0].url;
-        },
-        err: (err) => showErrSnackbar(msg: err),
-      );
+//           variable.value = data[0].url;
+//         },
+//         err: (err) => showErrSnackbar(msg: err),
+//       );
 
-      Get.back();
-    }
-  }
+//       Get.back();
+//     }
+//   }
 
-  isLoading.value = false;
-}
+//   isLoading.value = false;
+// }
 
 String formatHex(String input) {
   input = input.trim();

@@ -1,14 +1,16 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'my_loading.dart';
 
 class MyImage extends StatelessWidget {
-  const MyImage({
+  const MyImage(
+    this.image, {
     super.key,
     this.scale = 1,
     this.width,
-    required this.image,
+
     this.fit = BoxFit.cover,
     this.errorWidget,
     this.alignment = Alignment.center,
@@ -29,7 +31,8 @@ class MyImage extends StatelessWidget {
       onTap: onTap,
       child: CachedNetworkImage(
         width: width,
-        imageUrl: image,
+        imageUrl:
+            "${dotenv.env["API_URL"]}/${dotenv.env["API_STORAGE"]}/$image",
         fit: fit,
         scale: scale,
         alignment: alignment,
@@ -37,8 +40,7 @@ class MyImage extends StatelessWidget {
         errorWidget: (context, url, error) =>
             errorWidget ??
             MyImage(
-              image:
-                  "https://pixsector.com/cache/517d8be6/av5c8336583e291842624.png",
+              "https://pixsector.com/cache/517d8be6/av5c8336583e291842624.png",
             ),
       ),
     );

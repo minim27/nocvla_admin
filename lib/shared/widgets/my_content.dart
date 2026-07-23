@@ -33,7 +33,7 @@ class MyProduct extends StatelessWidget {
             children: [
               AspectRatio(
                 aspectRatio: 180 / 200,
-                child: MyImage(image: image, alignment: Alignment.topCenter),
+                child: MyImage( image, alignment: Alignment.topCenter),
               ),
               Positioned(
                 top: 10,

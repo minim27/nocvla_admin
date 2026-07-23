@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:nocvla_admin/shared/utils/my_images.dart';
-import 'package:nocvla_admin/shared/widgets/my_image.dart';
-import 'package:nocvla_admin/shared/widgets/my_text.dart';
+import 'package:nocvla_admin/modules/dashboard/widgets/mobile/m_dashboard_sidebar.dart';
+import 'package:nocvla_admin/modules/dashboard/widgets/tab/t_dashboard_sidebar.dart';
+import 'package:nocvla_admin/modules/dashboard/widgets/web/dashboard_sidebar.dart';
 
-import '../../../shared/widgets/my_scaffold.dart';
+import '../../shared/widgets/my_scaffold.dart';
 import 'dashboard_controller.dart';
 
 class DashboardPage extends GetView<DashboardController> {
@@ -12,80 +12,38 @@ class DashboardPage extends GetView<DashboardController> {
 
   @override
   Widget build(BuildContext context) {
-    return MyScaffold(
-      body: Row(
-        children: [
-          Container(
-            width: 220,
-            color: Colors.grey[900],
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isDesktop = constraints.maxWidth >= 1280;
+        final isTab = constraints.maxWidth >= 768;
+
+        if (isDesktop) {
+          return MyScaffold(
+            body: Row(
               children: [
-                Center(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    child: SizedBox(
-                      width: 160,
-                      child: MyImageAssets(assets: MyImages.imgNocvla),
+                DashboardSidebar(),
+                Expanded(
+                  child: Obx(
+                    () => GetRouterOutlet(
+                      initialRoute: controller.myRoutes.value,
                     ),
-                  ),
-                ),
-                ...List.generate(
-                  controller.menu.length,
-                  (index) => Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      GestureDetector(
-                        onTap: () => controller.menu[index]["route"] == null
-                            ? null
-                            : controller.changeRoute(
-                                route: controller.menu[index]["route"],
-                              ),
-                        child: Container(
-                          padding: EdgeInsets.symmetric(horizontal: 16),
-                          width: 220,
-                          height: 40,
-                          child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: MyText(text: controller.menu[index]["name"]),
-                          ),
-                        ),
-                      ),
-                      ...List.generate(
-                        controller.menu[index]["children"].length,
-                        (indexx) => GestureDetector(
-                          onTap: () => controller.changeRoute(
-                            route: controller
-                                .menu[index]["children"][indexx]["route"],
-                          ),
-                          child: Container(
-                            padding: EdgeInsets.symmetric(horizontal: 24),
-                            width: 220,
-                            height: 40,
-                            child: Align(
-                              alignment: Alignment.centerLeft,
-                              child: MyText(
-                                text: controller
-                                    .menu[index]["children"][indexx]["name"],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
                   ),
                 ),
               ],
             ),
+          );
+        }
+
+        return MyScaffold(
+          appBar: AppBar(),
+          drawer: Drawer(
+            child: isTab ? TDashboardSidebar() : MDashboardSidebar(),
           ),
-          // Konten kanan
-          Expanded(
-            child: Obx(
-              () => GetRouterOutlet(initialRoute: controller.myRoutes.value),
-            ),
+          body: Obx(
+            () => GetRouterOutlet(initialRoute: controller.myRoutes.value),
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

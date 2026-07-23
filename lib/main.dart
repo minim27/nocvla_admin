@@ -1,10 +1,10 @@
-import 'package:chucker_flutter/chucker_flutter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'app/routes/my_pages.dart';
 import 'app/routes/my_routes.dart';
@@ -14,6 +14,11 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
   await GetStorage.init();
+
+  await Supabase.initialize(
+    url: dotenv.env["API_URL"]!,
+    publishableKey: dotenv.env["SUPABASE_KEY"],
+  );
 
   runApp(const MyApp());
 }
@@ -25,13 +30,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      navigatorObservers: [ChuckerFlutter.navigatorObserver],
-      locale: const Locale('en'), // <-- optional
-      supportedLocales: const [
-        Locale('en'), // <-- minimal 1 locale
-      ],
+      locale: const Locale('en'),
+      supportedLocales: const [Locale('en')],
       localizationsDelegates: const [
-        FlutterQuillLocalizations.delegate, // <<=== tambahkan ini
+        FlutterQuillLocalizations.delegate,
         DefaultWidgetsLocalizations.delegate,
         DefaultMaterialLocalizations.delegate,
         DefaultCupertinoLocalizations.delegate,

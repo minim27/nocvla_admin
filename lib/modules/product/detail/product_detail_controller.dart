@@ -1,54 +1,38 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
-import 'package:flutter/cupertino.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:flutter_quill/quill_delta.dart';
 import 'package:get/get.dart';
-import 'package:nocvla_admin/data/models/master/colors_model.dart';
-import 'package:nocvla_admin/data/models/master/size_model.dart';
-import 'package:nocvla_admin/data/models/master/type_model.dart';
-import 'package:nocvla_admin/data/models/products/product_detail_model.dart';
 import 'package:nocvla_admin/modules/product/detail/product_detail_params.dart';
-import 'package:vsc_quill_delta_to_html/vsc_quill_delta_to_html.dart';
 
 import '../../../app/core/base_controller.dart';
+import '../../../data/models/products/add_products_model.dart';
+import '../../../data/models/products/product_type_model.dart';
 import '../../../shared/utils/my_utility.dart';
+import '../../../shared/widgets/my_confirm_dialog.dart';
 
 class ProductDetailController extends BaseController {
-  var resProduct = <ProductDetailModel>[];
-  var resType = <TypeModel>[];
-  var resSize = <SizeModel>[];
-  var resColor = <ColorsModel>[];
-
-  var gender = <Map<String, dynamic>>[
-    {"name": "Male", "value": "m"},
-    {"name": "Female", "value": "f"},
-    {"name": "Unisex", "value": "u"},
-  ];
-
   var isLoading = false.obs;
   var isLoadingAction = false.obs;
 
   var txtName = TextEditingController();
-  var txtIdentity = TextEditingController();
-  var selectedGender = {}.obs;
-  var selectedType = {}.obs;
-  var txtDescription = TextEditingController();
-  var txtGallery = <RxString>[].obs;
+  var txtColor = TextEditingController();
   var txtUrlShopee = TextEditingController();
   var txtUrlTiktokShop = TextEditingController();
   var txtUrlTokped = TextEditingController();
 
   QuillController quillController = QuillController.basic();
 
-  var selectedSize = <String>[].obs;
-  var selectedColor = <Map<String, dynamic>>[].obs;
+  var resTypes = <ProductTypeModel>[].obs;
+  var selectedType = Rxn<ProductTypeModel>();
 
-  final regPriceCtrls = <String, TextEditingController>{}.obs;
-  final discPriceCtrls = <String, TextEditingController>{}.obs;
-  final stockCtrls = <String, TextEditingController>{}.obs;
-  final printPrimaryCtrls = <String, TextEditingController>{}.obs;
-  final printSecondaryCtrls = <String, TextEditingController>{}.obs;
+  var gallery = <GalleryImage>[].obs;
+  var stockRows = <Map<String, TextEditingController>>[].obs;
+
+  ProductDetailParams get params => ProductDetailParams.fromMap(Get.parameters);
 
   @override
   void onInit() {
@@ -58,20 +42,16 @@ class ProductDetailController extends BaseController {
 
   @override
   void onClose() {
-    for (final c in regPriceCtrls.values) {
-      c.dispose();
-    }
-    for (final c in discPriceCtrls.values) {
-      c.dispose();
-    }
-    for (final c in stockCtrls.values) {
-      c.dispose();
-    }
-    for (final c in printPrimaryCtrls.values) {
-      c.dispose();
-    }
-    for (final c in printSecondaryCtrls.values) {
-      c.dispose();
+    txtName.dispose();
+    txtColor.dispose();
+    txtUrlShopee.dispose();
+    txtUrlTiktokShop.dispose();
+    txtUrlTokped.dispose();
+    quillController.dispose();
+    for (final row in stockRows) {
+      row["size"]?.dispose();
+      row["qty"]?.dispose();
+      row["price"]?.dispose();
     }
     super.onClose();
   }
@@ -79,315 +59,312 @@ class ProductDetailController extends BaseController {
   fetchApi() async {
     isLoading.value = true;
 
-    var reqType = await typeRepo.list();
-    var reqSize = await sizeRepo.list();
-    var reqColor = await colorsRepo.list();
-
-    await reqType.responseHandler(
+    final reqTypes = await productsRepo.listProductTypes();
+    await reqTypes.responseHandler(
       res: (res) {
-        for (var data in res["data"]) {
-          resType.add(TypeModel.fromJson(data));
-        }
-      },
-      err: (err) => showErrSnackbar(msg: err),
-    );
-    await reqSize.responseHandler(
-      res: (res) {
-        for (var data in res["data"]) {
-          resSize.add(SizeModel.fromJson(data));
-        }
-      },
-      err: (err) => showErrSnackbar(msg: err),
-    );
-    await reqColor.responseHandler(
-      res: (res) {
-        for (var data in res["data"]) {
-          resColor.add(ColorsModel.fromJson(data));
-        }
+        resTypes.value = (res as List)
+            .map((e) => ProductTypeModel.fromJson(e))
+            .toList();
       },
       err: (err) => showErrSnackbar(msg: err),
     );
 
-    ProductDetailParams params = ProductDetailParams.fromMap(Get.parameters);
-
-    if (params.slug == null) {
-      txtGallery.add("".obs);
-    } else {
-      var reqProduct = await productRepo.detailProduct(slug: params.slug);
-      await reqProduct.responseHandler(
+    if (params.id != null) {
+      final reqDetail = await productsRepo.detailProduct(id: params.id);
+      await reqDetail.responseHandler(
         res: (res) {
-          resProduct.add(ProductDetailModel.fromJson(res["data"]));
+          final product = AddProductsModel.fromJson(res);
 
-          txtName.text = resProduct[0].name;
-          txtIdentity.text = resProduct[0].identity;
-          selectedGender.value = {
-            "name": resProduct[0].gender["name"],
-            "value": resProduct[0].gender["value"],
-          };
-          selectedType.value = {
-            "id": resProduct[0].type["id"],
-            "title": resProduct[0].type["name"],
-          };
-          // txtDescription.text = resProduct[0].description;
-          final rawDescription = resProduct[0].description;
+          txtName.text = product.name ?? "";
+          txtColor.text = product.color ?? "";
+          txtUrlShopee.text = product.shopeeUrl ?? "";
+          txtUrlTiktokShop.text = product.tiktokUrl ?? "";
+          txtUrlTokped.text = product.tokopediaUrl ?? "";
 
-          try {
-            // coba decode sebagai delta JSON
-            final decoded = jsonDecode(rawDescription);
+          for (final type in resTypes) {
+            if (type.id == product.productTypeId) {
+              selectedType.value = type;
+              break;
+            }
+          }
 
-            // kalau berhasil dan berupa List, anggap dia delta
-            if (decoded is List) {
-              final delta = Delta.fromJson(decoded);
+          final rawDescription = product.description;
+          if (rawDescription != null && rawDescription.toString().isNotEmpty) {
+            try {
+              final delta = Delta.fromJson(jsonDecode(rawDescription));
               quillController = QuillController(
                 document: Document.fromDelta(delta),
                 selection: const TextSelection.collapsed(offset: 0),
               );
-            } else {
-              // fallback ke plain text
+            } catch (e) {
               quillController = QuillController(
-                document: Document()..insert(0, rawDescription),
+                document: Document()..insert(0, rawDescription.toString()),
                 selection: const TextSelection.collapsed(offset: 0),
               );
             }
-          } catch (e) {
-            // jsonDecode gagal → berarti plain text
-            quillController = QuillController(
-              document: Document()..insert(0, rawDescription),
-              selection: const TextSelection.collapsed(offset: 0),
+          }
+
+          for (final image in product.images ?? []) {
+            gallery.add(
+              GalleryImage(
+                existingPath: image.imageUrl,
+                isMain: image.isMain == true,
+              ),
             );
           }
 
-          for (var data in resProduct[0].gallery) {
-            txtGallery.add((data ?? "").toString().obs);
-          }
-          txtGallery.add("".obs);
-          txtUrlShopee.text = resProduct[0].urlShopee;
-          txtUrlTiktokShop.text = resProduct[0].urlTiktokshop;
-          txtUrlTokped.text = resProduct[0].urlTokped;
-
-          for (var size in resProduct[0].variation) {
-            final sizeName = size["name"];
-            selectedSize.add(sizeName);
-
-            final iSize = resSize.indexWhere((s) => s.name == size["name"]);
-            if (iSize != -1) {
-              resSize[iSize].selected.value = true;
-            }
-
-            for (var color in size["color"]) {
-              final hex = color["hex"];
-              final name = color["name"];
-              final iColorSelected = selectedColor.indexWhere(
-                (c) => c['hex'] == hex,
-              );
-
-              if (iColorSelected == -1) {
-                final iColor = resColor.indexWhere((s) => s.name == name);
-                if (iColor != -1) {
-                  resColor[iColor].selected.value = true;
-                }
-                selectedColor.add({'hex': hex, 'name': name});
-              }
-            }
-          }
-
-          for (var size in resProduct[0].variation) {
-            final sizeName = size["name"];
-
-            for (var color in size["color"]) {
-              final hex = color["hex"];
-
-              for (var print in color["print"]) {
-                final k = keyFor(sizeName, hex);
-
-                regPriceCtrls[k] = TextEditingController(
-                  text: print["price"]["regular"].toString(),
-                );
-                discPriceCtrls[k] = TextEditingController(
-                  text: print["price"]["discount"].toString(),
-                );
-                stockCtrls[k] = TextEditingController(
-                  text: print["stock"].toString(),
-                );
-                printPrimaryCtrls[k] = TextEditingController(
-                  text: print["primary_hex"].toString(),
-                );
-                printSecondaryCtrls[k] = TextEditingController(
-                  text: print["secondary_hex"].toString(),
-                );
-              }
-            }
+          for (final v in product.variation ?? []) {
+            addStockRow(
+              size: v.size?.toString(),
+              qty: v.qty?.toString(),
+              price: v.price?.toString(),
+            );
           }
         },
         err: (err) => showErrSnackbar(msg: err),
       );
     }
+
+    if (stockRows.isEmpty) addStockRow();
 
     isLoading.value = false;
   }
 
-  String keyFor(String size, String hex) => '$size|$hex';
+  void selectType({required ProductTypeModel res}) => selectedType.value = res;
 
-  TextEditingController _ensure(
-    Map<String, TextEditingController> map,
-    String key,
-  ) => map.putIfAbsent(key, () => TextEditingController());
-
-  void generateControllers() {
-    final needed = <String>{};
-
-    for (final size in selectedSize) {
-      for (final c in selectedColor) {
-        final hex = c['hex']!;
-        final k = keyFor(size, hex);
-        needed.add(k);
-        _ensure(regPriceCtrls, k);
-        _ensure(discPriceCtrls, k);
-        _ensure(stockCtrls, k);
-        _ensure(printPrimaryCtrls, k);
-        _ensure(printSecondaryCtrls, k);
-      }
-    }
-
-    void prune(Map<String, TextEditingController> map) {
-      final removeKeys = map.keys.where((k) => !needed.contains(k)).toList();
-      for (final k in removeKeys) {
-        map[k]?.dispose();
-        map.remove(k);
-      }
-    }
-
-    prune(regPriceCtrls);
-    prune(discPriceCtrls);
-    prune(stockCtrls);
-    prune(printPrimaryCtrls);
-    prune(printSecondaryCtrls);
-
-    // pastikan UI refresh
-    regPriceCtrls.refresh();
-    discPriceCtrls.refresh();
-    stockCtrls.refresh();
-    printPrimaryCtrls.refresh();
-    printSecondaryCtrls.refresh();
+  void addStockRow({String? size, String? qty, String? price}) {
+    stockRows.add({
+      "size": TextEditingController(text: size),
+      "qty": TextEditingController(text: qty),
+      "price": TextEditingController(text: price),
+    });
   }
 
-  void addImage({required int index}) async {
-    await selectImageFrom(
-      variable: txtGallery[index],
-      isLoading: isLoadingAction,
-      gallery: true,
+  Future<void> removeStockRow({required int index}) async {
+    final confirmed = await showMyConfirmDialog(title: "Hapus Baris Stok?");
+    if (!confirmed) return;
+
+    stockRows[index]["size"]?.dispose();
+    stockRows[index]["qty"]?.dispose();
+    stockRows[index]["price"]?.dispose();
+    stockRows.removeAt(index);
+  }
+
+  Future<void> pickImage() async {
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.image,
+      allowMultiple: true,
+      withData: true,
     );
 
-    if (txtGallery[index].value != "" && index < 9) txtGallery.add("".obs);
-  }
+    if (result == null) return;
 
-  selectGender({required Map<String, dynamic> val}) =>
-      selectedGender.value = {"name": val["name"], "value": val["value"]};
-
-  selectType({required TypeModel res}) =>
-      selectedType.value = {"id": res.id, "title": res.title};
-
-  selectSize({required int index}) {
-    resSize[index].selected.value = !resSize[index].selected.value;
-    final name = resSize[index].name;
-    if (selectedSize.contains(name)) {
-      selectedSize.remove(name);
-    } else {
-      selectedSize.add(name);
+    for (final file in result.files) {
+      if (file.bytes == null) continue;
+      gallery.add(GalleryImage(newBytes: file.bytes, newFileName: file.name));
     }
-    generateControllers();
-  }
 
-  // ✅ perbaiki toggle color (hapus/cek berdasarkan hex, bukan Map identity)
-  selectColor({required int index}) {
-    if (selectedSize.isEmpty) return showErrSnackbar(msg: "Please select Size");
-    resColor[index].selected.value = !resColor[index].selected.value;
-
-    final hex = resColor[index].hex;
-    final name = resColor[index].name;
-    final i = selectedColor.indexWhere((c) => c['hex'] == hex);
-
-    if (i == -1) {
-      selectedColor.add({'hex': hex, 'name': name});
-    } else {
-      selectedColor.removeAt(i);
+    if (gallery.isNotEmpty && !gallery.any((e) => e.isMain)) {
+      gallery.first.isMain = true;
+      gallery.refresh();
     }
-    generateControllers();
   }
 
-  void save() async {
+  Future<void> removeImage({required int index}) async {
+    final confirmed = await showMyConfirmDialog(title: "Hapus Gambar?");
+    if (!confirmed) return;
+
+    final wasMain = gallery[index].isMain;
+    gallery.removeAt(index);
+
+    if (wasMain && gallery.isNotEmpty) {
+      gallery.first.isMain = true;
+      gallery.refresh();
+    }
+  }
+
+  void setMainImage({required int index}) {
+    for (var i = 0; i < gallery.length; i++) {
+      gallery[i].isMain = i == index;
+    }
+    gallery.refresh();
+  }
+
+  void reorderGallery({required int oldIndex, required int newIndex}) {
+    final item = gallery.removeAt(oldIndex);
+    gallery.insert(newIndex, item);
+  }
+
+  Future<void> save() async {
+    if (txtName.text.trim().isEmpty) {
+      return showErrSnackbar(msg: "Nama produk wajib diisi");
+    }
+
     isLoadingAction.value = true;
 
-    List<Map<String, dynamic>> variations = [];
-
-    for (final size in selectedSize) {
-      List<Map<String, dynamic>> colors = [];
-
-      for (final c in selectedColor) {
-        final hex = c['hex']!;
-        final k = keyFor(size, hex);
-
-        colors.add({
-          "name": c["name"],
-          "hex": hex,
-          "print": [
-            {
-              "primary_hex": formatHex(printPrimaryCtrls[k]!.text),
-              "secondary_hex": formatHex(printSecondaryCtrls[k]!.text),
-              "stock": int.tryParse(stockCtrls[k]?.text ?? '') ?? 0,
-              "price_regular": int.tryParse(regPriceCtrls[k]?.text ?? '') ?? 0,
-              "price_discount":
-                  int.tryParse(discPriceCtrls[k]?.text ?? '') ?? 0,
-            },
-          ],
-        });
-      }
-      variations.add({"size": size, "color": colors});
-    }
-
     final delta = quillController.document.toDelta();
-    final converter = QuillDeltaToHtmlConverter(delta.toJson());
-    final htmlDesc = converter.convert();
-
-    var body = {
+    final body = {
       "name": txtName.text,
-      "identity": txtIdentity.text,
-      "gender": selectedGender["value"],
-      "type_id": selectedType["id"],
-      "description": htmlDesc,
-      "gallery": txtGallery
-          .where((e) => e.value.trim().isNotEmpty)
-          .map((e) => e.value)
-          .toList(),
-      "url_shopee": txtUrlShopee.text,
-      "url_tiktokshop": txtUrlTiktokShop.text,
-      "url_tokped": txtUrlTokped.text,
-      "variation": variations,
+      "color": txtColor.text,
+      "description": jsonEncode(delta.toJson()),
+      "shopee_url": txtUrlShopee.text,
+      "tiktok_url": txtUrlTiktokShop.text,
+      "tokopedia_url": txtUrlTokped.text,
+      "product_type_id": selectedType.value?.id,
     };
-    print(jsonEncode(body));
 
-    ProductDetailParams params = ProductDetailParams.fromMap(Get.parameters);
+    var hasError = false;
+    String? productId = params.id;
 
-    if (params.id == null) {
-      var req = await productRepo.addProduct(data: body);
-      await req.responseHandler(
-        res: (res) {
-          Get.back();
-          showSnackbar(msg: res["message"]);
+    if (productId == null) {
+      final reqAdd = await productsRepo.addProduct(body: body);
+      await reqAdd.responseHandler(
+        res: (res) => productId = AddProductsModel.fromJson(res).id,
+        err: (err) {
+          hasError = true;
+          showErrSnackbar(msg: err);
         },
-        err: (err) => showErrSnackbar(msg: err),
       );
     } else {
-      var req = await productRepo.updateProduct(id: int.parse(params.id) , data: body);
-      await req.responseHandler(
-        res: (res) {
-          Get.back();
-          showSnackbar(msg: res["message"]);
+      final reqUpdate = await productsRepo.updateProduct(
+        id: productId,
+        body: body,
+      );
+      await reqUpdate.responseHandler(
+        res: (res) {},
+        err: (err) {
+          hasError = true;
+          showErrSnackbar(msg: err);
         },
-        err: (err) => showErrSnackbar(msg: err),
+      );
+    }
+
+    if (hasError || productId == null) {
+      isLoadingAction.value = false;
+      return;
+    }
+
+    final imageRows = <Map<String, dynamic>>[];
+    for (var i = 0; i < gallery.length; i++) {
+      final image = gallery[i];
+      String? path = image.existingPath;
+
+      if (path == null && image.newBytes != null) {
+        final fileName =
+            "${DateTime.now().millisecondsSinceEpoch}_${image.newFileName!}";
+        final reqUpload = await productsRepo.uploadImage(
+          bytes: image.newBytes!,
+          fileName: fileName,
+        );
+        await reqUpload.responseHandler(
+          res: (res) => path = res,
+          err: (err) {
+            hasError = true;
+            showErrSnackbar(msg: err);
+          },
+        );
+      }
+
+      if (path != null) {
+        imageRows.add({
+          "image_url": path,
+          "is_main": image.isMain,
+          "sort_order": i,
+        });
+      }
+    }
+
+    if (hasError) {
+      isLoadingAction.value = false;
+      return;
+    }
+
+    if (params.id != null) {
+      final reqDeleteImages = await productsRepo.deleteProductImages(
+        productId: productId!,
+      );
+      await reqDeleteImages.responseHandler(
+        res: (res) {},
+        err: (err) {
+          hasError = true;
+          showErrSnackbar(msg: err);
+        },
+      );
+
+      final reqDeleteStocks = await productsRepo.deleteProductStocks(
+        productId: productId!,
+      );
+      await reqDeleteStocks.responseHandler(
+        res: (res) {},
+        err: (err) {
+          hasError = true;
+          showErrSnackbar(msg: err);
+        },
+      );
+    }
+
+    if (hasError) {
+      isLoadingAction.value = false;
+      return;
+    }
+
+    if (imageRows.isNotEmpty) {
+      final reqImages = await productsRepo.addImages(
+        body: imageRows
+            .map((row) => {"product_id": productId, ...row})
+            .toList(),
+      );
+      await reqImages.responseHandler(
+        res: (res) {},
+        err: (err) {
+          hasError = true;
+          showErrSnackbar(msg: err);
+        },
+      );
+    }
+
+    final stockBody = stockRows
+        .where((row) => row["size"]!.text.trim().isNotEmpty)
+        .map(
+          (row) => {
+            "product_id": productId,
+            "size": row["size"]!.text,
+            "qty": int.tryParse(row["qty"]!.text) ?? 0,
+            "price": double.tryParse(row["price"]!.text) ?? 0,
+          },
+        )
+        .toList();
+
+    if (stockBody.isNotEmpty) {
+      final reqStocks = await productsRepo.addStocks(body: stockBody);
+      await reqStocks.responseHandler(
+        res: (res) {},
+        err: (err) {
+          hasError = true;
+          showErrSnackbar(msg: err);
+        },
       );
     }
 
     isLoadingAction.value = false;
+
+    if (hasError) return;
+
+    Get.back();
+    showSnackbar(msg: "Produk berhasil disimpan");
   }
+}
+
+class GalleryImage {
+  final String? existingPath;
+  final Uint8List? newBytes;
+  final String? newFileName;
+  bool isMain;
+
+  GalleryImage({
+    this.existingPath,
+    this.newBytes,
+    this.newFileName,
+    this.isMain = false,
+  });
 }
