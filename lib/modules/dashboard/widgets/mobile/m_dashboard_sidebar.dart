@@ -40,6 +40,7 @@ class MDashboardSidebar extends StatelessWidget {
                     crossAxisAlignment: .start,
                     children: [
                       GestureDetector(
+                        behavior: .opaque,
                         onTap: () {
                           if (controller.menu[index]["route"] == null) return;
                           controller.changeRoute(
@@ -70,6 +71,7 @@ class MDashboardSidebar extends StatelessWidget {
                               controller.myRoutes.value == childRoute;
 
                           return GestureDetector(
+                            behavior: .opaque,
                             onTap: () {
                               controller.changeRoute(route: childRoute);
                               Navigator.of(context).pop();

@@ -76,6 +76,14 @@ class ProductController extends BaseController {
     fetchApi(isRefresh: true);
   }
 
+  duplicate({required String id}) async {
+    await Get.toNamed(
+      MyRoutes.productDetail,
+      parameters: {"duplicateId": "$id"},
+    );
+    fetchApi(isRefresh: true);
+  }
+
   delete({required String id}) async {
     final confirmed = await showMyConfirmDialog(title: "Hapus Produk?");
     if (!confirmed) return;

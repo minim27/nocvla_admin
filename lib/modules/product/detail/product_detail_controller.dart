@@ -69,8 +69,10 @@ class ProductDetailController extends BaseController {
       err: (err) => showErrSnackbar(msg: err),
     );
 
-    if (params.id != null) {
-      final reqDetail = await productsRepo.detailProduct(id: params.id);
+    final sourceId = params.id ?? params.duplicateId;
+
+    if (sourceId != null) {
+      final reqDetail = await productsRepo.detailProduct(id: sourceId);
       await reqDetail.responseHandler(
         res: (res) {
           final product = AddProductsModel.fromJson(res);

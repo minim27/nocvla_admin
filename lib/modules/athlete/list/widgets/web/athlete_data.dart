@@ -32,13 +32,16 @@ class AthleteData extends StatelessWidget {
                 children: [
                   Expanded(
                     child: items.picture != null
-                        ? Container(
-                            width: 64,
-                            height: 64,
-                            decoration: BoxDecoration(
-                              border: .all(color: MyColors.secondary),
+                        ? Align(
+                            alignment: .centerLeft,
+                            child: Container(
+                              width: 64,
+                              height: 64,
+                              decoration: BoxDecoration(
+                                border: .all(color: MyColors.secondary),
+                              ),
+                              child: MyImage(items.picture),
                             ),
-                            child: MyImage(items.picture),
                           )
                         : SizedBox(),
                   ),

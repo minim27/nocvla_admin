@@ -4,7 +4,14 @@ import '../../app/core/base_repository.dart';
 
 class AthleteRepo extends BaseRepository {
   Future<ResponseHandler<dynamic>> listAthletes() async => ResponseHandler(
-    supabase.from("m_athlete").select().order("created_at", ascending: false),
+    supabase
+        .from("m_athlete")
+        .select('''
+      *,
+      assignments:t_athlete(product:m_products(name))
+    ''')
+        .order("created_at", ascending: false)
+        .order("name", ascending: true, referencedTable: "assignments.product"),
   );
 
   Future<ResponseHandler<dynamic>> detailAthlete({required String id}) async =>

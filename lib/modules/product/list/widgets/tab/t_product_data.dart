@@ -83,6 +83,13 @@ class TProductData extends StatelessWidget {
                               ),
                             ),
                             GestureDetector(
+                              onTap: () => controller.duplicate(id: items.id),
+                              child: Icon(
+                                Icons.copy,
+                                color: MyColors.secondary,
+                              ),
+                            ),
+                            GestureDetector(
                               onTap: () => controller.delete(id: items.id),
                               child: Icon(
                                 Icons.delete_outline_rounded,

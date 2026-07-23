@@ -43,6 +43,7 @@ class MyApp extends StatelessWidget {
         appBarTheme: AppBarTheme(
           backgroundColor: MyColors.primary,
           surfaceTintColor: MyColors.primary,
+          foregroundColor: MyColors.secondary,
         ),
         popupMenuTheme: PopupMenuThemeData(
           color: MyColors.primary,

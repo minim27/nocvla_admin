@@ -40,6 +40,7 @@ class DashboardSidebar extends StatelessWidget {
                   crossAxisAlignment: .start,
                   children: [
                     GestureDetector(
+                      behavior: .opaque,
                       onTap: () => controller.menu[index]["route"] == null
                           ? null
                           : controller.changeRoute(
@@ -68,6 +69,7 @@ class DashboardSidebar extends StatelessWidget {
                             controller.myRoutes.value == childRoute;
 
                         return GestureDetector(
+                          behavior: .opaque,
                           onTap: () =>
                               controller.changeRoute(route: childRoute),
                           child: Container(

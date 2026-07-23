@@ -1,5 +1,6 @@
 class AthleteModel {
   dynamic id, picture, code, name, createdAt, updatedAt;
+  List<String>? assignedProducts;
 
   AthleteModel({
     this.id,
@@ -8,6 +9,7 @@ class AthleteModel {
     this.name,
     this.createdAt,
     this.updatedAt,
+    this.assignedProducts,
   });
 
   AthleteModel.fromJson(Map<String, dynamic> json) {
@@ -17,5 +19,8 @@ class AthleteModel {
     name = json["name"];
     createdAt = json["created_at"];
     updatedAt = json["updated_at"];
+    assignedProducts = (json["assignments"] as List?)
+        ?.map((e) => e["product"]["name"] as String)
+        .toList();
   }
 }
