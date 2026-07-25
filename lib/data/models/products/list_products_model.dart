@@ -1,13 +1,14 @@
 class ListProductsModel {
-  dynamic id, name, type, color, isFeatured;
+  dynamic id, productId, name, colorName, type, isFeatured;
   List<ProductImagesModel>? images;
   List<ProductVariationModel>? variation;
 
   ListProductsModel({
     this.id,
+    this.productId,
     this.name,
+    this.colorName,
     this.type,
-    this.color,
     this.isFeatured,
     this.images,
     this.variation,
@@ -15,10 +16,14 @@ class ListProductsModel {
 
   ListProductsModel.fromJson(Map<String, dynamic> json) {
     id = json["id"];
-    name = json["name"];
-    type = json["type"];
-    color = json["color"];
-    isFeatured = json["is_featured"];
+    colorName = json["name"];
+    productId = json["product_id"];
+
+    final product = json["product"];
+    if (product != null) {
+      name = product["name"];
+      isFeatured = product["is_featured"];
+    }
 
     images = (json["images"] as List?)
         ?.map((e) => ProductImagesModel.fromJson(e))

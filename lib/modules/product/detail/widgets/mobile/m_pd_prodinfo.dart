@@ -5,7 +5,6 @@ import 'package:get/get.dart';
 import '../../../../../shared/utils/my_colors.dart';
 import '../../../../../shared/utils/my_fonts.dart';
 import '../../../../../shared/widgets/my_dropdown.dart';
-import '../../../../../shared/widgets/my_image.dart';
 import '../../../../../shared/widgets/my_text.dart';
 import '../../../../../shared/widgets/my_text_form_field.dart';
 import '../../product_detail_controller.dart';
@@ -35,7 +34,7 @@ class MPDProdInfo extends StatelessWidget {
             ),
             child: MyText(
               text:
-                  "Ini duplikat — akan tersimpan sebagai produk baru saat disimpan.",
+                  "Ini duplikat produk — seluruh warna, foto, ukuran, stok & harga akan ikut tersalin sebagai produk baru saat disimpan.",
               color: MyColors.primary,
               fontWeight: .w600,
               fontSize: 12,
@@ -43,113 +42,9 @@ class MPDProdInfo extends StatelessWidget {
           ),
         ],
         SizedBox(height: 16),
-        MyText(
-          text: "Product Image (tekan lama untuk drag, foto pertama = main)",
-        ),
-        SizedBox(height: 8),
-        SizedBox(
-          height: 88,
-          child: Row(
-            children: [
-              Expanded(
-                child: Obx(
-                  () => ReorderableListView(
-                    scrollDirection: .horizontal,
-                    buildDefaultDragHandles: false,
-                    onReorderItem: (oldIndex, newIndex) => controller
-                        .reorderGallery(oldIndex: oldIndex, newIndex: newIndex),
-                    children: List.generate(controller.gallery.length, (index) {
-                      final image = controller.gallery[index];
-
-                      return ReorderableDelayedDragStartListener(
-                        key: ValueKey(image),
-                        index: index,
-                        child: Padding(
-                          padding: const .only(right: 8),
-                          child: Stack(
-                            children: [
-                              Container(
-                                width: 72,
-                                height: 72,
-                                decoration: BoxDecoration(
-                                  border: .all(
-                                    color: index == 0
-                                        ? MyColors.red
-                                        : MyColors.secondary,
-                                    width: index == 0 ? 2 : 1,
-                                  ),
-                                ),
-                                child: image.existingPath != null
-                                    ? MyImage(image.existingPath!)
-                                    : Image.memory(
-                                        image.newBytes!,
-                                        fit: .cover,
-                                      ),
-                              ),
-                              Positioned(
-                                top: 2,
-                                right: 2,
-                                child: GestureDetector(
-                                  onTap: () =>
-                                      controller.removeImage(index: index),
-                                  child: Container(
-                                    padding: .all(2),
-                                    decoration: BoxDecoration(
-                                      color: MyColors.primary,
-                                      shape: .circle,
-                                    ),
-                                    child: Icon(
-                                      Icons.close,
-                                      size: 12,
-                                      color: MyColors.secondary,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    }),
-                  ),
-                ),
-              ),
-              GestureDetector(
-                onTap: () => controller.pickImage(),
-                child: Container(
-                  width: 72,
-                  height: 72,
-                  decoration: BoxDecoration(
-                    border: .all(color: MyColors.secondary),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: .center,
-                    children: [
-                      Icon(
-                        Icons.add_photo_alternate,
-                        size: 18,
-                        color: MyColors.secondary,
-                      ),
-                      MyText(text: "Add", fontSize: 9, textAlign: .center),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-        SizedBox(height: 16),
         MyTextFormField(
           controller: controller.txtName,
           label: "Product Name",
-          required: true,
-          keyboardType: .text,
-          textInputAction: .next,
-        ),
-        SizedBox(height: 16),
-        MyTextFormField(
-          controller: controller.txtColor,
-          label: "Color",
           required: true,
           keyboardType: .text,
           textInputAction: .next,

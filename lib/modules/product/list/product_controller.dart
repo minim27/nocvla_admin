@@ -52,9 +52,17 @@ class ProductController extends BaseController {
     );
     req.responseHandler(
       res: (res) {
-        this.res.value = (res as List).map((e) {
-          return ListProductsModel.fromJson(e);
-        }).toList();
+        this.res.value =
+            (res as List).map((e) => ListProductsModel.fromJson(e)).toList()
+              ..sort((a, b) {
+                final byName = (a.name ?? "").toString().compareTo(
+                  (b.name ?? "").toString(),
+                );
+                if (byName != 0) return byName;
+                return (a.colorName ?? "").toString().compareTo(
+                  (b.colorName ?? "").toString(),
+                );
+              });
       },
       err: (err) => showErrSnackbar(msg: err),
     );
@@ -84,34 +92,82 @@ class ProductController extends BaseController {
     fetchApi(isRefresh: true);
   }
 
-  delete({required String id}) async {
-    final confirmed = await showMyConfirmDialog(title: "Hapus Produk?");
+  delete({required ListProductsModel item}) async {
+    final confirmed = await showMyConfirmDialog(title: "Hapus Warna Ini?");
     if (!confirmed) return;
 
     isLoadingAction.value = true;
+    var hasError = false;
 
     final reqDeleteImages = await productsRepo.deleteProductImages(
-      productId: id,
+      productColorId: item.id,
     );
     await reqDeleteImages.responseHandler(
       res: (res) {},
-      err: (err) => showErrSnackbar(msg: err),
+      err: (err) {
+        hasError = true;
+        showErrSnackbar(msg: err);
+      },
     );
 
     final reqDeleteStocks = await productsRepo.deleteProductStocks(
-      productId: id,
+      productColorId: item.id,
     );
     await reqDeleteStocks.responseHandler(
       res: (res) {},
-      err: (err) => showErrSnackbar(msg: err),
+      err: (err) {
+        hasError = true;
+        showErrSnackbar(msg: err);
+      },
     );
 
-    final reqDelete = await productsRepo.deleteProduct(id: id);
-    await reqDelete.responseHandler(
-      res: (res) => fetchApi(isRefresh: true),
-      err: (err) => showErrSnackbar(msg: err),
+    if (hasError) {
+      isLoadingAction.value = false;
+      return;
+    }
+
+    final reqDeleteColor = await productsRepo.deleteColor(id: item.id);
+    await reqDeleteColor.responseHandler(
+      res: (res) {},
+      err: (err) {
+        hasError = true;
+        showErrSnackbar(msg: err);
+      },
     );
+
+    if (hasError) {
+      isLoadingAction.value = false;
+      return;
+    }
+
+    var remainingColors = [];
+    final reqRemaining = await productsRepo.listProductColorIds(
+      productId: item.productId,
+    );
+    await reqRemaining.responseHandler(
+      res: (res) => remainingColors = res as List,
+      err: (err) {
+        hasError = true;
+        showErrSnackbar(msg: err);
+      },
+    );
+
+    if (hasError) {
+      isLoadingAction.value = false;
+      return;
+    }
+
+    if (remainingColors.isEmpty) {
+      final reqDeleteProduct = await productsRepo.deleteProduct(
+        id: item.productId,
+      );
+      await reqDeleteProduct.responseHandler(
+        res: (res) {},
+        err: (err) => showErrSnackbar(msg: err),
+      );
+    }
 
     isLoadingAction.value = false;
+    fetchApi(isRefresh: true);
   }
 }

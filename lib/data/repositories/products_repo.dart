@@ -7,38 +7,46 @@ class ProductsRepo extends BaseRepository {
     String? name,
     String? typeId,
   }) async {
-    var query = supabase.from("m_products").select('''
-      *,
+    var query = supabase.from("m_product_color").select('''
+      id, name, product_id,
+      product:m_products!inner(id, name, is_featured, product_type_id),
       images:m_product_images(image_url, sort_order),
       variation:m_product_stock(size, qty, price)
     ''');
 
-    if (name != null && name.isNotEmpty) query = query.ilike("name", "%$name%");
+    if (name != null && name.isNotEmpty) {
+      query = query.ilike("product.name", "%$name%");
+    }
     if (typeId != null && typeId.isNotEmpty) {
-      query = query.eq("product_type_id", typeId);
+      query = query.eq("product.product_type_id", typeId);
     }
 
     return ResponseHandler(
-      query
-          .order("name", ascending: true)
-          .order("color", ascending: true)
-          .order("sort_order", ascending: true, referencedTable: "images"),
+      query.order("sort_order", ascending: true, referencedTable: "images"),
     );
   }
 
-  Future<ResponseHandler<dynamic>> detailProduct({required String id}) async =>
-      ResponseHandler(
-        supabase
-            .from("m_products")
-            .select('''
+  Future<ResponseHandler<dynamic>> detailProductWithColors({
+    required String id,
+  }) async => ResponseHandler(
+    supabase
+        .from("m_products")
+        .select('''
       *,
-      images:m_product_images(image_url, sort_order),
-      variation:m_product_stock(size, qty, price)
+      colors:m_product_color(
+        id, name,
+        images:m_product_images(image_url, sort_order),
+        variation:m_product_stock(size, qty, price)
+      )
     ''')
-            .eq("id", id)
-            .order("sort_order", ascending: true, referencedTable: "images")
-            .single(),
-      );
+        .eq("id", id)
+        .order("sort_order", ascending: true, referencedTable: "colors.images")
+        .single(),
+  );
+
+  Future<ResponseHandler<dynamic>> listProductNames() async => ResponseHandler(
+    supabase.from("m_products").select("id, name").order("name", ascending: true),
+  );
 
   Future<ResponseHandler<dynamic>> addProduct({
     required Map<String, dynamic> body,
@@ -56,15 +64,39 @@ class ProductsRepo extends BaseRepository {
     supabase.from("m_products").update(body).eq("id", id).select().single(),
   );
 
+  Future<ResponseHandler<dynamic>> addColor({
+    required Map<String, dynamic> body,
+  }) async => ResponseHandler(
+    supabase.from("m_product_color").insert(body).select().single(),
+  );
+
+  Future<ResponseHandler<dynamic>> deleteColor({required String id}) async =>
+      ResponseHandler(supabase.from("m_product_color").delete().eq("id", id));
+
+  Future<ResponseHandler<dynamic>> listProductColorIds({
+    required String productId,
+  }) async => ResponseHandler(
+    supabase.from("m_product_color").select("id").eq("product_id", productId),
+  );
+
+  Future<ResponseHandler<dynamic>> deleteProductColorsByProduct({
+    required String productId,
+  }) async => ResponseHandler(
+    supabase.from("m_product_color").delete().eq("product_id", productId),
+  );
+
   Future<ResponseHandler<dynamic>> addImages({
     required List<Map<String, dynamic>> body,
   }) async =>
       ResponseHandler(supabase.from("m_product_images").insert(body).select());
 
   Future<ResponseHandler<dynamic>> deleteProductImages({
-    required String productId,
+    required String productColorId,
   }) async => ResponseHandler(
-    supabase.from("m_product_images").delete().eq("product_id", productId),
+    supabase
+        .from("m_product_images")
+        .delete()
+        .eq("product_color_id", productColorId),
   );
 
   Future<ResponseHandler<dynamic>> addStocks({
@@ -73,9 +105,12 @@ class ProductsRepo extends BaseRepository {
       ResponseHandler(supabase.from("m_product_stock").insert(body).select());
 
   Future<ResponseHandler<dynamic>> deleteProductStocks({
-    required String productId,
+    required String productColorId,
   }) async => ResponseHandler(
-    supabase.from("m_product_stock").delete().eq("product_id", productId),
+    supabase
+        .from("m_product_stock")
+        .delete()
+        .eq("product_color_id", productColorId),
   );
 
   Future<ResponseHandler<dynamic>> listProductTypes() async => ResponseHandler(

@@ -22,9 +22,17 @@ class FeaturedController extends BaseController {
     final req = await productsRepo.listProducts();
     req.responseHandler(
       res: (res) {
-        this.res.value = (res as List)
-            .map((e) => ListProductsModel.fromJson(e))
-            .toList();
+        this.res.value =
+            (res as List).map((e) => ListProductsModel.fromJson(e)).toList()
+              ..sort((a, b) {
+                final byName = (a.name ?? "").toString().compareTo(
+                  (b.name ?? "").toString(),
+                );
+                if (byName != 0) return byName;
+                return (a.colorName ?? "").toString().compareTo(
+                  (b.colorName ?? "").toString(),
+                );
+              });
       },
       err: (err) => showErrSnackbar(msg: err),
     );
@@ -39,12 +47,14 @@ class FeaturedController extends BaseController {
     isLoadingAction.value = true;
 
     final req = await productsRepo.updateProduct(
-      id: item.id,
+      id: item.productId,
       body: {"is_featured": newValue},
     );
     await req.responseHandler(
       res: (res) {
-        item.isFeatured = newValue;
+        for (final row in this.res) {
+          if (row.productId == item.productId) row.isFeatured = newValue;
+        }
         this.res.refresh();
       },
       err: (err) => showErrSnackbar(msg: err),

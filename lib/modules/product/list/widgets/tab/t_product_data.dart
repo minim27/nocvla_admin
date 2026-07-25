@@ -56,7 +56,7 @@ class TProductData extends StatelessWidget {
                                 children: [
                                   MyText(text: items.name, fontWeight: .w500),
                                   MyText(
-                                    text: "- ${items.color}",
+                                    text: "- ${items.colorName}",
                                     fontWeight: .w500,
                                   ),
                                 ],
@@ -73,21 +73,22 @@ class TProductData extends StatelessWidget {
                           spacing: 14,
                           children: [
                             GestureDetector(
-                              onTap: () => controller.edit(id: items.id),
+                              onTap: () => controller.edit(id: items.productId),
                               child: Icon(
                                 Icons.edit_document,
                                 color: MyColors.secondary,
                               ),
                             ),
                             GestureDetector(
-                              onTap: () => controller.duplicate(id: items.id),
+                              onTap: () =>
+                                  controller.duplicate(id: items.productId),
                               child: Icon(
                                 Icons.copy,
                                 color: MyColors.secondary,
                               ),
                             ),
                             GestureDetector(
-                              onTap: () => controller.delete(id: items.id),
+                              onTap: () => controller.delete(item: items),
                               child: Icon(
                                 Icons.delete_outline_rounded,
                                 color: MyColors.secondary,

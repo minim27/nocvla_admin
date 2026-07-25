@@ -1,9 +1,6 @@
-import 'list_products_model.dart';
-
 class AddProductsModel {
-  dynamic id,
-      name,
-      color,
+  dynamic productId;
+  dynamic productName,
       description,
       createdAt,
       updatedAt,
@@ -11,13 +8,10 @@ class AddProductsModel {
       tiktokUrl,
       tokopediaUrl,
       productTypeId;
-  List<ProductImagesModel>? images;
-  List<ProductVariationModel>? variation;
 
   AddProductsModel({
-    this.id,
-    this.name,
-    this.color,
+    this.productId,
+    this.productName,
     this.description,
     this.createdAt,
     this.updatedAt,
@@ -25,14 +19,11 @@ class AddProductsModel {
     this.tiktokUrl,
     this.tokopediaUrl,
     this.productTypeId,
-    this.images,
-    this.variation,
   });
 
-  AddProductsModel.fromJson(Map<String, dynamic> json) {
-    id = json["id"];
-    name = json["name"];
-    color = json["color"];
+  AddProductsModel.fromProductJson(Map<String, dynamic> json) {
+    productId = json["id"];
+    productName = json["name"];
     description = json["description"];
     createdAt = json["created_at"];
     updatedAt = json["updated_at"];
@@ -40,13 +31,5 @@ class AddProductsModel {
     tiktokUrl = json["tiktok_url"];
     tokopediaUrl = json["tokopedia_url"];
     productTypeId = json["product_type_id"];
-
-    images = (json["images"] as List?)
-        ?.map((e) => ProductImagesModel.fromJson(e))
-        .toList();
-
-    variation = (json["variation"] as List?)
-        ?.map((e) => ProductVariationModel.fromJson(e))
-        .toList();
   }
 }

@@ -64,7 +64,7 @@ class FeaturedData extends StatelessWidget {
                             crossAxisAlignment: .start,
                             children: [
                               MyText(text: items.name, fontWeight: .w500),
-                              MyText(text: "- ${items.color}"),
+                              MyText(text: "- ${items.colorName}"),
                             ],
                           ),
                         ),

@@ -6,7 +6,7 @@ import 'package:get/get.dart';
 
 import '../../../app/core/base_controller.dart';
 import '../../../data/models/athlete/athlete_model.dart';
-import '../../../data/models/products/list_products_model.dart';
+import '../../../data/models/products/product_name_model.dart';
 import '../../../shared/utils/my_utility.dart';
 import '../../../shared/widgets/my_confirm_dialog.dart';
 import 'athlete_detail_params.dart';
@@ -20,7 +20,7 @@ class AthleteDetailController extends BaseController {
 
   var picture = Rxn<AthletePicture>();
 
-  var productOptions = <ListProductsModel>[].obs;
+  var productOptions = <ProductNameModel>[].obs;
   var assignments = <AthleteAssignmentRow>[].obs;
 
   AthleteDetailParams get params => AthleteDetailParams.fromMap(Get.parameters);
@@ -44,11 +44,11 @@ class AthleteDetailController extends BaseController {
   fetchApi() async {
     isLoading.value = true;
 
-    final reqProducts = await productsRepo.listProducts();
+    final reqProducts = await productsRepo.listProductNames();
     await reqProducts.responseHandler(
       res: (res) {
         productOptions.value = (res as List)
-            .map((e) => ListProductsModel.fromJson(e))
+            .map((e) => ProductNameModel.fromJson(e))
             .toList();
       },
       err: (err) => showErrSnackbar(msg: err),
@@ -77,7 +77,7 @@ class AthleteDetailController extends BaseController {
             final assignment = AthleteAssignmentRow();
 
             if (row["product"] != null) {
-              assignment.selectedProduct.value = ListProductsModel(
+              assignment.selectedProduct.value = ProductNameModel(
                 id: row["product"]["id"],
                 name: row["product"]["name"],
               );
@@ -129,7 +129,7 @@ class AthleteDetailController extends BaseController {
 
   void selectAssignmentProduct({
     required int index,
-    required ListProductsModel product,
+    required ProductNameModel product,
   }) => assignments[index].selectedProduct.value = product;
 
   Future<void> save() async {
@@ -275,7 +275,7 @@ class AthletePicture {
 }
 
 class AthleteAssignmentRow {
-  var selectedProduct = Rxn<ListProductsModel>();
+  var selectedProduct = Rxn<ProductNameModel>();
   var shopee = TextEditingController();
   var tiktok = TextEditingController();
   var tokped = TextEditingController();
