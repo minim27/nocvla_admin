@@ -39,6 +39,13 @@ class AthleteColumn extends StatelessWidget {
           ),
           Expanded(
             child: MyText(
+              text: "Active",
+              color: MyColors.primary,
+              fontWeight: .w500,
+            ),
+          ),
+          Expanded(
+            child: MyText(
               text: "Action",
               color: MyColors.primary,
               fontWeight: .w500,

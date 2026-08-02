@@ -59,6 +59,12 @@ class MAthleteData extends StatelessWidget {
                       ],
                     ),
                   ),
+                  Switch(
+                    value: items.isActive == true,
+                    activeThumbColor: MyColors.green,
+                    onChanged: (value) =>
+                        controller.toggleActive(index: index),
+                  ),
                   Row(
                     spacing: 20,
                     children: [

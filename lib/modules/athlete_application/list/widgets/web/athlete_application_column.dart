@@ -3,25 +3,18 @@ import 'package:flutter/material.dart';
 import '../../../../../shared/utils/my_colors.dart';
 import '../../../../../shared/widgets/my_text.dart';
 
-class TAthleteColumn extends StatelessWidget {
-  const TAthleteColumn({super.key});
+class AthleteApplicationColumn extends StatelessWidget {
+  const AthleteApplicationColumn({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: .symmetric(horizontal: 8, vertical: 6),
+      padding: .symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(color: MyColors.secondary),
       child: Row(
         mainAxisAlignment: .spaceBetween,
-        spacing: 8,
+        spacing: 12,
         children: [
-          Expanded(
-            child: MyText(
-              text: "Photo",
-              color: MyColors.primary,
-              fontWeight: .w500,
-            ),
-          ),
           Expanded(
             flex: 2,
             child: MyText(
@@ -32,14 +25,14 @@ class TAthleteColumn extends StatelessWidget {
           ),
           Expanded(
             child: MyText(
-              text: "Code",
+              text: "City",
               color: MyColors.primary,
               fontWeight: .w500,
             ),
           ),
           Expanded(
             child: MyText(
-              text: "Active",
+              text: "Created At",
               color: MyColors.primary,
               fontWeight: .w500,
             ),

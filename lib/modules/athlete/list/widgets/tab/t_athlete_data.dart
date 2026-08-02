@@ -55,6 +55,14 @@ class TAthleteData extends StatelessWidget {
                         child: MyText(text: items.code, fontWeight: .w500),
                       ),
                       Expanded(
+                        child: Switch(
+                          value: items.isActive == true,
+                          activeThumbColor: MyColors.green,
+                          onChanged: (value) =>
+                              controller.toggleActive(index: index),
+                        ),
+                      ),
+                      Expanded(
                         child: Row(
                           spacing: 14,
                           children: [
@@ -98,6 +106,7 @@ class TAthleteData extends StatelessWidget {
                                 fontWeight: .w500,
                               ),
                             ),
+                            Expanded(child: SizedBox()),
                             Expanded(child: SizedBox()),
                             Expanded(child: SizedBox()),
                           ],

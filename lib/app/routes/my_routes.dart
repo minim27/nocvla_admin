@@ -5,4 +5,6 @@ class MyRoutes {
   static const athlete = '/athlete';
   static const athleteDetail = '/athlete/detail';
   static const featured = '/featured';
+  static const athleteApplication = '/athlete-application';
+  static const athleteApplicationDetail = '/athlete-application/detail';
 }

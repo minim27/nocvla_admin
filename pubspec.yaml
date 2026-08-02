@@ -48,6 +48,7 @@ dependencies:
   vsc_quill_delta_to_html: ^1.0.5
   supabase_flutter: ^2.15.0
   flutter_dynamic_launcher_icon: ^0.0.2
+  url_launcher: ^6.3.2
 
 dev_dependencies:
   flutter_test:

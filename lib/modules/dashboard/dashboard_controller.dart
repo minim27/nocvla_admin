@@ -16,6 +16,11 @@ class DashboardController extends BaseController {
     // },
     {"name": "Products", "route": MyRoutes.product, "children": []},
     {"name": "Athlete", "route": MyRoutes.athlete, "children": []},
+    {
+      "name": "Athlete Applications",
+      "route": MyRoutes.athleteApplication,
+      "children": [],
+    },
     {"name": "Featured", "route": MyRoutes.featured, "children": []},
   ];
 

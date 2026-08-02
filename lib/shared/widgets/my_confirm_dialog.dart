@@ -8,6 +8,7 @@ import 'my_text.dart';
 Future<bool> showMyConfirmDialog({
   required String title,
   String message = "Data yang sudah dihapus tidak bisa dikembalikan.",
+  String confirmText = "Delete",
 }) async {
   final result = await Get.dialog<bool>(
     Dialog(
@@ -40,7 +41,7 @@ Future<bool> showMyConfirmDialog({
                 ),
                 MyButton(
                   width: 100,
-                  text: "Delete",
+                  text: confirmText,
                   color: MyColors.red,
                   textColor: MyColors.secondary,
                   onTap: () => Get.back(result: true),

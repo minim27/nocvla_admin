@@ -44,6 +44,27 @@ class AthleteController extends BaseController {
     fetchApi(isRefresh: true);
   }
 
+  Future<void> toggleActive({required int index}) async {
+    final item = res[index];
+    final newValue = !(item.isActive == true);
+
+    isLoadingAction.value = true;
+
+    final req = await athleteRepo.updateAthlete(
+      id: item.id,
+      body: {"is_active": newValue},
+    );
+    await req.responseHandler(
+      res: (res) {
+        item.isActive = newValue;
+        this.res.refresh();
+      },
+      err: (err) => showErrSnackbar(msg: err),
+    );
+
+    isLoadingAction.value = false;
+  }
+
   delete({required String id}) async {
     final confirmed = await showMyConfirmDialog(title: "Hapus Athlete?");
     if (!confirmed) return;
