@@ -7,4 +7,5 @@ class MyRoutes {
   static const featured = '/featured';
   static const athleteApplication = '/athlete-application';
   static const athleteApplicationDetail = '/athlete-application/detail';
+  static const earlyAccess = '/early-access';
 }

@@ -9,6 +9,8 @@ import 'package:nocvla_admin/modules/athlete_application/list/athlete_applicatio
 import 'package:nocvla_admin/modules/athlete_application/list/athlete_application_page.dart';
 import 'package:nocvla_admin/modules/dashboard/dashboard_binding.dart';
 import 'package:nocvla_admin/modules/dashboard/dashboard_page.dart';
+import 'package:nocvla_admin/modules/early_access/early_access_binding.dart';
+import 'package:nocvla_admin/modules/early_access/early_access_page.dart';
 import 'package:nocvla_admin/modules/featured/featured_binding.dart';
 import 'package:nocvla_admin/modules/featured/featured_page.dart';
 import 'package:nocvla_admin/modules/product/detail/product_detail_binding.dart';
@@ -59,6 +61,11 @@ class MyPages {
       name: MyRoutes.athleteApplicationDetail,
       page: () => AthleteApplicationDetailPage(),
       binding: AthleteApplicationDetailBinding(),
+    ),
+    GetPage(
+      name: MyRoutes.earlyAccess,
+      page: () => EarlyAccessPage(),
+      binding: EarlyAccessBinding(),
     ),
   ];
 }

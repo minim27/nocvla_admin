@@ -22,6 +22,7 @@ class DashboardController extends BaseController {
       "children": [],
     },
     {"name": "Featured", "route": MyRoutes.featured, "children": []},
+    {"name": "Early Access", "route": MyRoutes.earlyAccess, "children": []},
   ];
 
   var myRoutes = MyRoutes.product.obs;
