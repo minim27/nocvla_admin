@@ -225,7 +225,7 @@ class ProductDetailController extends BaseController {
   }
 
   Future<void> pickImage({required int colorIndex}) async {
-    final result = await FilePicker.platform.pickFiles(
+    final result = await FilePicker.pickFiles(
       type: FileType.image,
       allowMultiple: true,
       withData: true,

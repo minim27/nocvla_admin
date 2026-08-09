@@ -97,7 +97,7 @@ class AthleteDetailController extends BaseController {
   }
 
   Future<void> pickPicture() async {
-    final result = await FilePicker.platform.pickFiles(
+    final result = await FilePicker.pickFiles(
       type: FileType.image,
       withData: true,
     );

@@ -157,7 +157,7 @@ class _MyDropdownState extends State<MyDropdown> {
               //     iconOpened: MyImageAssets(assets: MyIcons.icDropdown),
               //   ),
               // ),
-              onChanged: widget.onChanged,
+              onSelected: widget.onChanged,
             ),
           ),
         ),
