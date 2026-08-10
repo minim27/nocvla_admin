@@ -102,7 +102,6 @@ class _MyDropdownState extends State<MyDropdown> {
               items: widget.items,
               compareFn: (item1, item2) => item1,
               itemAsString: widget.itemAsString,
-              selectedItem: widget.selectedItem,
               popupProps: PopupProps.menu(
                 showSearchBox: widget.showSearchBox!,
                 fit: FlexFit.loose,
@@ -135,10 +134,10 @@ class _MyDropdownState extends State<MyDropdown> {
                   ),
                 ),
               ),
-              dropdownBuilder: (context, selectedItem) => MyText(
-                text: widget.selectedItem ?? "",
-                color: MyColors.primary,
-              ),
+              // dropdownBuilder: (context, selectedItem) => MyText(
+              //   text: widget.selectedItem ?? "",
+              //   color: MyColors.primary,
+              // ),
               decoratorProps: DropDownDecoratorProps(
                 decoration: InputDecoration(
                   hintText: (widget.selectedItem ?? widget.hintText.tr),
