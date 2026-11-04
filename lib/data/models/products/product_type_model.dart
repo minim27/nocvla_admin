@@ -1,5 +1,5 @@
 class ProductTypeModel {
-  dynamic id, name, value, isActive, sortOrder;
+  dynamic id, name, value, isActive, sortOrder, productCount;
 
   ProductTypeModel({
     this.id,
@@ -7,6 +7,7 @@ class ProductTypeModel {
     this.value,
     this.isActive,
     this.sortOrder,
+    this.productCount,
   });
 
   ProductTypeModel.fromJson(Map<String, dynamic> json) {
@@ -15,5 +16,9 @@ class ProductTypeModel {
     value = json["value"];
     isActive = json["is_active"];
     sortOrder = json["sort_order"];
+    final products = json["products"] as List?;
+    productCount = products == null || products.isEmpty
+        ? 0
+        : products.first["count"];
   }
 }

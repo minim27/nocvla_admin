@@ -42,6 +42,7 @@ class ProductDetailController extends BaseController {
   var isPricePerColor = false.obs;
 
   var resTypes = <ProductTypeModel>[].obs;
+  var _allTypes = <ProductTypeModel>[];
   var selectedType = Rxn<ProductTypeModel>();
 
   var sizeTags = <TextEditingController>[].obs;
@@ -79,12 +80,13 @@ class ProductDetailController extends BaseController {
   fetchApi() async {
     isLoading.value = true;
 
-    final reqTypes = await productsRepo.listProductTypes();
+    final reqTypes = await productsRepo.listAllProductTypes();
     await reqTypes.responseHandler(
       res: (res) {
-        resTypes.value = (res as List)
+        _allTypes = (res as List)
             .map((e) => ProductTypeModel.fromJson(e))
             .toList();
+        resTypes.value = _allTypes.where((e) => e.isActive == true).toList();
       },
       err: (err) => showErrSnackbar(msg: err),
     );
@@ -131,9 +133,10 @@ class ProductDetailController extends BaseController {
     txtUrlTiktokShop.text = product.tiktokUrl ?? "";
     txtUrlTokped.text = product.tokopediaUrl ?? "";
 
-    for (final type in resTypes) {
+    for (final type in _allTypes) {
       if (type.id == product.productTypeId) {
         selectedType.value = type;
+        if (type.isActive != true) resTypes.add(type);
         break;
       }
     }

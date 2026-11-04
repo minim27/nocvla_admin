@@ -13,6 +13,8 @@ import 'package:nocvla_admin/modules/early_access/early_access_page.dart';
 import 'package:nocvla_admin/modules/featured/featured_binding.dart';
 import 'package:nocvla_admin/modules/login/login_binding.dart';
 import 'package:nocvla_admin/modules/login/login_page.dart';
+import 'package:nocvla_admin/modules/master_data/master_data_binding.dart';
+import 'package:nocvla_admin/modules/master_data/master_data_page.dart';
 import 'package:nocvla_admin/modules/order/order_binding.dart';
 import 'package:nocvla_admin/modules/order/order_page.dart';
 import 'package:nocvla_admin/modules/overview/overview_binding.dart';
@@ -51,6 +53,12 @@ class MyPages {
       name: MyRoutes.order,
       page: () => OrderPage(),
       binding: OrderBinding(),
+    ),
+    GetPage(
+      middlewares: [MyAuthMiddleware()],
+      name: MyRoutes.masterData,
+      page: () => MasterDataPage(),
+      binding: MasterDataBinding(),
     ),
     GetPage(
       middlewares: [MyAuthMiddleware()],

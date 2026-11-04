@@ -13,22 +13,22 @@ class ProductFilter extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.find<ProductController>();
 
-    return Row(
+    return Column(
+      crossAxisAlignment: .start,
       spacing: 12,
       children: [
-        Expanded(
-          child: MyTextFormField(
-            controller: controller.txtSearchName,
-            hintText: "Cari nama produk atau warna",
-            keyboardType: .text,
-            textInputAction: .search,
-            prefixIcon: Icon(Icons.search, size: 18, color: MyColors.primary60),
-            onChanged: (value) => controller.search(query: value),
-          ),
+        MyTextFormField(
+          controller: controller.txtSearchName,
+          hintText: "Cari nama produk atau warna",
+          keyboardType: .text,
+          textInputAction: .search,
+          prefixIcon: Icon(Icons.search, size: 18, color: MyColors.primary60),
+          onChanged: (value) => controller.search(query: value),
         ),
         Obx(
-          () => Row(
+          () => Wrap(
             spacing: 6,
+            runSpacing: 6,
             children: controller.filterOptions.map((option) {
               final isActive = controller.selectedFilter.value == option["id"];
 

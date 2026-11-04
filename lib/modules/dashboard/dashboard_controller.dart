@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:nocvla_admin/app/routes/my_routes.dart';
+import 'package:nocvla_admin/modules/master_data/master_data_controller.dart';
 import 'package:nocvla_admin/modules/order/order_controller.dart';
 import 'package:nocvla_admin/modules/setting/setting_controller.dart';
 import 'package:nocvla_admin/shared/utils/my_utility.dart';
@@ -14,6 +15,7 @@ class DashboardController extends BaseController {
     {"name": "Atlet & Pendaftar", "route": MyRoutes.athlete, "hasBadge": true},
     {"name": "Order WhatsApp", "route": MyRoutes.order},
     {"name": "Konten & Drop", "route": MyRoutes.earlyAccess},
+    {"name": "Master Data", "route": MyRoutes.masterData},
     {"name": "Pengaturan", "route": MyRoutes.setting},
   ];
 
@@ -55,6 +57,7 @@ class DashboardController extends BaseController {
     await Get.offAllNamed(MyRoutes.login);
     Get.delete<OrderController>(force: true);
     Get.delete<SettingController>(force: true);
+    Get.delete<MasterDataController>(force: true);
     myRoutes.value = MyRoutes.overview;
   }
 

@@ -125,7 +125,40 @@ class ProductsRepo extends BaseRepository {
         .from("m_product_type")
         .select()
         .eq("is_active", true)
-        .order("sort_order"),
+        .order("sort_order", ascending: true)
+        .order("name", ascending: true),
+  );
+
+  Future<ResponseHandler<dynamic>> listAllProductTypes() async =>
+      ResponseHandler(
+        supabase
+            .from("m_product_type")
+            .select("*, products:m_products(count)")
+            .order("sort_order", ascending: true)
+            .order("name", ascending: true),
+      );
+
+  Future<ResponseHandler<dynamic>> addProductType({
+    required Map<String, dynamic> body,
+  }) async =>
+      ResponseHandler(supabase.from("m_product_type").insert(body).select());
+
+  Future<ResponseHandler<dynamic>> updateProductType({
+    required String id,
+    required Map<String, dynamic> body,
+  }) async => ResponseHandler(
+    supabase.from("m_product_type").update(body).eq("id", id).select(),
+  );
+
+  Future<ResponseHandler<dynamic>> updateProductTypeOrders({
+    required List<Map<String, dynamic>> body,
+  }) async =>
+      ResponseHandler(supabase.from("m_product_type").upsert(body).select());
+
+  Future<ResponseHandler<dynamic>> deleteProductType({
+    required String id,
+  }) async => ResponseHandler(
+    supabase.from("m_product_type").delete().eq("id", id).select(),
   );
 
   Future<ResponseHandler<String>> uploadImage({

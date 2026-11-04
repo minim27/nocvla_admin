@@ -3,6 +3,7 @@ class MyRoutes {
   static const login = '/login';
   static const overview = '/overview';
   static const order = '/order';
+  static const masterData = '/master-data';
   static const setting = '/setting';
   static const product = '/product';
   static const productDetail = '/product/detail';
