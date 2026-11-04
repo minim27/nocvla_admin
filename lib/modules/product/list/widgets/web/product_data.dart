@@ -25,6 +25,7 @@ class ProductData extends StatelessWidget {
       if (controller.isLoading.value) return Expanded(child: MyLoading());
 
       final groups = controller.groups;
+      final expandedId = controller.expandedId.value;
 
       return Expanded(
         child: Container(
@@ -44,12 +45,13 @@ class ProductData extends StatelessWidget {
                   separatorBuilder: (context, index) => Divider(height: 1),
                   itemBuilder: (context, index) {
                     final group = groups[index];
-                    final isOpen = controller.expandedId.value == group.id;
+                    final isOpen = expandedId == group.id;
                     final image = (group.first.images ?? []).isEmpty
                         ? null
                         : group.first.images!.first.imageUrl;
 
                     return Column(
+                      crossAxisAlignment: .stretch,
                       children: [
                         InkWell(
                           onTap: () => controller.toggleExpand(id: group.id),
@@ -252,48 +254,62 @@ class _ProductMatrix extends StatelessWidget {
   Widget build(BuildContext context) {
     final sizes = group.sizes;
 
-    return Padding(
-      padding: const .fromLTRB(82, 0, 20, 20),
-      child: Column(
-        crossAxisAlignment: .start,
-        children: [
-          SingleChildScrollView(
-            scrollDirection: .horizontal,
-            child: Column(
-              crossAxisAlignment: .start,
-              children: [
-                Padding(
-                  padding: const .only(bottom: 10),
-                  child: Row(
-                    children: [
-                      SizedBox(width: 240, child: MyTableLabel(text: "Warna")),
-                      ...sizes.map(
-                        (size) => SizedBox(
-                          width: 130,
-                          child: MyTableLabel(text: size),
-                        ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final free =
+            (constraints.maxWidth - 102 - 240 - 30) /
+            (sizes.isEmpty ? 1 : sizes.length);
+        final cellWidth = free < 130 ? 130.0 : free;
+
+        return Padding(
+          padding: const .fromLTRB(82, 0, 20, 20),
+          child: Column(
+            crossAxisAlignment: .start,
+            children: [
+              SingleChildScrollView(
+                scrollDirection: .horizontal,
+                child: Column(
+                  crossAxisAlignment: .start,
+                  children: [
+                    Padding(
+                      padding: const .only(bottom: 10),
+                      child: Row(
+                        children: [
+                          SizedBox(
+                            width: 240,
+                            child: MyTableLabel(text: "Warna"),
+                          ),
+                          ...sizes.map(
+                            (size) => SizedBox(
+                              width: cellWidth,
+                              child: MyTableLabel(text: size),
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                    ...group.colors.map(
+                      (color) => _row(color, sizes, cellWidth),
+                    ),
+                  ],
                 ),
-                ...group.colors.map((color) => _row(color, sizes)),
+              ),
+              if (sizes.isNotEmpty) ...[
+                SizedBox(height: 14),
+                MyText(
+                  text: group.priceSummary,
+                  color: MyColors.primary60,
+                  fontSize: 12,
+                ),
               ],
-            ),
+            ],
           ),
-          if (sizes.isNotEmpty) ...[
-            SizedBox(height: 14),
-            MyText(
-              text: group.priceSummary,
-              color: MyColors.primary60,
-              fontSize: 12,
-            ),
-          ],
-        ],
-      ),
+        );
+      },
     );
   }
 
-  Widget _row(ListProductsModel color, List<String> sizes) {
+  Widget _row(ListProductsModel color, List<String> sizes, double cellWidth) {
     final image = (color.images ?? []).isEmpty
         ? null
         : color.images!.first.imageUrl;
@@ -323,7 +339,7 @@ class _ProductMatrix extends StatelessWidget {
           ),
           ...sizes.map(
             (size) => SizedBox(
-              width: 130,
+              width: cellWidth,
               child: Align(
                 alignment: .centerLeft,
                 child: MyStockCell(

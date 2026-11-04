@@ -7,7 +7,8 @@ class ListProductsModel {
       isFeatured,
       shopeeUrl,
       tiktokUrl,
-      tokopediaUrl;
+      tokopediaUrl,
+      productCreatedAt;
   List<ProductImagesModel>? images;
   List<ProductVariationModel>? variation;
 
@@ -35,6 +36,7 @@ class ListProductsModel {
       tiktokUrl = product["tiktok_url"];
       tokopediaUrl = product["tokopedia_url"];
       type = product["type"]?["name"];
+      productCreatedAt = product["created_at"];
     }
 
     images = (json["images"] as List?)

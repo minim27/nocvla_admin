@@ -22,7 +22,7 @@ class TAthleteForm extends StatelessWidget {
 
       if (picture == null) {
         return MyDashedButton(
-          width: 120,
+          width: 96,
           height: 120,
           onTap: () => controller.pickPicture(),
           child: Column(
@@ -45,9 +45,8 @@ class TAthleteForm extends StatelessWidget {
           InkWell(
             onTap: () => controller.pickPicture(),
             child: Container(
-              width: 120,
+              width: 96,
               height: 120,
-              decoration: BoxDecoration(border: .all(color: MyColors.line)),
               child: picture.existingPath != null
                   ? MyImage(picture.existingPath!)
                   : Image.memory(picture.newBytes!, fit: .cover),

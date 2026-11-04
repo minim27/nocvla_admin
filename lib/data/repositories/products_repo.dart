@@ -10,7 +10,7 @@ class ProductsRepo extends BaseRepository {
     var query = supabase.from("m_product_color").select('''
       id, name, product_id,
       product:m_products!inner(
-        id, name, is_featured, product_type_id,
+        id, name, is_featured, product_type_id, created_at,
         shopee_url, tiktok_url, tokopedia_url,
         type:m_product_type(name)
       ),

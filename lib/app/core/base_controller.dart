@@ -1,7 +1,9 @@
 import 'package:get/get.dart';
 import 'package:nocvla_admin/data/repositories/athlete_application_repo.dart';
 import 'package:nocvla_admin/data/repositories/athlete_repo.dart';
+import 'package:nocvla_admin/data/repositories/config_repo.dart';
 import 'package:nocvla_admin/data/repositories/early_access_repo.dart';
+import 'package:nocvla_admin/data/repositories/order_repo.dart';
 import 'package:nocvla_admin/data/repositories/products_repo.dart';
 
 class BaseController extends GetxController {
@@ -9,4 +11,6 @@ class BaseController extends GetxController {
   AthleteRepo athleteRepo = AthleteRepo();
   AthleteApplicationRepo athleteApplicationRepo = AthleteApplicationRepo();
   EarlyAccessRepo earlyAccessRepo = EarlyAccessRepo();
+  ConfigRepo configRepo = ConfigRepo();
+  OrderRepo orderRepo = OrderRepo();
 }

@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
+import '../../app/services/my_config.dart';
 import '../utils/my_colors.dart';
 
 class MyImage extends StatelessWidget {
@@ -31,8 +32,7 @@ class MyImage extends StatelessWidget {
       onTap: onTap,
       child: CachedNetworkImage(
         width: width,
-        imageUrl:
-            "${dotenv.env["API_URL"]}/${dotenv.env["API_STORAGE"]}/$image",
+        imageUrl: "${MyConfig.apiUrl}/${dotenv.env["API_STORAGE"]}/$image",
         fit: fit,
         scale: scale,
         alignment: alignment,
@@ -85,10 +85,7 @@ class MyThumbnail extends StatelessWidget {
     return Container(
       width: size,
       height: size,
-      decoration: BoxDecoration(
-        color: MyColors.selected,
-        border: .all(color: MyColors.secondary),
-      ),
+      color: MyColors.selected,
       child: image == null ? null : MyImage(image!),
     );
   }

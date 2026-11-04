@@ -4,6 +4,7 @@ import 'package:nocvla_admin/shared/utils/my_colors.dart';
 import 'package:nocvla_admin/shared/utils/my_fonts.dart';
 import 'package:nocvla_admin/shared/utils/my_images.dart';
 import 'package:nocvla_admin/shared/widgets/my_image.dart';
+import 'package:nocvla_admin/shared/widgets/my_tab_bar.dart';
 import 'package:nocvla_admin/shared/widgets/my_text.dart';
 
 import '../../dashboard_controller.dart';
@@ -51,58 +52,61 @@ class TDashboardSidebar extends StatelessWidget {
               ],
             ),
           ),
-          SingleChildScrollView(
-            scrollDirection: .horizontal,
-            padding: const .symmetric(horizontal: 8),
-            child: Obx(
-              () => Row(
-                children: List.generate(controller.menu.length, (index) {
-                  final item = controller.menu[index];
-                  final isActive = controller.myRoutes.value == item["route"];
-                  final badge = item["hasBadge"] == true
-                      ? controller.pendingCount.value
-                      : 0;
+          ScrollConfiguration(
+            behavior: const MyDragScrollBehavior(),
+            child: SingleChildScrollView(
+              scrollDirection: .horizontal,
+              padding: const .symmetric(horizontal: 8),
+              child: Obx(
+                () => Row(
+                  children: List.generate(controller.menu.length, (index) {
+                    final item = controller.menu[index];
+                    final isActive = controller.myRoutes.value == item["route"];
+                    final badge = item["hasBadge"] == true
+                        ? controller.pendingCount.value
+                        : 0;
 
-                  return InkWell(
-                    onTap: () => controller.changeRoute(route: item["route"]),
-                    child: Container(
-                      height: 44,
-                      padding: const .symmetric(horizontal: 12),
-                      color: isActive ? MyColors.selected : null,
-                      child: Row(
-                        spacing: 12,
-                        children: [
-                          Container(
-                            width: 3,
-                            height: 16,
-                            color: isActive ? MyColors.red : null,
-                          ),
-                          MyText(
-                            text: item["name"],
-                            color: isActive
-                                ? MyColors.secondary
-                                : MyColors.primary60,
-                            fontWeight: isActive ? .w600 : .w500,
-                          ),
-                          if (badge > 0)
+                    return InkWell(
+                      onTap: () => controller.changeRoute(route: item["route"]),
+                      child: Container(
+                        height: 44,
+                        padding: const .symmetric(horizontal: 12),
+                        color: isActive ? MyColors.selected : null,
+                        child: Row(
+                          spacing: 12,
+                          children: [
                             Container(
-                              constraints: const BoxConstraints(minWidth: 22),
-                              height: 22,
-                              padding: const .symmetric(horizontal: 6),
-                              alignment: .center,
-                              color: MyColors.red,
-                              child: MyText(
-                                text: "$badge",
-                                color: MyColors.white,
-                                fontSize: 12,
-                                fontWeight: .w600,
-                              ),
+                              width: 3,
+                              height: 16,
+                              color: isActive ? MyColors.red : null,
                             ),
-                        ],
+                            MyText(
+                              text: item["name"],
+                              color: isActive
+                                  ? MyColors.secondary
+                                  : MyColors.primary60,
+                              fontWeight: isActive ? .w600 : .w500,
+                            ),
+                            if (badge > 0)
+                              Container(
+                                constraints: const BoxConstraints(minWidth: 22),
+                                height: 22,
+                                padding: const .symmetric(horizontal: 6),
+                                alignment: .center,
+                                color: MyColors.red,
+                                child: MyText(
+                                  text: "$badge",
+                                  color: MyColors.white,
+                                  fontSize: 12,
+                                  fontWeight: .w600,
+                                ),
+                              ),
+                          ],
+                        ),
                       ),
-                    ),
-                  );
-                }),
+                    );
+                  }),
+                ),
               ),
             ),
           ),

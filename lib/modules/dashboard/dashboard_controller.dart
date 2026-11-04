@@ -6,12 +6,15 @@ import '../../../app/core/base_controller.dart';
 
 class DashboardController extends BaseController {
   List<Map<String, dynamic>> menu = [
+    {"name": "Dashboard", "route": MyRoutes.overview},
     {"name": "Produk & Stok", "route": MyRoutes.product},
     {"name": "Atlet & Pendaftar", "route": MyRoutes.athlete, "hasBadge": true},
+    {"name": "Order WhatsApp", "route": MyRoutes.order},
     {"name": "Konten & Drop", "route": MyRoutes.earlyAccess},
+    {"name": "Pengaturan", "route": MyRoutes.setting},
   ];
 
-  var myRoutes = MyRoutes.product.obs;
+  var myRoutes = MyRoutes.overview.obs;
   var pendingCount = 0.obs;
 
   @override

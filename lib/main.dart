@@ -8,6 +8,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'app/routes/my_pages.dart';
 import 'app/routes/my_routes.dart';
+import 'app/services/my_config.dart';
 import 'shared/utils/my_colors.dart';
 import 'shared/utils/my_fonts.dart';
 
@@ -17,8 +18,8 @@ void main() async {
   await GetStorage.init();
 
   await Supabase.initialize(
-    url: dotenv.env["API_URL"]!,
-    publishableKey: dotenv.env["SUPABASE_KEY"],
+    url: MyConfig.apiUrl,
+    publishableKey: MyConfig.supabaseKey,
   );
 
   runApp(const MyApp());

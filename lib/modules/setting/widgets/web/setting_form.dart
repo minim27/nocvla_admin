@@ -1,0 +1,87 @@
+import 'package:flutter/material.dart';
+
+import '../../../../shared/widgets/my_button.dart';
+import '../../../../shared/widgets/my_panel.dart';
+import '../../../../shared/widgets/my_text_form_field.dart';
+import '../../setting_controller.dart';
+
+class SettingForm extends StatelessWidget {
+  const SettingForm({super.key, required this.controller});
+
+  final SettingController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    final instagram = MyTextFormField(
+      controller: controller.txtInstagram,
+      label: "Instagram",
+      hintText: "@nocvla",
+      keyboardType: .text,
+    );
+    final tiktok = MyTextFormField(
+      controller: controller.txtTiktok,
+      label: "TikTok",
+      hintText: "@nocvla",
+      keyboardType: .text,
+    );
+    final email = MyTextFormField(
+      controller: controller.txtEmail,
+      label: "Email kontak",
+      keyboardType: .emailAddress,
+    );
+    final discord = MyTextFormField(
+      controller: controller.txtDiscord,
+      label: "Discord (LINK_DISCORD)",
+      keyboardType: .url,
+    );
+
+    return MyPanel(
+      child: Column(
+        crossAxisAlignment: .start,
+        spacing: 16,
+        children: [
+          MySectionTitle(text: "Pengaturan toko"),
+          MyTextFormField(
+            controller: controller.txtWaNumber,
+            label: "Nomor WhatsApp order",
+            hintText: "62xxxxxxxxxx",
+            keyboardType: .phone,
+          ),
+          MyTextFormField(
+            controller: controller.txtWaTemplate,
+            label: "Template pesan WhatsApp",
+            hintText:
+                "Halo NOCVLA, saya mau order:\n{item} — {warna} / {ukuran} × {qty}\nKode atlet: {kode}",
+            maxLines: 4,
+            keyboardType: .multiline,
+          ),
+          Row(
+            spacing: 12,
+            children: [
+              Expanded(child: instagram),
+              Expanded(child: tiktok),
+            ],
+          ),
+          Row(
+            spacing: 12,
+            children: [
+              Expanded(child: email),
+              Expanded(child: discord),
+            ],
+          ),
+          MyTextFormField(
+            controller: controller.txtMarketplace,
+            label:
+                "Link toko marketplace (default bila produk tidak punya link)",
+            keyboardType: .url,
+          ),
+          MyButton(
+            text: "Simpan pengaturan",
+            fontSize: 13,
+            onTap: () => controller.save(),
+          ),
+        ],
+      ),
+    );
+  }
+}

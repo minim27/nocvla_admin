@@ -30,18 +30,7 @@ class ProductController extends BaseController {
     {"id": filterLowStock, "label": "Stok menipis"},
   ];
 
-  List<ProductGroup> get allGroups {
-    final grouped = <String, ProductGroup>{};
-
-    for (final item in res) {
-      grouped
-          .putIfAbsent(item.productId, () => ProductGroup(first: item))
-          .colors
-          .add(item);
-    }
-
-    return grouped.values.toList();
-  }
+  List<ProductGroup> get allGroups => ProductGroup.fromColors(res);
 
   List<ProductGroup> get groups {
     final query = searchQuery.value.trim().toLowerCase();
@@ -226,6 +215,31 @@ class ProductGroup {
 
   ProductGroup({required this.first});
 
+  static List<ProductGroup> fromColors(List<ListProductsModel> items) {
+    final grouped = <String, ProductGroup>{};
+
+    for (final item in items) {
+      grouped
+          .putIfAbsent(item.productId, () => ProductGroup(first: item))
+          .colors
+          .add(item);
+    }
+
+    return grouped.values.toList();
+  }
+
+  static List<String> sortSizes(Iterable<String> labels) {
+    const rank = ["XS", "S", "M", "L", "XL", "XXL", "XXXL", "3XL"];
+
+    int rankOf(String label) {
+      final index = rank.indexOf(label.toUpperCase());
+      return index < 0 ? rank.length : index;
+    }
+
+    return labels.toSet().toList()
+      ..sort((a, b) => rankOf(a).compareTo(rankOf(b)));
+  }
+
   String get id => first.productId;
   String get name => "${first.name ?? "-"}";
   String get typeName => "${first.type ?? "-"}";
@@ -235,17 +249,8 @@ class ProductGroup {
       .expand((color) => color.variation ?? <ProductVariationModel>[])
       .toList();
 
-  List<String> get sizes {
-    const rank = ["XS", "S", "M", "L", "XL", "XXL", "XXXL", "3XL"];
-    final labels = _variations.map((e) => "${e.size ?? "-"}").toSet().toList();
-
-    int rankOf(String label) {
-      final index = rank.indexOf(label.toUpperCase());
-      return index < 0 ? rank.length : index;
-    }
-
-    return labels..sort((a, b) => rankOf(a).compareTo(rankOf(b)));
-  }
+  List<String> get sizes =>
+      sortSizes(_variations.map((e) => "${e.size ?? "-"}"));
 
   int? qtyOf({required ListProductsModel color, required String size}) {
     for (final variation in color.variation ?? <ProductVariationModel>[]) {

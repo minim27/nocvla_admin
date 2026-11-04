@@ -11,10 +11,16 @@ import 'package:nocvla_admin/modules/dashboard/dashboard_page.dart';
 import 'package:nocvla_admin/modules/early_access/early_access_binding.dart';
 import 'package:nocvla_admin/modules/early_access/early_access_page.dart';
 import 'package:nocvla_admin/modules/featured/featured_binding.dart';
+import 'package:nocvla_admin/modules/order/order_binding.dart';
+import 'package:nocvla_admin/modules/order/order_page.dart';
+import 'package:nocvla_admin/modules/overview/overview_binding.dart';
+import 'package:nocvla_admin/modules/overview/overview_page.dart';
 import 'package:nocvla_admin/modules/product/detail/product_detail_binding.dart';
 import 'package:nocvla_admin/modules/product/detail/product_detail_page.dart';
 import 'package:nocvla_admin/modules/product/list/product_binding.dart';
 import 'package:nocvla_admin/modules/product/list/product_page.dart';
+import 'package:nocvla_admin/modules/setting/setting_binding.dart';
+import 'package:nocvla_admin/modules/setting/setting_page.dart';
 
 import 'my_routes.dart';
 
@@ -24,6 +30,21 @@ class MyPages {
       name: MyRoutes.dashboard,
       page: () => DashboardPage(),
       binding: DashboardBinding(),
+    ),
+    GetPage(
+      name: MyRoutes.overview,
+      page: () => OverviewPage(),
+      binding: OverviewBinding(),
+    ),
+    GetPage(
+      name: MyRoutes.order,
+      page: () => OrderPage(),
+      binding: OrderBinding(),
+    ),
+    GetPage(
+      name: MyRoutes.setting,
+      page: () => SettingPage(),
+      binding: SettingBinding(),
     ),
     GetPage(
       name: MyRoutes.product,
