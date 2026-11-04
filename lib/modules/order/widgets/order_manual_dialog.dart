@@ -61,9 +61,7 @@ class OrderManualDialog extends StatelessWidget {
 
                     return Obx(() {
                       final color = row.color.value;
-                      final sizes = (color?.variation ?? [])
-                          .map((e) => "${e.size ?? ""}")
-                          .toList();
+                      final sizes = controller.manualSizes(row: row);
 
                       return Column(
                         spacing: 8,
@@ -91,6 +89,8 @@ class OrderManualDialog extends StatelessWidget {
                                 child: MyDropdown(
                                   label: "Ukuran",
                                   items: (filter, loadProps) => sizes,
+                                  itemAsString: (item) =>
+                                      "$item · stok ${controller.stockOf(color: color!, size: item)}",
                                   selectedItem: row.size.value,
                                   onChanged: (value) =>
                                       controller.selectManualSize(

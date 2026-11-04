@@ -38,6 +38,9 @@ class OrderController extends BaseController {
   var productOptions = <ListProductsModel>[].obs;
   var manualRows = <OrderManualRow>[].obs;
 
+  String _errorMessage(dynamic err) =>
+      RegExp(r"message: (.*?), code:").firstMatch("$err")?.group(1) ?? "$err";
+
   int countOf({required String status}) =>
       res.where((e) => e.status == status).length;
 
@@ -97,7 +100,7 @@ class OrderController extends BaseController {
       res: (res) {},
       err: (err) {
         isSuccess = false;
-        showErrSnackbar(msg: err);
+        showErrSnackbar(msg: _errorMessage(err));
       },
     );
 
@@ -173,7 +176,7 @@ class OrderController extends BaseController {
         res: (res) {},
         err: (err) {
           isSuccess = false;
-          showErrSnackbar(msg: err);
+          showErrSnackbar(msg: _errorMessage(err));
         },
       );
     }
@@ -213,7 +216,7 @@ class OrderController extends BaseController {
     final req = await orderRepo.cancel(id: selected.value!.id);
     await req.responseHandler(
       res: (res) {},
-      err: (err) => showErrSnackbar(msg: err),
+      err: (err) => showErrSnackbar(msg: _errorMessage(err)),
     );
 
     await fetchApi();
@@ -227,8 +230,12 @@ class OrderController extends BaseController {
     await req.responseHandler(
       res: (res) => productOptions.value = (res as List)
           .map((e) => ListProductsModel.fromJson(e))
+          .where(
+            (color) =>
+                (color.variation ?? []).any((e) => ((e.qty ?? 0) as num) > 0),
+          )
           .toList(),
-      err: (err) => showErrSnackbar(msg: err),
+      err: (err) => showErrSnackbar(msg: _errorMessage(err)),
     );
 
     isLoadingAction.value = false;
@@ -241,6 +248,21 @@ class OrderController extends BaseController {
 
     await Get.dialog(const OrderManualDialog(), barrierDismissible: false);
   }
+
+  int stockOf({required ListProductsModel color, required String size}) {
+    for (final variation in color.variation ?? <ProductVariationModel>[]) {
+      if ("${variation.size ?? ""}" == size) {
+        return ((variation.qty ?? 0) as num).toInt();
+      }
+    }
+    return 0;
+  }
+
+  List<String> manualSizes({required OrderManualRow row}) =>
+      (row.color.value?.variation ?? [])
+          .map((e) => "${e.size ?? ""}")
+          .where((size) => stockOf(color: row.color.value!, size: size) > 0)
+          .toList();
 
   void addManualRow() => manualRows.add(OrderManualRow());
 
@@ -264,11 +286,24 @@ class OrderController extends BaseController {
     }
 
     final items = <Map<String, dynamic>>[];
+    final requested = <String, int>{};
     for (final row in manualRows) {
       final qty = int.tryParse(row.txtQty.text.trim()) ?? 0;
       if (row.color.value == null || row.size.value == null || qty <= 0) {
         return showErrSnackbar(msg: "Lengkapi produk, ukuran, dan jumlah");
       }
+
+      final color = row.color.value!;
+      final key = "${color.id}|${row.size.value}";
+      final stock = stockOf(color: color, size: row.size.value!);
+      requested[key] = (requested[key] ?? 0) + qty;
+      if (requested[key]! > stock) {
+        return showErrSnackbar(
+          msg:
+              "Stok ${color.name} ${color.colorName} ukuran ${row.size.value} tinggal $stock",
+        );
+      }
+
       items.add({
         "color_id": row.color.value!.id,
         "size": row.size.value,
@@ -290,7 +325,7 @@ class OrderController extends BaseController {
       res: (res) {},
       err: (err) {
         isSuccess = false;
-        showErrSnackbar(msg: err);
+        showErrSnackbar(msg: _errorMessage(err));
       },
     );
 
