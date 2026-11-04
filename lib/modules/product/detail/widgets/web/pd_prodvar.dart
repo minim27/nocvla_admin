@@ -352,6 +352,15 @@ class PDProdVar extends StatelessWidget {
                                 textInputAction: .next,
                               ),
                             ),
+                            SizedBox(
+                              width: 110,
+                              child: MyTextFormField(
+                                controller: tag.txtHex,
+                                hintText: "#A3241F",
+                                keyboardType: .text,
+                                textInputAction: .next,
+                              ),
+                            ),
                             MyIconButton(
                               icon: Icons.delete_outline_rounded,
                               tooltip: "Hapus warna",

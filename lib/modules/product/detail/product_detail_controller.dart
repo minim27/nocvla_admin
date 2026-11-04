@@ -20,6 +20,7 @@ class ProductDetailController extends BaseController {
   var isLoadingAction = false.obs;
 
   var txtName = TextEditingController();
+  var txtBadge = TextEditingController();
   var txtUrlShopee = TextEditingController();
   var txtUrlTiktokShop = TextEditingController();
   var txtUrlTokped = TextEditingController();
@@ -106,6 +107,7 @@ class ProductDetailController extends BaseController {
               _buildColorTag(
                 id: isEditing ? c["id"] : null,
                 name: c["name"],
+                hex: c["hex"],
                 images: (c["images"] as List?)
                     ?.map((e) => ProductImagesModel.fromJson(e))
                     .toList(),
@@ -129,6 +131,7 @@ class ProductDetailController extends BaseController {
 
   void _populateSharedFields(AddProductsModel product) {
     txtName.text = product.productName ?? "";
+    txtBadge.text = product.badge ?? "";
     txtUrlShopee.text = product.shopeeUrl ?? "";
     txtUrlTiktokShop.text = product.tiktokUrl ?? "";
     txtUrlTokped.text = product.tokopediaUrl ?? "";
@@ -170,6 +173,7 @@ class ProductDetailController extends BaseController {
   ProductColorTag _buildColorTag({
     String? id,
     String? name,
+    String? hex,
     List<ProductImagesModel>? images,
     List<ProductVariationModel>? variation,
   }) {
@@ -180,6 +184,7 @@ class ProductDetailController extends BaseController {
 
     final tag = ProductColorTag()..id = id;
     tag.txtName.text = name ?? "";
+    tag.txtHex.text = hex ?? "";
     for (final image in images ?? []) {
       tag.gallery.add(GalleryImage(existingPath: image.imageUrl));
     }
@@ -375,6 +380,7 @@ class ProductDetailController extends BaseController {
 
   Map<String, dynamic> _sharedFieldsBody(Delta delta) => {
     "name": txtName.text,
+    "badge": txtBadge.text.trim().isEmpty ? null : txtBadge.text.trim(),
     "description": jsonEncode(delta.toJson()),
     "shopee_url": txtUrlShopee.text,
     "tiktok_url": txtUrlTiktokShop.text,
@@ -516,7 +522,11 @@ class ProductDetailController extends BaseController {
 
     for (final tag in colorTags) {
       final reqAddColor = await productsRepo.addColor(
-        body: {"product_id": resolvedProductId, "name": tag.txtName.text},
+        body: {
+          "product_id": resolvedProductId,
+          "name": tag.txtName.text,
+          "hex": tag.txtHex.text.trim().isEmpty ? null : tag.txtHex.text.trim(),
+        },
       );
 
       String? colorId;
@@ -631,11 +641,13 @@ class StockCell {
 class ProductColorTag {
   String? id;
   var txtName = TextEditingController();
+  var txtHex = TextEditingController();
   var gallery = <GalleryImage>[].obs;
   var stockCells = <StockCell>[].obs;
 
   void dispose() {
     txtName.dispose();
+    txtHex.dispose();
     for (final cell in stockCells) {
       cell.dispose();
     }

@@ -26,12 +26,13 @@ Semua tabel punya `id uuid`. Kolom `created_at` dan `updated_at` tidak ditulis u
 
 | Tabel | Kolom |
 |---|---|
-| `m_products` | `name`, `description`, `shopee_url`, `tiktok_url`, `tokopedia_url`, `product_type_id`, `is_featured` |
-| `m_product_color` | `product_id`, `name` |
+| `m_products` | `name`, `description`, `shopee_url`, `tiktok_url`, `tokopedia_url`, `product_type_id`, `is_featured`, `badge` |
+| `m_product_color` | `product_id`, `name`, `hex` |
 | `m_product_images` | `product_color_id`, `image_url`, `sort_order` (terkecil = foto utama) |
 | `m_product_stock` | `product_color_id`, `size`, `qty`, `price`, `sort_order` |
 | `m_product_type` | `name`, `value`, `is_active`, `sort_order` |
-| `m_banners` | `image_url`, `title`, `description`, `start_date`, `end_date`, `sort_order`, `is_active` |
+| `m_banners` | `image_url`, `title`, `description`, `eyebrow`, `cta_product_id`, `start_date`, `end_date`, `sort_order`, `is_active` |
+| `m_series` | `label`, `title`, `description`, `image_url`, `product_id`, `sort_order`, `is_active` |
 | `m_athlete` | `picture`, `code`, `name`, `is_active` |
 | `t_athlete` | `athlete_id`, `product_id`, `link_aff_shopee`, `link_aff_tktkshop`, `link_aff_tokped` |
 | `m_early_access_images` | `image_url`, `sort_order` |
@@ -86,11 +87,11 @@ Rencana di `_docs` yang belum dibuat. Jangan memakainya sebelum dokumen ini dipe
 
 | Area | Yang belum ada |
 |---|---|
-| Produk | `v_catalog`, `m_product_size`, `slug`, `status`, `archived_at`, `badge`, `series_label`, `material`, `care_text`, `size_chart_url`, `hex`, dan `kind` |
+| Produk | `v_catalog`, `m_product_size`, `slug`, `status`, `archived_at`, `series_label`, `material`, `care_text`, `size_chart_url`, dan `kind` |
 | Fitur dan featured | `m_features`, `m_product_features`, `m_featured` (sekarang memakai `m_products.is_featured`) |
 | Atlet | `validate_athlete_code`, `submit_athlete_application`, `approve_athlete_application`, `reject_athlete_application`, `instagram`, `archived_at`, `review_note`, dan `reviewed_at` |
 | Order | `v_product_sold` |
 | Kontak | `t_contact_messages`, `submit_contact_message` |
-| Banner | `eyebrow`, `image_mobile_url`, `cta_type`, `cta_ref` |
+| Banner | `image_mobile_url`, `cta_type`, `cta_ref` |
 | Early access | `v_early_access_public`, `verify_early_access` (sekarang memakai `v_early_access_status` dan `check_early_access_password`), rate limit |
 | Storage | Bucket `size-charts` dan `applications` |

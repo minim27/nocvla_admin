@@ -38,7 +38,7 @@ class ProductsRepo extends BaseRepository {
         .select('''
       *,
       colors:m_product_color(
-        id, name,
+        id, name, hex,
         images:m_product_images(image_url, sort_order),
         variation:m_product_stock(size, qty, price)
       )

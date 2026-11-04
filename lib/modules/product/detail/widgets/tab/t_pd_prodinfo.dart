@@ -63,6 +63,14 @@ class TPDProdInfo extends StatelessWidget {
             ],
           ),
           SizedBox(height: 20),
+          MyTextFormField(
+            controller: controller.txtBadge,
+            label: "Badge (opsional)",
+            hintText: "NEW DROP",
+            keyboardType: .text,
+            textInputAction: .next,
+          ),
+          SizedBox(height: 20),
           MyText(text: "Deskripsi", color: MyColors.primary60, fontSize: 13),
           SizedBox(height: 8),
           Container(
