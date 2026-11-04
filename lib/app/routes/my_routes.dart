@@ -1,5 +1,6 @@
 class MyRoutes {
   static const dashboard = '/';
+  static const login = '/login';
   static const overview = '/overview';
   static const order = '/order';
   static const setting = '/setting';

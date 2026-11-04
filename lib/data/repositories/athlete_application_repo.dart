@@ -32,6 +32,8 @@ class AthleteApplicationRepo extends BaseRepository {
     supabase
         .from("m_athlete_application")
         .update({"status": status})
-        .eq("id", id),
+        .eq("id", id)
+        .select()
+        .single(),
   );
 }

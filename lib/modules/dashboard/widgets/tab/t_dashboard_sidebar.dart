@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:nocvla_admin/shared/utils/my_colors.dart';
 import 'package:nocvla_admin/shared/utils/my_fonts.dart';
 import 'package:nocvla_admin/shared/utils/my_images.dart';
+import 'package:nocvla_admin/shared/widgets/my_icon_button.dart';
 import 'package:nocvla_admin/shared/widgets/my_image.dart';
 import 'package:nocvla_admin/shared/widgets/my_tab_bar.dart';
 import 'package:nocvla_admin/shared/widgets/my_text.dart';
@@ -48,6 +49,15 @@ class TDashboardSidebar extends StatelessWidget {
                     fontWeight: .w600,
                     letterSpacing: 2.2,
                   ),
+                ),
+                Spacer(),
+                MyIconButton(
+                  icon: Icons.logout,
+                  tooltip: "Keluar",
+                  size: 32,
+                  iconSize: 15,
+                  color: MyColors.primary60,
+                  onTap: () => controller.logout(),
                 ),
               ],
             ),

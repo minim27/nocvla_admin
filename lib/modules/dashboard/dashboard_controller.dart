@@ -1,6 +1,9 @@
 import 'package:get/get.dart';
 import 'package:nocvla_admin/app/routes/my_routes.dart';
+import 'package:nocvla_admin/modules/order/order_controller.dart';
+import 'package:nocvla_admin/modules/setting/setting_controller.dart';
 import 'package:nocvla_admin/shared/utils/my_utility.dart';
+import 'package:nocvla_admin/shared/widgets/my_confirm_dialog.dart';
 
 import '../../../app/core/base_controller.dart';
 
@@ -31,6 +34,28 @@ class DashboardController extends BaseController {
       res: (res) => pendingCount.value = (res as List).length,
       err: (err) => showErrSnackbar(msg: err),
     );
+  }
+
+  String get userEmail => authRepo.currentUser?.email ?? "-";
+
+  Future<void> logout() async {
+    final confirmed = await showMyConfirmDialog(
+      title: "Keluar dari Admin?",
+      message: "Anda perlu masuk lagi untuk mengelola data.",
+      confirmText: "Keluar",
+    );
+    if (!confirmed) return;
+
+    final req = await authRepo.signOut();
+    await req.responseHandler(
+      res: (res) {},
+      err: (err) => showErrSnackbar(msg: err),
+    );
+
+    await Get.offAllNamed(MyRoutes.login);
+    Get.delete<OrderController>(force: true);
+    Get.delete<SettingController>(force: true);
+    myRoutes.value = MyRoutes.overview;
   }
 
   void changeRoute({required String route}) {

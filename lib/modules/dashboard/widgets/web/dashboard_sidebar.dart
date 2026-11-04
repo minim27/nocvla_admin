@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:nocvla_admin/shared/utils/my_colors.dart';
 import 'package:nocvla_admin/shared/utils/my_fonts.dart';
 import 'package:nocvla_admin/shared/utils/my_images.dart';
+import 'package:nocvla_admin/shared/widgets/my_icon_button.dart';
 import 'package:nocvla_admin/shared/widgets/my_image.dart';
 import 'package:nocvla_admin/shared/widgets/my_text.dart';
 
@@ -105,6 +106,57 @@ class DashboardSidebar extends StatelessWidget {
                   );
                 }),
               ),
+            ),
+          ),
+          Spacer(),
+          Container(
+            padding: const .all(20),
+            decoration: const BoxDecoration(
+              border: Border(top: BorderSide(color: MyColors.line)),
+            ),
+            child: Row(
+              spacing: 12,
+              children: [
+                Container(
+                  width: 36,
+                  height: 36,
+                  alignment: .center,
+                  color: MyColors.line,
+                  child: MyText(
+                    text: controller.userEmail[0].toUpperCase(),
+                    fontFamily: MyFonts.archivoNarrow,
+                    fontWeight: .w700,
+                  ),
+                ),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: .start,
+                    spacing: 2,
+                    children: [
+                      MyText(
+                        text: controller.userEmail,
+                        fontSize: 13,
+                        fontWeight: .w600,
+                        maxLines: 1,
+                        overflow: .ellipsis,
+                      ),
+                      MyText(
+                        text: "Admin",
+                        color: MyColors.primary60,
+                        fontSize: 13,
+                      ),
+                    ],
+                  ),
+                ),
+                MyIconButton(
+                  icon: Icons.logout,
+                  tooltip: "Keluar",
+                  size: 36,
+                  iconSize: 16,
+                  color: MyColors.primary60,
+                  onTap: () => controller.logout(),
+                ),
+              ],
             ),
           ),
         ],

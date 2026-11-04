@@ -11,6 +11,8 @@ import 'package:nocvla_admin/modules/dashboard/dashboard_page.dart';
 import 'package:nocvla_admin/modules/early_access/early_access_binding.dart';
 import 'package:nocvla_admin/modules/early_access/early_access_page.dart';
 import 'package:nocvla_admin/modules/featured/featured_binding.dart';
+import 'package:nocvla_admin/modules/login/login_binding.dart';
+import 'package:nocvla_admin/modules/login/login_page.dart';
 import 'package:nocvla_admin/modules/order/order_binding.dart';
 import 'package:nocvla_admin/modules/order/order_page.dart';
 import 'package:nocvla_admin/modules/overview/overview_binding.dart';
@@ -22,56 +24,72 @@ import 'package:nocvla_admin/modules/product/list/product_page.dart';
 import 'package:nocvla_admin/modules/setting/setting_binding.dart';
 import 'package:nocvla_admin/modules/setting/setting_page.dart';
 
+import 'my_middleware.dart';
 import 'my_routes.dart';
 
 class MyPages {
   static final routes = [
     GetPage(
+      name: MyRoutes.login,
+      page: () => LoginPage(),
+      binding: LoginBinding(),
+    ),
+    GetPage(
+      middlewares: [MyAuthMiddleware()],
       name: MyRoutes.dashboard,
       page: () => DashboardPage(),
       binding: DashboardBinding(),
     ),
     GetPage(
+      middlewares: [MyAuthMiddleware()],
       name: MyRoutes.overview,
       page: () => OverviewPage(),
       binding: OverviewBinding(),
     ),
     GetPage(
+      middlewares: [MyAuthMiddleware()],
       name: MyRoutes.order,
       page: () => OrderPage(),
       binding: OrderBinding(),
     ),
     GetPage(
+      middlewares: [MyAuthMiddleware()],
       name: MyRoutes.setting,
       page: () => SettingPage(),
       binding: SettingBinding(),
     ),
     GetPage(
+      middlewares: [MyAuthMiddleware()],
       name: MyRoutes.product,
       page: () => ProductPage(),
       binding: ProductBinding(),
     ),
     GetPage(
+      middlewares: [MyAuthMiddleware()],
       name: MyRoutes.productDetail,
       page: () => ProductDetailPage(),
       bindings: [DashboardBinding(), ProductDetailBinding()],
     ),
     GetPage(
+      middlewares: [MyAuthMiddleware()],
       name: MyRoutes.athlete,
       page: () => AthletePage(),
       bindings: [AthleteBinding(), AthleteApplicationBinding()],
     ),
     GetPage(
+      middlewares: [MyAuthMiddleware()],
       name: MyRoutes.athleteDetail,
       page: () => AthleteDetailPage(),
       bindings: [DashboardBinding(), AthleteDetailBinding()],
     ),
     GetPage(
+      middlewares: [MyAuthMiddleware()],
       name: MyRoutes.athleteApplicationDetail,
       page: () => AthleteApplicationDetailPage(),
       bindings: [DashboardBinding(), AthleteApplicationDetailBinding()],
     ),
     GetPage(
+      middlewares: [MyAuthMiddleware()],
       name: MyRoutes.earlyAccess,
       page: () => EarlyAccessPage(),
       bindings: [EarlyAccessBinding(), FeaturedBinding()],
