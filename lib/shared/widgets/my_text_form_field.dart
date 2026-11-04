@@ -9,18 +9,18 @@ class MyTextFormField extends StatefulWidget {
   const MyTextFormField({
     super.key,
     this.controller,
-    this.borderRadius = 6,
+    this.borderRadius = 0,
     this.label,
     this.hintText,
     this.maxLines = 1,
     this.errorText,
     this.keyboardType,
     this.textInputAction,
-    this.labelFontSize = 14,
+    this.labelFontSize = 13,
     this.labelFontWeight = FontWeight.w400,
-    this.textColor = MyColors.primary,
-    this.labelColor = MyColors.secondary,
-    this.borderColor = MyColors.secondary,
+    this.textColor = MyColors.secondary,
+    this.labelColor = MyColors.primary60,
+    this.borderColor = MyColors.border,
     this.isPassword = false,
     this.obscureText = true,
     this.required = false,
@@ -72,7 +72,7 @@ class _MyTextFormFieldState extends State<MyTextFormField> {
                       text: (widget.label == null) ? "" : widget.label!.tr,
                       style: TextStyle(
                         color: widget.labelColor,
-                        fontFamily: MyFonts.montserrat,
+                        fontFamily: MyFonts.archivo,
                         fontSize: widget.labelFontSize,
                         fontWeight: widget.labelFontWeight,
                       ),
@@ -80,8 +80,8 @@ class _MyTextFormFieldState extends State<MyTextFormField> {
                     TextSpan(
                       text: (widget.required) ? " *" : "",
                       style: TextStyle(
-                        color: MyColors.red,
-                        fontFamily: MyFonts.montserrat,
+                        color: MyColors.redText,
+                        fontFamily: MyFonts.archivo,
                         fontSize: widget.labelFontSize,
                         fontWeight: widget.labelFontWeight,
                       ),
@@ -98,8 +98,9 @@ class _MyTextFormFieldState extends State<MyTextFormField> {
           child: Container(
             decoration: BoxDecoration(
               color: widget.enabled
-                  ? MyColors.secondary
+                  ? MyColors.primary
                   : MyColors.secondary.withValues(alpha: 0.1),
+              border: .all(color: widget.borderColor),
               borderRadius: BorderRadius.all(
                 Radius.circular(widget.borderRadius),
               ),
@@ -115,27 +116,25 @@ class _MyTextFormFieldState extends State<MyTextFormField> {
               textInputAction: widget.textInputAction,
               style: TextStyle(
                 fontSize: 14,
-                fontFamily: MyFonts.montserrat,
+                fontFamily: MyFonts.archivo,
                 color: widget.textColor,
               ),
               decoration: InputDecoration(
-                contentPadding: EdgeInsets.only(
-                  left: 14,
-                  top:
-                      (widget.isPassword ||
-                          widget.suffixIcon != null ||
-                          widget.prefixIcon != null)
-                      ? 14
-                      : 0,
+                isDense: true,
+                contentPadding: const .symmetric(
+                  vertical: 14.5,
+                  horizontal: 12,
                 ),
+                prefixIconConstraints: const BoxConstraints(minWidth: 40),
+                suffixIconConstraints: const BoxConstraints(minWidth: 40),
                 floatingLabelBehavior: FloatingLabelBehavior.always,
                 hintText: (widget.hintText != null)
                     ? widget.hintText!.tr
                     : "".tr,
                 hintStyle: const TextStyle(
                   fontSize: 14,
-                  fontFamily: MyFonts.montserrat,
-                  color: MyColors.primary60,
+                  fontFamily: MyFonts.archivo,
+                  color: MyColors.primary80,
                 ),
                 border: InputBorder.none,
                 enabledBorder: InputBorder.none,
@@ -151,7 +150,7 @@ class _MyTextFormFieldState extends State<MyTextFormField> {
                           (widget.obscureText)
                               ? Icons.visibility
                               : Icons.visibility_off,
-                          color: MyColors.primary,
+                          color: MyColors.primary60,
                         ),
                       )
                     : widget.suffixIcon,
@@ -172,7 +171,7 @@ class MyTextFormFieldNoBorder extends StatelessWidget {
     super.key,
     required this.controller,
     this.textAlign = TextAlign.center,
-    this.textColor = MyColors.primary,
+    this.textColor = MyColors.secondary,
     this.keyboardType,
     this.textInputAction,
     this.onChanged,
@@ -196,7 +195,7 @@ class MyTextFormFieldNoBorder extends StatelessWidget {
       textAlign: textAlign,
       style: TextStyle(
         fontSize: fontSize,
-        fontFamily: MyFonts.montserrat,
+        fontFamily: MyFonts.archivo,
         color: textColor,
         fontWeight: fontWeight,
       ),

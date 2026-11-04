@@ -11,11 +11,11 @@ class MyDropdown extends StatefulWidget {
     super.key,
     this.selectedItem,
     this.label,
-    this.labelFontSize = 14,
+    this.labelFontSize = 13,
     this.labelFontWeight = FontWeight.w400,
-    this.textColor = MyColors.primary,
-    this.labelColor = MyColors.secondary,
-    this.borderColor = MyColors.secondary,
+    this.textColor = MyColors.secondary,
+    this.labelColor = MyColors.primary60,
+    this.borderColor = MyColors.border,
     this.hintText = "Pilih",
     this.hintTextSearch,
     this.items,
@@ -26,7 +26,7 @@ class MyDropdown extends StatefulWidget {
     this.required = false,
     this.icon = Icons.keyboard_arrow_down,
     this.itemAsString,
-    this.borderRadius = 6,
+    this.borderRadius = 0,
     this.enabled = true,
   });
 
@@ -65,7 +65,7 @@ class _MyDropdownState extends State<MyDropdown> {
                       text: (widget.label == null) ? "" : widget.label!.tr,
                       style: TextStyle(
                         color: widget.labelColor,
-                        fontFamily: MyFonts.montserrat,
+                        fontFamily: MyFonts.archivo,
                         fontSize: widget.labelFontSize,
                         fontWeight: widget.labelFontWeight,
                       ),
@@ -73,8 +73,8 @@ class _MyDropdownState extends State<MyDropdown> {
                     TextSpan(
                       text: (widget.required) ? " *" : "",
                       style: TextStyle(
-                        color: MyColors.red,
-                        fontFamily: MyFonts.montserrat,
+                        color: MyColors.redText,
+                        fontFamily: MyFonts.archivo,
                         fontSize: widget.labelFontSize,
                         fontWeight: widget.labelFontWeight,
                       ),
@@ -87,11 +87,12 @@ class _MyDropdownState extends State<MyDropdown> {
           ),
         ),
         Container(
-          height: 48,
+          height: 44,
           decoration: BoxDecoration(
             color: widget.enabled
-                ? MyColors.secondary
+                ? MyColors.primary
                 : MyColors.secondary.withValues(alpha: 0.1),
+            border: .all(color: widget.borderColor),
             borderRadius: BorderRadius.all(
               Radius.circular(widget.borderRadius),
             ),
@@ -105,11 +106,11 @@ class _MyDropdownState extends State<MyDropdown> {
               popupProps: PopupProps.menu(
                 showSearchBox: widget.showSearchBox!,
                 fit: FlexFit.loose,
-                menuProps: MenuProps(backgroundColor: MyColors.secondary),
+                menuProps: MenuProps(backgroundColor: MyColors.primary90),
                 searchFieldProps: TextFieldProps(
                   style: TextStyle(
                     fontSize: 14,
-                    fontFamily: MyFonts.montserrat,
+                    fontFamily: MyFonts.archivo,
                     color: widget.textColor,
                   ),
                   keyboardType: TextInputType.text,
@@ -120,11 +121,11 @@ class _MyDropdownState extends State<MyDropdown> {
                         : widget.hintTextSearch!.tr,
                     hintStyle: const TextStyle(
                       fontSize: 14,
-                      fontFamily: MyFonts.montserrat,
-                      color: MyColors.primary60,
+                      fontFamily: MyFonts.archivo,
+                      color: MyColors.primary80,
                     ),
                     // prefixIcon: const MyImageAssets(assets: MyIcons.icSearch),
-                    contentPadding: const EdgeInsets.only(left: 14, top: 12),
+                    contentPadding: const EdgeInsets.only(left: 12, top: 12),
                     border: InputBorder.none,
                     enabledBorder: InputBorder.none,
                     disabledBorder: InputBorder.none,
@@ -143,10 +144,10 @@ class _MyDropdownState extends State<MyDropdown> {
                   hintText: (widget.selectedItem ?? widget.hintText.tr),
                   hintStyle: TextStyle(
                     fontSize: 14,
-                    fontFamily: MyFonts.montserrat,
+                    fontFamily: MyFonts.archivo,
                     color: widget.textColor,
                   ),
-                  contentPadding: const EdgeInsets.only(left: 14, top: 14),
+                  contentPadding: const EdgeInsets.only(left: 12, top: 11),
                   border: InputBorder.none,
                 ),
               ),

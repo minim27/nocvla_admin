@@ -12,7 +12,8 @@ Future<bool> showMyConfirmDialog({
 }) async {
   final result = await Get.dialog<bool>(
     Dialog(
-      backgroundColor: MyColors.secondary,
+      backgroundColor: MyColors.primary90,
+      constraints: const BoxConstraints(maxWidth: 480),
       child: Padding(
         padding: const .all(20),
         child: Column(
@@ -21,12 +22,12 @@ Future<bool> showMyConfirmDialog({
           children: [
             MyText(
               text: title,
-              color: MyColors.primary,
+              color: MyColors.secondary,
               fontSize: 16,
               fontWeight: .w600,
             ),
             const SizedBox(height: 8),
-            MyText(text: message, color: MyColors.primary),
+            MyText(text: message, color: MyColors.primary60),
             const SizedBox(height: 24),
             Row(
               mainAxisAlignment: .end,
@@ -35,15 +36,16 @@ Future<bool> showMyConfirmDialog({
                 MyButton(
                   width: 100,
                   text: "Cancel",
-                  color: MyColors.primary80,
+                  color: Colors.transparent,
                   textColor: MyColors.secondary,
+                  borderColor: MyColors.border,
                   onTap: () => Get.back(result: false),
                 ),
                 MyButton(
                   width: 100,
                   text: confirmText,
                   color: MyColors.red,
-                  textColor: MyColors.secondary,
+                  textColor: MyColors.white,
                   onTap: () => Get.back(result: true),
                 ),
               ],

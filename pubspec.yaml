@@ -91,6 +91,32 @@ flutter:
   # list giving the asset and other descriptors for the font. For
   # example:
   fonts:
+    - family: GrenzeGotisch
+      fonts:
+        - asset: assets/fonts/GrenzeGotisch/GrenzeGotisch-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/GrenzeGotisch/GrenzeGotisch-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/GrenzeGotisch/GrenzeGotisch-Bold.ttf
+          weight: 700
+    - family: ArchivoNarrow
+      fonts:
+        - asset: assets/fonts/ArchivoNarrow/ArchivoNarrow-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/ArchivoNarrow/ArchivoNarrow-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/ArchivoNarrow/ArchivoNarrow-Bold.ttf
+          weight: 700
+    - family: Archivo
+      fonts:
+        - asset: assets/fonts/Archivo/Archivo-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Archivo/Archivo-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Archivo/Archivo-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Archivo/Archivo-Bold.ttf
+          weight: 700
     - family: LibreBaskerville
       fonts:
         - asset: assets/fonts/LibreBaskerville/LibreBaskerville-Italic.ttf

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:nocvla_admin/app/routes/my_routes.dart';
+import 'package:nocvla_admin/shared/utils/my_parsing_currency.dart';
 import 'package:nocvla_admin/shared/utils/my_utility.dart';
 import 'package:nocvla_admin/shared/widgets/my_confirm_dialog.dart';
 
@@ -16,7 +17,50 @@ class ProductController extends BaseController {
   var isLoadingAction = false.obs;
 
   final txtSearchName = TextEditingController();
-  var selectedType = Rxn<ProductTypeModel>();
+  var searchQuery = "".obs;
+  var selectedFilter = filterAll.obs;
+  var expandedId = "".obs;
+
+  static const filterAll = "all";
+  static const filterLowStock = "low_stock";
+
+  List<Map<String, String>> get filterOptions => [
+    {"id": filterAll, "label": "Semua"},
+    ...resTypes.map((e) => {"id": "${e.name}", "label": "${e.name}"}),
+    {"id": filterLowStock, "label": "Stok menipis"},
+  ];
+
+  List<ProductGroup> get allGroups {
+    final grouped = <String, ProductGroup>{};
+
+    for (final item in res) {
+      grouped
+          .putIfAbsent(item.productId, () => ProductGroup(first: item))
+          .colors
+          .add(item);
+    }
+
+    return grouped.values.toList();
+  }
+
+  List<ProductGroup> get groups {
+    final query = searchQuery.value.trim().toLowerCase();
+
+    return allGroups.where((group) {
+      final matchesFilter = switch (selectedFilter.value) {
+        filterAll => true,
+        filterLowStock => group.hasLowStock,
+        final type => group.typeName == type,
+      };
+      if (!matchesFilter) return false;
+      if (query.isEmpty) return true;
+
+      return group.name.toLowerCase().contains(query) ||
+          group.colors.any(
+            (color) => "${color.colorName}".toLowerCase().contains(query),
+          );
+    }).toList();
+  }
 
   @override
   void onInit() {
@@ -46,11 +90,8 @@ class ProductController extends BaseController {
   fetchApi({bool isRefresh = false}) async {
     isLoading.value = true;
 
-    final req = await productsRepo.listProducts(
-      name: txtSearchName.text,
-      typeId: selectedType.value?.id,
-    );
-    req.responseHandler(
+    final req = await productsRepo.listProducts();
+    await req.responseHandler(
       res: (res) {
         this.res.value =
             (res as List).map((e) => ListProductsModel.fromJson(e)).toList()
@@ -67,12 +108,19 @@ class ProductController extends BaseController {
       err: (err) => showErrSnackbar(msg: err),
     );
 
+    if (expandedId.value.isEmpty && res.isNotEmpty) {
+      expandedId.value = groups.isEmpty ? "" : groups.first.id;
+    }
+
     isLoading.value = false;
   }
 
-  search() => fetchApi();
+  void search({required String query}) => searchQuery.value = query;
 
-  selectType({ProductTypeModel? res}) => selectedType.value = res;
+  void selectFilter({required String id}) => selectedFilter.value = id;
+
+  void toggleExpand({required String id}) =>
+      expandedId.value = expandedId.value == id ? "" : id;
 
   add() async {
     await Get.toNamed(MyRoutes.productDetail);
@@ -169,5 +217,61 @@ class ProductController extends BaseController {
 
     isLoadingAction.value = false;
     fetchApi(isRefresh: true);
+  }
+}
+
+class ProductGroup {
+  final ListProductsModel first;
+  final colors = <ListProductsModel>[];
+
+  ProductGroup({required this.first});
+
+  String get id => first.productId;
+  String get name => "${first.name ?? "-"}";
+  String get typeName => "${first.type ?? "-"}";
+  bool get isFeatured => first.isFeatured == true;
+
+  List<ProductVariationModel> get _variations => colors
+      .expand((color) => color.variation ?? <ProductVariationModel>[])
+      .toList();
+
+  List<String> get sizes {
+    const rank = ["XS", "S", "M", "L", "XL", "XXL", "XXXL", "3XL"];
+    final labels = _variations.map((e) => "${e.size ?? "-"}").toSet().toList();
+
+    int rankOf(String label) {
+      final index = rank.indexOf(label.toUpperCase());
+      return index < 0 ? rank.length : index;
+    }
+
+    return labels..sort((a, b) => rankOf(a).compareTo(rankOf(b)));
+  }
+
+  int? qtyOf({required ListProductsModel color, required String size}) {
+    for (final variation in color.variation ?? <ProductVariationModel>[]) {
+      if ("${variation.size ?? "-"}" == size) return variation.qty;
+    }
+    return null;
+  }
+
+  num? get minPrice {
+    final prices = _variations.map((e) => e.price as num? ?? 0).toList();
+    if (prices.isEmpty) return null;
+    return prices.reduce((a, b) => a < b ? a : b);
+  }
+
+  int get totalStock =>
+      _variations.fold(0, (total, e) => total + ((e.qty as int?) ?? 0));
+
+  bool get hasLowStock => _variations.any((e) => ((e.qty as int?) ?? 0) <= 2);
+
+  String get priceSummary {
+    final parts = sizes.map((size) {
+      final price = _variations
+          .firstWhere((e) => "${e.size ?? "-"}" == size)
+          .price;
+      return "$size ${parsingCurrency(price)}";
+    });
+    return "Harga: ${parts.join(" · ")}. Klik edit untuk ubah stok sekaligus di matriks.";
   }
 }

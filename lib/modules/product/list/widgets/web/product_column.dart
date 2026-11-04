@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../shared/utils/my_colors.dart';
-import '../../../../../shared/widgets/my_text.dart';
+import '../../../../../shared/widgets/my_panel.dart';
 
 class ProductColumn extends StatelessWidget {
   const ProductColumn({super.key});
@@ -9,56 +9,23 @@ class ProductColumn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: .symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(color: MyColors.secondary),
+      padding: const .symmetric(horizontal: 20, vertical: 14),
+      decoration: BoxDecoration(
+        color: MyColors.primary90,
+        border: .all(color: MyColors.line),
+      ),
       child: Row(
-        mainAxisAlignment: .spaceBetween,
         spacing: 12,
         children: [
-          Expanded(
-            flex: 2,
-            child: MyText(
-              text: "Product",
-              color: MyColors.primary,
-              fontWeight: .w500,
-            ),
-          ),
-          Expanded(
-            child: Center(
-              child: MyText(
-                text: "Sold",
-                color: MyColors.primary,
-                fontWeight: .w500,
-                textAlign: .center,
-              ),
-            ),
-          ),
-          Expanded(
-            child: Center(
-              child: MyText(
-                text: "Price",
-                color: MyColors.primary,
-                fontWeight: .w500,
-                textAlign: .center,
-              ),
-            ),
-          ),
-          Expanded(
-            child: Center(
-              child: MyText(
-                text: "Stock",
-                color: MyColors.primary,
-                fontWeight: .w500,
-                textAlign: .center,
-              ),
-            ),
-          ),
-          Expanded(
-            child: MyText(
-              text: "Action",
-              color: MyColors.primary,
-              fontWeight: .w500,
-            ),
+          SizedBox(width: 28),
+          Expanded(flex: 5, child: MyTableLabel(text: "Produk")),
+          Expanded(flex: 3, child: MyTableLabel(text: "Colorway")),
+          Expanded(flex: 2, child: MyTableLabel(text: "Harga")),
+          Expanded(flex: 2, child: MyTableLabel(text: "Stok")),
+          Expanded(flex: 2, child: MyTableLabel(text: "Marketplace")),
+          SizedBox(
+            width: 88,
+            child: MyTableLabel(text: "Aksi", textAlign: .right),
           ),
         ],
       ),

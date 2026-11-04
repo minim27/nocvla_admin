@@ -24,7 +24,22 @@ class ProductDetailController extends BaseController {
   var txtUrlTiktokShop = TextEditingController();
   var txtUrlTokped = TextEditingController();
 
+  var txtNewSize = TextEditingController();
+  var txtBasePrice = TextEditingController();
+  var txtFillQty = TextEditingController(text: "0");
+
   QuillController quillController = QuillController.basic();
+
+  static const tabs = ["Info", "Varian & Stok", "Foto", "Marketplace"];
+  static const sizePresets = {
+    "Huruf S–XXL": ["S", "M", "L", "XL", "XXL"],
+    "M–XXL": ["M", "L", "XL", "XXL"],
+    "Angka 28–34": ["28", "30", "32", "34"],
+    "All size": ["All size"],
+  };
+
+  var currentTab = 0.obs;
+  var isPricePerColor = false.obs;
 
   var resTypes = <ProductTypeModel>[].obs;
   var selectedType = Rxn<ProductTypeModel>();
@@ -48,6 +63,9 @@ class ProductDetailController extends BaseController {
     txtUrlShopee.dispose();
     txtUrlTiktokShop.dispose();
     txtUrlTokped.dispose();
+    txtNewSize.dispose();
+    txtBasePrice.dispose();
+    txtFillQty.dispose();
     quillController.dispose();
     for (final tag in sizeTags) {
       tag.dispose();
@@ -101,6 +119,8 @@ class ProductDetailController extends BaseController {
     }
 
     if (colorTags.isEmpty) addColorTag();
+
+    isPricePerColor.value = _hasDifferentPricePerColor();
 
     isLoading.value = false;
   }
@@ -180,13 +200,96 @@ class ProductDetailController extends BaseController {
 
   void selectType({required ProductTypeModel res}) => selectedType.value = res;
 
-  void addSizeTag() {
-    sizeTags.add(TextEditingController());
+  void addSizeTag({String? label}) {
+    final value = (label ?? txtNewSize.text).trim();
+    if (value.isEmpty) return;
+    if (sizeTags.any((t) => t.text.toLowerCase() == value.toLowerCase())) {
+      return showErrSnackbar(msg: "Ukuran $value sudah ada");
+    }
+
+    sizeTags.add(TextEditingController(text: value));
     for (final tag in colorTags) {
       if (sizeTags.length > tag.stockCells.length) {
         tag.stockCells.add(StockCell());
       }
     }
+    if (label == null) txtNewSize.clear();
+  }
+
+  void applySizePreset({required List<String> labels}) {
+    for (final label in labels) {
+      if (!sizeTags.any((t) => t.text.toLowerCase() == label.toLowerCase())) {
+        addSizeTag(label: label);
+      }
+    }
+  }
+
+  bool _hasDifferentPricePerColor() {
+    if (colorTags.length < 2) return false;
+
+    for (var i = 0; i < colorTags.first.stockCells.length; i++) {
+      final price = colorTags.first.stockCells[i].price.text;
+      for (final tag in colorTags) {
+        if (i < tag.stockCells.length &&
+            tag.stockCells[i].price.text != price) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  void togglePricePerColor({required bool value}) {
+    isPricePerColor.value = value;
+    if (value) return;
+
+    for (var i = 0; i < colorTags.first.stockCells.length; i++) {
+      setSizePrice(index: i, value: colorTags.first.stockCells[i].price.text);
+    }
+  }
+
+  void setSizePrice({required int index, required String value}) {
+    for (final tag in colorTags) {
+      if (index < tag.stockCells.length &&
+          tag.stockCells[index].price.text != value) {
+        tag.stockCells[index].price.text = value;
+      }
+    }
+  }
+
+  void applyBasePrice() {
+    if (txtBasePrice.text.trim().isEmpty) {
+      return showErrSnackbar(msg: "Harga dasar wajib diisi");
+    }
+    for (final tag in colorTags) {
+      for (final cell in tag.stockCells) {
+        cell.price.text = txtBasePrice.text;
+      }
+    }
+  }
+
+  void fillEmptyStock() {
+    final value = txtFillQty.text.trim().isEmpty ? "0" : txtFillQty.text;
+    for (final tag in colorTags) {
+      for (final cell in tag.stockCells) {
+        if (cell.qty.text.trim().isEmpty) cell.qty.text = value;
+      }
+    }
+  }
+
+  int rowTotal({required ProductColorTag tag}) => tag.stockCells.fold(
+    0,
+    (total, cell) => total + (int.tryParse(cell.qty.text) ?? 0),
+  );
+
+  void changeTab({required int index}) => currentTab.value = index;
+
+  void nextTab() {
+    if (currentTab.value < tabs.length - 1) currentTab.value++;
+  }
+
+  void prevTab() {
+    if (currentTab.value > 0) currentTab.value--;
   }
 
   Future<void> removeSizeTag({required int index}) async {
@@ -211,7 +314,13 @@ class ProductDetailController extends BaseController {
     final tag = ProductColorTag();
     final cellCount = sizeTags.isEmpty ? 1 : sizeTags.length;
     for (var i = 0; i < cellCount; i++) {
-      tag.stockCells.add(StockCell());
+      final cell = StockCell();
+      if (!isPricePerColor.value &&
+          colorTags.isNotEmpty &&
+          i < colorTags.first.stockCells.length) {
+        cell.price.text = colorTags.first.stockCells[i].price.text;
+      }
+      tag.stockCells.add(cell);
     }
     colorTags.add(tag);
   }
@@ -342,8 +451,9 @@ class ProductDetailController extends BaseController {
         productId: resolvedProductId,
       );
       await reqOldColors.responseHandler(
-        res: (res) =>
-            oldColorIds = (res as List).map((row) => row["id"] as String).toList(),
+        res: (res) => oldColorIds = (res as List)
+            .map((row) => row["id"] as String)
+            .toList(),
         err: (err) {
           hasError = true;
           showErrSnackbar(msg: err);

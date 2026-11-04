@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../../shared/utils/my_colors.dart';
-import '../../../../shared/utils/my_fonts.dart';
+import '../../../../shared/widgets/my_dashed_button.dart';
 import '../../../../shared/widgets/my_image.dart';
 import '../../../../shared/widgets/my_text.dart';
 import '../../early_access_controller.dart';
@@ -16,24 +16,21 @@ class MEarlyAccessImageGallery extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: .start,
+      spacing: 8,
       children: [
-        MyText(text: "GAMBAR TEASER", fontSize: 20, fontFamily: MyFonts.libreBaskerville),
-        SizedBox(height: 8),
-        MyText(text: "Drag untuk mengubah urutan gambar teaser."),
-        SizedBox(height: 16),
+        MyText(text: "Gambar teaser", color: MyColors.primary60, fontSize: 13),
         SizedBox(
-          height: 80,
+          height: 100,
           child: Obx(
             () => Row(
+              spacing: 10,
               children: [
                 Expanded(
                   child: ReorderableListView(
                     scrollDirection: .horizontal,
                     buildDefaultDragHandles: false,
-                    onReorderItem: (oldIndex, newIndex) => controller.reorderImages(
-                      oldIndex: oldIndex,
-                      newIndex: newIndex,
-                    ),
+                    onReorderItem: (oldIndex, newIndex) => controller
+                        .reorderImages(oldIndex: oldIndex, newIndex: newIndex),
                     children: List.generate(controller.images.length, (index) {
                       final image = controller.images[index];
 
@@ -41,34 +38,34 @@ class MEarlyAccessImageGallery extends StatelessWidget {
                         key: ValueKey(image),
                         index: index,
                         child: Padding(
-                          padding: const .only(right: 12),
+                          padding: const .only(right: 10),
                           child: Stack(
                             children: [
                               Container(
-                                width: 64,
-                                height: 64,
+                                width: 76,
+                                height: 100,
                                 decoration: BoxDecoration(
-                                  border: .all(color: MyColors.secondary),
+                                  border: .all(color: MyColors.line),
                                 ),
                                 child: image.existingPath != null
                                     ? MyImage(image.existingPath!)
-                                    : Image.memory(image.newBytes!, fit: .cover),
+                                    : Image.memory(
+                                        image.newBytes!,
+                                        fit: .cover,
+                                      ),
                               ),
                               Positioned(
-                                top: 2,
-                                right: 2,
-                                child: GestureDetector(
+                                top: 6,
+                                right: 6,
+                                child: InkWell(
                                   onTap: () =>
                                       controller.removeImage(index: index),
                                   child: Container(
-                                    padding: .all(2),
-                                    decoration: BoxDecoration(
-                                      color: MyColors.primary,
-                                      shape: .circle,
-                                    ),
+                                    padding: const .all(3),
+                                    color: MyColors.primary,
                                     child: Icon(
                                       Icons.close,
-                                      size: 12,
+                                      size: 14,
                                       color: MyColors.secondary,
                                     ),
                                   ),
@@ -81,23 +78,15 @@ class MEarlyAccessImageGallery extends StatelessWidget {
                     }),
                   ),
                 ),
-                GestureDetector(
+                MyDashedButton(
+                  width: 76,
+                  height: 100,
                   onTap: controller.pickImages,
-                  child: Container(
-                    width: 64,
-                    height: 64,
-                    decoration: BoxDecoration(border: .all(color: MyColors.secondary)),
-                    child: Column(
-                      mainAxisAlignment: .center,
-                      children: [
-                        Icon(
-                          Icons.add_photo_alternate,
-                          size: 16,
-                          color: MyColors.secondary,
-                        ),
-                        MyText(text: "Add", fontSize: 9, textAlign: .center),
-                      ],
-                    ),
+                  child: MyText(
+                    text: "+ Tambah",
+                    color: MyColors.primary60,
+                    fontSize: 12,
+                    textAlign: .center,
                   ),
                 ),
               ],

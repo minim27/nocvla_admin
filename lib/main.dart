@@ -9,6 +9,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'app/routes/my_pages.dart';
 import 'app/routes/my_routes.dart';
 import 'shared/utils/my_colors.dart';
+import 'shared/utils/my_fonts.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -39,7 +40,27 @@ class MyApp extends StatelessWidget {
         DefaultCupertinoLocalizations.delegate,
       ],
       theme: ThemeData(
+        fontFamily: MyFonts.archivo,
+        colorScheme: const .dark(
+          primary: MyColors.secondary,
+          onPrimary: MyColors.primary,
+          secondary: MyColors.secondary,
+          onSecondary: MyColors.primary,
+          surface: MyColors.primary90,
+          onSurface: MyColors.secondary,
+          error: MyColors.redText,
+        ),
         scaffoldBackgroundColor: MyColors.primary,
+        dividerTheme: const DividerThemeData(color: MyColors.line),
+        dialogTheme: const DialogThemeData(
+          backgroundColor: MyColors.primary90,
+          surfaceTintColor: MyColors.primary90,
+          shape: RoundedRectangleBorder(),
+        ),
+        textSelectionTheme: TextSelectionThemeData(
+          cursorColor: MyColors.secondary,
+          selectionColor: MyColors.red.withValues(alpha: 0.4),
+        ),
         appBarTheme: AppBarTheme(
           backgroundColor: MyColors.primary,
           surfaceTintColor: MyColors.primary,

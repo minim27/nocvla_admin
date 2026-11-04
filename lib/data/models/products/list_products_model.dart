@@ -1,5 +1,13 @@
 class ListProductsModel {
-  dynamic id, productId, name, colorName, type, isFeatured;
+  dynamic id,
+      productId,
+      name,
+      colorName,
+      type,
+      isFeatured,
+      shopeeUrl,
+      tiktokUrl,
+      tokopediaUrl;
   List<ProductImagesModel>? images;
   List<ProductVariationModel>? variation;
 
@@ -23,6 +31,10 @@ class ListProductsModel {
     if (product != null) {
       name = product["name"];
       isFeatured = product["is_featured"];
+      shopeeUrl = product["shopee_url"];
+      tiktokUrl = product["tiktok_url"];
+      tokopediaUrl = product["tokopedia_url"];
+      type = product["type"]?["name"];
     }
 
     images = (json["images"] as List?)

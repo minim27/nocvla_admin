@@ -3,8 +3,8 @@ import 'package:flutter_quill/flutter_quill.dart';
 import 'package:get/get.dart';
 
 import '../../../../../shared/utils/my_colors.dart';
-import '../../../../../shared/utils/my_fonts.dart';
 import '../../../../../shared/widgets/my_dropdown.dart';
+import '../../../../../shared/widgets/my_panel.dart';
 import '../../../../../shared/widgets/my_text.dart';
 import '../../../../../shared/widgets/my_text_form_field.dart';
 import '../../product_detail_controller.dart';
@@ -16,95 +16,81 @@ class MPDProdInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: .start,
-      children: [
-        MyText(
-          text: "PRODUCT INFORMATION",
-          fontSize: 20,
-          fontFamily: MyFonts.libreBaskerville,
-        ),
-        if (controller.isDuplicating) ...[
+    final name = MyTextFormField(
+      controller: controller.txtName,
+      label: "Nama produk",
+      required: true,
+      keyboardType: .text,
+      textInputAction: .next,
+    );
+    final type = Obx(
+      () => MyDropdown(
+        label: "Kategori",
+        required: true,
+        items: (filter, loadProps) => controller.resTypes,
+        itemAsString: (item) => item.name,
+        selectedItem: controller.selectedType.value?.name,
+        onChanged: (value) => controller.selectType(res: value),
+      ),
+    );
+
+    return MyPanel(
+      child: Column(
+        crossAxisAlignment: .start,
+        children: [
+          MySectionTitle(text: "Informasi produk"),
+          if (controller.isDuplicating) ...[
+            SizedBox(height: 16),
+            Container(
+              width: double.infinity,
+              padding: const .symmetric(horizontal: 12, vertical: 10),
+              decoration: BoxDecoration(border: .all(color: MyColors.yellow)),
+              child: MyText(
+                text:
+                    "Ini duplikat produk. Seluruh warna, foto, ukuran, stok, dan harga ikut tersalin sebagai produk baru saat disimpan.",
+                color: MyColors.yellow,
+                fontSize: 13,
+              ),
+            ),
+          ],
+          SizedBox(height: 20),
+          name,
+          SizedBox(height: 16),
+          type,
+          SizedBox(height: 20),
+          MyText(text: "Deskripsi", color: MyColors.primary60, fontSize: 13),
           SizedBox(height: 8),
           Container(
-            padding: .symmetric(horizontal: 12, vertical: 8),
+            width: double.infinity,
             decoration: BoxDecoration(
-              color: MyColors.yellow,
-              borderRadius: .circular(6),
-            ),
-            child: MyText(
-              text:
-                  "Ini duplikat produk — seluruh warna, foto, ukuran, stok & harga akan ikut tersalin sebagai produk baru saat disimpan.",
               color: MyColors.primary,
-              fontWeight: .w600,
-              fontSize: 12,
+              border: .all(color: MyColors.border),
+            ),
+            child: QuillSimpleToolbar(
+              controller: controller.quillController,
+              config: const QuillSimpleToolbarConfig(),
+            ),
+          ),
+          Container(
+            height: 260,
+            width: double.infinity,
+            decoration: const BoxDecoration(
+              color: MyColors.primary,
+              border: Border(
+                left: BorderSide(color: MyColors.border),
+                right: BorderSide(color: MyColors.border),
+                bottom: BorderSide(color: MyColors.border),
+              ),
+            ),
+            child: QuillEditor.basic(
+              controller: controller.quillController,
+              config: const QuillEditorConfig(
+                padding: EdgeInsetsGeometry.all(12),
+              ),
             ),
           ),
         ],
-        SizedBox(height: 16),
-        MyTextFormField(
-          controller: controller.txtName,
-          label: "Product Name",
-          required: true,
-          keyboardType: .text,
-          textInputAction: .next,
-        ),
-        SizedBox(height: 16),
-        Obx(
-          () => MyDropdown(
-            label: "Type",
-            required: true,
-            items: (filter, loadProps) => controller.resTypes,
-            itemAsString: (item) => item.name,
-            selectedItem: controller.selectedType.value?.name,
-            onChanged: (value) => controller.selectType(res: value),
-          ),
-        ),
-        SizedBox(height: 16),
-        MyTextFormField(
-          controller: controller.txtUrlShopee,
-          label: "URL Shopee",
-          keyboardType: .url,
-          textInputAction: .next,
-        ),
-        SizedBox(height: 16),
-        MyTextFormField(
-          controller: controller.txtUrlTiktokShop,
-          label: "URL TikTok Shop",
-          keyboardType: .url,
-          textInputAction: .next,
-        ),
-        SizedBox(height: 16),
-        MyTextFormField(
-          controller: controller.txtUrlTokped,
-          label: "URL Tokopedia",
-          keyboardType: .url,
-          textInputAction: .next,
-        ),
-        SizedBox(height: 16),
-        MyText(text: "Description"),
-        SizedBox(height: 8),
-        Container(
-          color: MyColors.secondary,
-          child: QuillSimpleToolbar(
-            controller: controller.quillController,
-            config: const QuillSimpleToolbarConfig(),
-          ),
-        ),
-        Container(
-          height: 280,
-          decoration: BoxDecoration(
-            color: MyColors.secondary,
-            borderRadius: .all(.circular(6)),
-          ),
-          child: QuillEditor.basic(
-            controller: controller.quillController,
-            config: const QuillEditorConfig(
-              padding: EdgeInsetsGeometry.all(12),
-            ),
-          ),
-        ),
-      ],
+      ),
     );
   }
 }

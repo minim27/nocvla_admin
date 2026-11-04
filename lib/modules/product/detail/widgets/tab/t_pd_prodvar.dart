@@ -6,7 +6,10 @@ import '../../../../../shared/utils/my_colors.dart';
 import '../../../../../shared/utils/my_fonts.dart';
 import '../../../../../shared/utils/my_input_formatters.dart';
 import '../../../../../shared/widgets/my_button.dart';
-import '../../../../../shared/widgets/my_image.dart';
+import '../../../../../shared/widgets/my_dashed_button.dart';
+import '../../../../../shared/widgets/my_icon_button.dart';
+import '../../../../../shared/widgets/my_panel.dart';
+import '../../../../../shared/widgets/my_switch.dart';
 import '../../../../../shared/widgets/my_text.dart';
 import '../../../../../shared/widgets/my_text_form_field.dart';
 import '../../product_detail_controller.dart';
@@ -16,293 +19,416 @@ class TPDProdVar extends StatelessWidget {
 
   final ProductDetailController controller;
 
+  List<TextInputFormatter> get _numberFormatters => [
+    FilteringTextInputFormatter.digitsOnly,
+    NoLeadingZeroTextInputFormatter(),
+  ];
+
+  String _sizeLabel(int index) => index < controller.sizeTags.length
+      ? controller.sizeTags[index].text
+      : "All size";
+
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: .start,
-      children: [
-        MyText(text: "UKURAN", fontSize: 22, fontFamily: MyFonts.libreBaskerville),
-        SizedBox(height: 12),
-        Obx(
-          () => Wrap(
+      spacing: 20,
+      children: [_sizes(), _prices(), _stocks()],
+    );
+  }
+
+  Widget _sizes() {
+    return MyPanel(
+      child: Column(
+        crossAxisAlignment: .start,
+        spacing: 16,
+        children: [
+          MySectionTitle(text: "Ukuran"),
+          MyText(
+            text:
+                "Label bebas. Menghapus ukuran akan meminta konfirmasi lebih dulu.",
+            color: MyColors.primary60,
+            fontSize: 13,
+          ),
+          Wrap(
             spacing: 8,
             runSpacing: 8,
+            crossAxisAlignment: .center,
             children: [
-              ...List.generate(controller.sizeTags.length, (index) {
-                return SizedBox(
-                  width: 140,
-                  child: Row(
-                    spacing: 4,
-                    crossAxisAlignment: .end,
-                    children: [
-                      Expanded(
-                        child: MyTextFormField(
-                          controller: controller.sizeTags[index],
-                          label: "Ukuran ${index + 1}",
-                          keyboardType: .text,
-                          textInputAction: .next,
-                        ),
-                      ),
-                      IconButton(
-                        onPressed: () =>
-                            controller.removeSizeTag(index: index),
-                        icon: Icon(Icons.close, size: 16),
-                      ),
-                    ],
+              MyText(text: "Preset", color: MyColors.primary60, fontSize: 12),
+              ...ProductDetailController.sizePresets.entries.map(
+                (preset) => InkWell(
+                  onTap: () => controller.applySizePreset(labels: preset.value),
+                  child: Container(
+                    height: 36,
+                    padding: const .symmetric(horizontal: 12),
+                    decoration: BoxDecoration(
+                      border: .all(color: MyColors.line),
+                    ),
+                    child: Center(
+                      widthFactor: 1,
+                      child: MyText(text: preset.key, fontSize: 13),
+                    ),
                   ),
-                );
-              }),
-              MyButton(
-                width: 110,
-                height: 48,
-                text: "Add Ukuran",
-                onTap: () => controller.addSizeTag(),
+                ),
               ),
             ],
           ),
+          Obx(
+            () => Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              crossAxisAlignment: .center,
+              children: [
+                ...List.generate(controller.sizeTags.length, (index) {
+                  return Container(
+                    height: 44,
+                    padding: const .only(left: 10, right: 6),
+                    decoration: BoxDecoration(
+                      color: MyColors.selected,
+                      border: .all(color: MyColors.secondary),
+                    ),
+                    child: Row(
+                      mainAxisSize: .min,
+                      spacing: 6,
+                      children: [
+                        SizedBox(
+                          width: 72,
+                          child: MyTextFormFieldNoBorder(
+                            controller: controller.sizeTags[index],
+                            textAlign: .left,
+                            fontSize: 15,
+                            fontWeight: .w700,
+                          ),
+                        ),
+                        InkWell(
+                          onTap: () => controller.removeSizeTag(index: index),
+                          child: Icon(
+                            Icons.close,
+                            size: 16,
+                            color: MyColors.primary60,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }),
+                SizedBox(
+                  width: 220,
+                  child: MyTextFormField(
+                    controller: controller.txtNewSize,
+                    hintText: "Contoh: 3XL, 30, All size",
+                    keyboardType: .text,
+                    onFieldSubmitted: (_) => controller.addSizeTag(),
+                  ),
+                ),
+                MyButton(
+                  text: "Tambah",
+                  fontSize: 13,
+                  onTap: () => controller.addSizeTag(),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _prices() {
+    return MyPanel(
+      child: Obx(
+        () => Column(
+          crossAxisAlignment: .start,
+          spacing: 16,
+          children: [
+            MySectionTitle(text: "Harga per ukuran"),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              crossAxisAlignment: .center,
+              children: [
+                MyText(
+                  text: "Harga dasar",
+                  color: MyColors.primary60,
+                  fontSize: 13,
+                ),
+                SizedBox(
+                  width: 140,
+                  child: MyTextFormField(
+                    controller: controller.txtBasePrice,
+                    keyboardType: .number,
+                    inputFormatters: _numberFormatters,
+                  ),
+                ),
+                MyButton(
+                  text: "Samakan semua",
+                  fontSize: 13,
+                  color: Colors.transparent,
+                  textColor: MyColors.secondary,
+                  borderColor: MyColors.border,
+                  onTap: () => controller.applyBasePrice(),
+                ),
+              ],
+            ),
+            Row(
+              spacing: 10,
+              children: [
+                MySwitch(
+                  value: controller.isPricePerColor.value,
+                  onChanged: (value) =>
+                      controller.togglePricePerColor(value: value),
+                ),
+                Flexible(
+                  child: MyText(
+                    text: "Harga berbeda per warna",
+                    color: MyColors.primary60,
+                    fontSize: 13,
+                  ),
+                ),
+              ],
+            ),
+            if (controller.isPricePerColor.value)
+              _matrix(isPrice: true)
+            else
+              Wrap(
+                spacing: 10,
+                runSpacing: 10,
+                children: List.generate(
+                  controller.colorTags.first.stockCells.length,
+                  (index) => SizedBox(
+                    width: 170,
+                    child: ListenableBuilder(
+                      listenable: index < controller.sizeTags.length
+                          ? controller.sizeTags[index]
+                          : controller.txtBasePrice,
+                      builder: (context, _) => MyTextFormField(
+                        controller:
+                            controller.colorTags.first.stockCells[index].price,
+                        label: _sizeLabel(index),
+                        required: true,
+                        keyboardType: .number,
+                        inputFormatters: _numberFormatters,
+                        onChanged: (value) =>
+                            controller.setSizePrice(index: index, value: value),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+          ],
         ),
-        SizedBox(height: 28),
-        MyText(
-          text: "WARNA & STOK",
-          fontSize: 22,
-          fontFamily: MyFonts.libreBaskerville,
-        ),
-        SizedBox(height: 12),
-        Obx(
-          () => Column(
+      ),
+    );
+  }
+
+  Widget _stocks() {
+    return MyPanel(
+      child: Column(
+        crossAxisAlignment: .start,
+        spacing: 16,
+        children: [
+          SizedBox(
+            width: double.infinity,
+            child: Wrap(
+              alignment: .spaceBetween,
+              crossAxisAlignment: .center,
+              spacing: 16,
+              runSpacing: 12,
+              children: [
+                MySectionTitle(text: "Stok per warna × ukuran"),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  crossAxisAlignment: .center,
+                  children: [
+                    MyText(
+                      text: "Isi semua sel kosong",
+                      color: MyColors.primary60,
+                      fontSize: 13,
+                    ),
+                    SizedBox(
+                      width: 72,
+                      child: MyTextFormField(
+                        controller: controller.txtFillQty,
+                        keyboardType: .number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
+                      ),
+                    ),
+                    MyButton(
+                      text: "Terapkan",
+                      fontSize: 13,
+                      color: Colors.transparent,
+                      textColor: MyColors.secondary,
+                      borderColor: MyColors.border,
+                      onTap: () => controller.fillEmptyStock(),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          Obx(() {
+            controller.colorTags.length;
+            controller.sizeTags.length;
+            return _matrix(isPrice: false);
+          }),
+          MyDashedButton(
+            width: 150,
+            text: "+ Tambah warna",
+            onTap: () => controller.addColorTag(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _matrix({required bool isPrice}) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        const nameWidth = 220.0;
+        const totalWidth = 56.0;
+        final count = controller.colorTags.first.stockCells.length;
+        final free =
+            (constraints.maxWidth - nameWidth - totalWidth - (count + 2) * 8) /
+            (count == 0 ? 1 : count);
+        final cellWidth = free < 76.0 ? 76.0 : free;
+
+        return SingleChildScrollView(
+          scrollDirection: .horizontal,
+          child: Column(
             crossAxisAlignment: .start,
             children: [
+              Row(
+                spacing: 8,
+                children: [
+                  SizedBox(
+                    width: nameWidth,
+                    child: MyTableLabel(text: "Warna"),
+                  ),
+                  ...List.generate(
+                    count,
+                    (index) => SizedBox(
+                      width: cellWidth,
+                      child: index < controller.sizeTags.length
+                          ? ListenableBuilder(
+                              listenable: controller.sizeTags[index],
+                              builder: (context, _) =>
+                                  MyTableLabel(text: _sizeLabel(index)),
+                            )
+                          : MyTableLabel(text: _sizeLabel(index)),
+                    ),
+                  ),
+                  SizedBox(
+                    width: totalWidth,
+                    child: isPrice ? null : MyTableLabel(text: "Total"),
+                  ),
+                ],
+              ),
+              SizedBox(height: 8),
               ...List.generate(controller.colorTags.length, (colorIndex) {
                 final tag = controller.colorTags[colorIndex];
 
                 return Container(
-                  margin: .only(bottom: 12),
-                  padding: .all(12),
-                  decoration: BoxDecoration(
-                    border: .all(color: MyColors.secondary),
+                  padding: const .symmetric(vertical: 8),
+                  decoration: const BoxDecoration(
+                    border: Border(top: BorderSide(color: MyColors.lineSoft)),
                   ),
-                  child: Column(
-                    crossAxisAlignment: .start,
+                  child: Row(
+                    spacing: 8,
                     children: [
-                      Row(
-                        spacing: 8,
-                        children: [
-                          Expanded(
-                            child: MyTextFormField(
-                              controller: tag.txtName,
-                              label: "Color Name",
-                              required: true,
-                              keyboardType: .text,
-                              textInputAction: .next,
-                            ),
-                          ),
-                          IconButton(
-                            onPressed: controller.colorTags.length > 1
-                                ? () =>
-                                      controller.removeColorTag(index: colorIndex)
-                                : null,
-                            icon: Icon(Icons.delete_outline_rounded),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 12),
-                      MyText(
-                        text:
-                            "Color Image (tekan lama untuk drag, foto pertama = main)",
-                      ),
-                      SizedBox(height: 8),
                       SizedBox(
-                        height: 80,
+                        width: nameWidth,
                         child: Row(
+                          spacing: 6,
                           children: [
                             Expanded(
-                              child: Obx(
-                                () => ReorderableListView(
-                                  scrollDirection: .horizontal,
-                                  buildDefaultDragHandles: false,
-                                  onReorderItem: (oldIndex, newIndex) =>
-                                      controller.reorderGallery(
-                                        colorIndex: colorIndex,
-                                        oldIndex: oldIndex,
-                                        newIndex: newIndex,
-                                      ),
-                                  children: List.generate(
-                                    tag.gallery.length,
-                                    (imageIndex) {
-                                      final image = tag.gallery[imageIndex];
-
-                                      return ReorderableDelayedDragStartListener(
-                                        key: ValueKey(image),
-                                        index: imageIndex,
-                                        child: Padding(
-                                          padding: const .only(right: 8),
-                                          child: Stack(
-                                            children: [
-                                              Container(
-                                                width: 64,
-                                                height: 64,
-                                                decoration: BoxDecoration(
-                                                  border: .all(
-                                                    color: imageIndex == 0
-                                                        ? MyColors.red
-                                                        : MyColors.secondary,
-                                                    width: imageIndex == 0
-                                                        ? 2
-                                                        : 1,
-                                                  ),
-                                                ),
-                                                child:
-                                                    image.existingPath != null
-                                                    ? MyImage(
-                                                        image.existingPath!,
-                                                      )
-                                                    : Image.memory(
-                                                        image.newBytes!,
-                                                        fit: .cover,
-                                                      ),
-                                              ),
-                                              Positioned(
-                                                top: 2,
-                                                right: 2,
-                                                child: GestureDetector(
-                                                  onTap: () => controller
-                                                      .removeImage(
-                                                        colorIndex: colorIndex,
-                                                        imageIndex: imageIndex,
-                                                      ),
-                                                  child: Container(
-                                                    padding: .all(2),
-                                                    decoration: BoxDecoration(
-                                                      color: MyColors.primary,
-                                                      shape: .circle,
-                                                    ),
-                                                    child: Icon(
-                                                      Icons.close,
-                                                      size: 12,
-                                                      color:
-                                                          MyColors.secondary,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ),
+                              child: MyTextFormField(
+                                controller: tag.txtName,
+                                hintText: "Nama warna",
+                                keyboardType: .text,
+                                textInputAction: .next,
                               ),
                             ),
-                            GestureDetector(
-                              onTap: () =>
-                                  controller.pickImage(colorIndex: colorIndex),
-                              child: Container(
-                                width: 64,
-                                height: 64,
-                                decoration: BoxDecoration(
-                                  border: .all(color: MyColors.secondary),
-                                ),
-                                child: Column(
-                                  mainAxisAlignment: .center,
-                                  children: [
-                                    Icon(
-                                      Icons.add_photo_alternate,
-                                      size: 18,
-                                      color: MyColors.secondary,
-                                    ),
-                                    MyText(
-                                      text: "Add",
-                                      fontSize: 9,
-                                      textAlign: .center,
-                                    ),
-                                  ],
-                                ),
-                              ),
+                            MyIconButton(
+                              icon: Icons.delete_outline_rounded,
+                              tooltip: "Hapus warna",
+                              size: 32,
+                              iconSize: 16,
+                              color: MyColors.primary60,
+                              onTap: controller.colorTags.length > 1
+                                  ? () => controller.removeColorTag(
+                                      index: colorIndex,
+                                    )
+                                  : null,
                             ),
                           ],
                         ),
                       ),
-                      SizedBox(height: 12),
-                      MyText(text: "Stock"),
-                      SizedBox(height: 8),
-                      Obx(
-                        () => Column(
-                          crossAxisAlignment: .start,
-                          children: List.generate(tag.stockCells.length, (
-                            cellIndex,
-                          ) {
-                            final cell = tag.stockCells[cellIndex];
+                      ...List.generate(count, (cellIndex) {
+                        if (cellIndex >= tag.stockCells.length) {
+                          return SizedBox(width: cellWidth);
+                        }
+                        final cell = tag.stockCells[cellIndex];
+                        final txt = isPrice ? cell.price : cell.qty;
 
-                            return Padding(
-                              padding: .only(bottom: 8),
-                              child: Row(
-                                spacing: 8,
-                                crossAxisAlignment: .end,
-                                children: [
-                                  if (controller.sizeTags.isNotEmpty)
-                                    SizedBox(
-                                      width: 90,
-                                      child: ListenableBuilder(
-                                        listenable:
-                                            controller.sizeTags[cellIndex],
-                                        builder: (context, _) => MyText(
-                                          text: controller
-                                              .sizeTags[cellIndex]
-                                              .text,
-                                          fontWeight: .w500,
-                                        ),
-                                      ),
-                                    ),
-                                  SizedBox(
-                                    width: 160,
-                                    child: MyTextFormField(
-                                      controller: cell.price,
-                                      label: "Price",
-                                      required: true,
-                                      keyboardType: .number,
-                                      inputFormatters: [
-                                        FilteringTextInputFormatter
-                                            .digitsOnly,
-                                        NoLeadingZeroTextInputFormatter(),
-                                      ],
-                                      textInputAction: .next,
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: 160,
-                                    child: MyTextFormField(
-                                      controller: cell.qty,
-                                      label: "Stock",
-                                      required: true,
-                                      keyboardType: .number,
-                                      inputFormatters: [
-                                        FilteringTextInputFormatter
-                                            .digitsOnly,
-                                        NoLeadingZeroTextInputFormatter(),
-                                      ],
-                                      textInputAction: .next,
-                                    ),
-                                  ),
-                                ],
+                        return SizedBox(
+                          width: cellWidth,
+                          child: ListenableBuilder(
+                            listenable: txt,
+                            builder: (context, _) {
+                              final isEmptyStock = !isPrice && txt.text == "0";
+
+                              return MyTextFormField(
+                                controller: txt,
+                                keyboardType: .number,
+                                textColor: isEmptyStock
+                                    ? MyColors.redText
+                                    : MyColors.secondary,
+                                borderColor: isEmptyStock
+                                    ? MyColors.red
+                                    : MyColors.border,
+                                inputFormatters: isPrice
+                                    ? _numberFormatters
+                                    : [FilteringTextInputFormatter.digitsOnly],
+                                textInputAction: .next,
+                              );
+                            },
+                          ),
+                        );
+                      }),
+                      SizedBox(
+                        width: totalWidth,
+                        child: isPrice
+                            ? null
+                            : ListenableBuilder(
+                                listenable: Listenable.merge(
+                                  tag.stockCells.map((cell) => cell.qty),
+                                ),
+                                builder: (context, _) {
+                                  final total = controller.rowTotal(tag: tag);
+
+                                  return MyText(
+                                    text: "$total",
+                                    color: total == 0
+                                        ? MyColors.redText
+                                        : MyColors.secondary,
+                                    fontFamily: MyFonts.archivo,
+                                    fontWeight: .w700,
+                                  );
+                                },
                               ),
-                            );
-                          }),
-                        ),
                       ),
                     ],
                   ),
                 );
               }),
-              MyButton(
-                width: 140,
-                text: "Add Warna",
-                onTap: () => controller.addColorTag(),
-              ),
             ],
           ),
-        ),
-      ],
+        );
+      },
     );
   }
 }

@@ -9,7 +9,11 @@ class ProductsRepo extends BaseRepository {
   }) async {
     var query = supabase.from("m_product_color").select('''
       id, name, product_id,
-      product:m_products!inner(id, name, is_featured, product_type_id),
+      product:m_products!inner(
+        id, name, is_featured, product_type_id,
+        shopee_url, tiktok_url, tokopedia_url,
+        type:m_product_type(name)
+      ),
       images:m_product_images(image_url, sort_order),
       variation:m_product_stock(size, qty, price)
     ''');
@@ -45,7 +49,10 @@ class ProductsRepo extends BaseRepository {
   );
 
   Future<ResponseHandler<dynamic>> listProductNames() async => ResponseHandler(
-    supabase.from("m_products").select("id, name").order("name", ascending: true),
+    supabase
+        .from("m_products")
+        .select("id, name")
+        .order("name", ascending: true),
   );
 
   Future<ResponseHandler<dynamic>> addProduct({

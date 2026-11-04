@@ -15,7 +15,8 @@ class AthleteApplicationApproveDialog extends StatelessWidget {
     final controller = Get.find<AthleteApplicationDetailController>();
 
     return Dialog(
-      backgroundColor: MyColors.primary,
+      backgroundColor: MyColors.primary90,
+      constraints: const BoxConstraints(maxWidth: 480),
       child: Padding(
         padding: const .all(20),
         child: Column(
@@ -31,7 +32,7 @@ class AthleteApplicationApproveDialog extends StatelessWidget {
             Row(
               children: [
                 MyText(text: "Photo"),
-                MyText(text: " *", color: MyColors.red),
+                MyText(text: " *", color: MyColors.redText),
               ],
             ),
             const SizedBox(height: 8),
@@ -102,8 +103,9 @@ class AthleteApplicationApproveDialog extends StatelessWidget {
                 MyButton(
                   width: 100,
                   text: "Cancel",
-                  color: MyColors.primary80,
+                  color: Colors.transparent,
                   textColor: MyColors.secondary,
+                  borderColor: MyColors.border,
                   onTap: () => Get.back(),
                 ),
                 MyButton(

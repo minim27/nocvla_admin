@@ -5,12 +5,23 @@ import 'package:nocvla_admin/shared/widgets/my_confirm_dialog.dart';
 
 import '../../../app/core/base_controller.dart';
 import '../../../data/models/athlete/athlete_model.dart';
+import '../../athlete_application/list/athlete_application_controller.dart';
 
 class AthleteController extends BaseController {
   final res = <AthleteModel>[].obs;
 
   var isLoading = false.obs;
   var isLoadingAction = false.obs;
+  var selectedTab = 0.obs;
+
+  void changeTab({required int index}) {
+    selectedTab.value = index;
+    if (index > 0) {
+      Get.find<AthleteApplicationController>().changeStatus(
+        status: AthleteApplicationController.statusTabs[index - 1],
+      );
+    }
+  }
 
   @override
   void onInit() {
@@ -22,7 +33,7 @@ class AthleteController extends BaseController {
     isLoading.value = true;
 
     final req = await athleteRepo.listAthletes();
-    req.responseHandler(
+    await req.responseHandler(
       res: (res) {
         this.res.value = (res as List)
             .map((e) => AthleteModel.fromJson(e))

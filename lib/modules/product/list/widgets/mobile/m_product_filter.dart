@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../../../shared/utils/my_colors.dart';
 import '../../../../../shared/widgets/my_button.dart';
-import '../../../../../shared/widgets/my_dropdown.dart';
 import '../../../../../shared/widgets/my_text_form_field.dart';
 import '../../product_controller.dart';
 
@@ -15,37 +15,33 @@ class MProductFilter extends StatelessWidget {
 
     return Column(
       crossAxisAlignment: .start,
+      spacing: 12,
       children: [
         MyTextFormField(
           controller: controller.txtSearchName,
-          label: "Product Name",
-          hintText: "Search by name",
+          hintText: "Cari nama produk atau warna",
           keyboardType: .text,
           textInputAction: .search,
-          onFieldSubmitted: (_) => controller.search(),
+          prefixIcon: Icon(Icons.search, size: 18, color: MyColors.primary60),
+          onChanged: (value) => controller.search(query: value),
         ),
-        SizedBox(height: 12),
-        Row(
-          crossAxisAlignment: .end,
-          spacing: 12,
-          children: [
-            Expanded(
-              child: Obx(
-                () => MyDropdown(
-                  label: "Type",
-                  items: (filter, loadProps) => controller.resTypes,
-                  itemAsString: (item) => item.name,
-                  selectedItem: controller.selectedType.value?.name,
-                  onChanged: (value) => controller.selectType(res: value),
-                ),
-              ),
-            ),
-            MyButton(
-              width: 90,
-              text: "Search",
-              onTap: () => controller.search(),
-            ),
-          ],
+        Obx(
+          () => Wrap(
+            spacing: 6,
+            runSpacing: 6,
+            children: controller.filterOptions.map((option) {
+              final isActive = controller.selectedFilter.value == option["id"];
+
+              return MyButton(
+                text: option["label"]!,
+                fontSize: 13,
+                color: isActive ? MyColors.secondary : Colors.transparent,
+                textColor: isActive ? MyColors.primary : MyColors.secondary,
+                borderColor: isActive ? null : MyColors.line,
+                onTap: () => controller.selectFilter(id: option["id"]!),
+              );
+            }).toList(),
+          ),
         ),
       ],
     );

@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../../../data/models/products/list_products_model.dart';
 import '../../../../../shared/utils/my_colors.dart';
 import '../../../../../shared/utils/my_parsing_currency.dart';
+import '../../../../../shared/widgets/my_empty_state.dart';
+import '../../../../../shared/widgets/my_icon_button.dart';
 import '../../../../../shared/widgets/my_image.dart';
 import '../../../../../shared/widgets/my_loading.dart';
+import '../../../../../shared/widgets/my_panel.dart';
+import '../../../../../shared/widgets/my_stock_cell.dart';
 import '../../../../../shared/widgets/my_text.dart';
 import '../../product_controller.dart';
 
@@ -18,79 +23,205 @@ class MProductData extends StatelessWidget {
     return Obx(() {
       if (controller.isLoading.value) return Expanded(child: MyLoading());
 
-      return Expanded(
-        child: ListView.separated(
-          shrinkWrap: true,
-          padding: .symmetric(vertical: 12),
-          itemBuilder: (context, index) {
-            final items = controller.res[index];
-            final mainImage = items.images!.isEmpty
-                ? null
-                : items.images!.first;
+      final groups = controller.groups;
 
-            return Container(
-              padding: .all(12),
-              decoration: BoxDecoration(
-                border: .all(color: MyColors.secondary),
-              ),
-              child: Column(
-                crossAxisAlignment: .start,
-                children: [
-                  if (mainImage != null)
-                    SizedBox(
-                      width: double.infinity,
-                      height: 160,
-                      child: MyImage(mainImage.imageUrl!),
-                    ),
-                  SizedBox(height: 12),
-                  MyText(text: items.name, fontWeight: .w500),
-                  MyText(text: "- ${items.colorName}", fontWeight: .w500),
-                  if (items.variation!.isNotEmpty) ...[
-                    SizedBox(height: 8),
-                    ...items.variation!.map(
-                      (varItems) => Padding(
-                        padding: .only(bottom: 4),
-                        child: MyText(
-                          text:
-                              "${varItems.size} - ${parsingCurrency(varItems.price)} - Stock: ${varItems.qty}",
+      return Expanded(
+        child: Container(
+          width: double.infinity,
+          decoration: const BoxDecoration(
+            color: MyColors.primary90,
+            border: Border(
+              left: BorderSide(color: MyColors.line),
+              right: BorderSide(color: MyColors.line),
+              bottom: BorderSide(color: MyColors.line),
+              top: BorderSide(color: MyColors.line),
+            ),
+          ),
+          child: groups.isEmpty
+              ? MyEmptyState(text: "Belum ada produk yang cocok.")
+              : ListView.separated(
+                  itemCount: groups.length,
+                  separatorBuilder: (context, index) => Divider(height: 1),
+                  itemBuilder: (context, index) {
+                    final group = groups[index];
+                    final isOpen = controller.expandedId.value == group.id;
+                    final image = (group.first.images ?? []).isEmpty
+                        ? null
+                        : group.first.images!.first.imageUrl;
+
+                    return Column(
+                      children: [
+                        InkWell(
+                          onTap: () => controller.toggleExpand(id: group.id),
+                          child: Padding(
+                            padding: const .symmetric(
+                              horizontal: 12,
+                              vertical: 14,
+                            ),
+                            child: Row(
+                              spacing: 10,
+                              children: [
+                                Icon(
+                                  isOpen
+                                      ? Icons.expand_more
+                                      : Icons.chevron_right,
+                                  size: 18,
+                                  color: MyColors.primary60,
+                                ),
+                                MyThumbnail(image: image),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: .start,
+                                    spacing: 3,
+                                    children: [
+                                      MyText(
+                                        text: group.name,
+                                        fontWeight: .w700,
+                                        maxLines: 1,
+                                        overflow: .ellipsis,
+                                      ),
+                                      MyText(
+                                        text:
+                                            "${group.typeName} · ${group.colors.length} warna · ${group.totalStock} pcs",
+                                        color: MyColors.primary60,
+                                        fontSize: 12,
+                                      ),
+                                      MyText(
+                                        text: group.minPrice == null
+                                            ? "-"
+                                            : parsingCurrency(group.minPrice),
+                                        fontSize: 12,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                MyIconButton(
+                                  icon: Icons.edit_outlined,
+                                  tooltip: "Edit",
+                                  onTap: () => controller.edit(id: group.id),
+                                ),
+                                MyIconButton(
+                                  icon: Icons.copy,
+                                  tooltip: "Duplikat",
+                                  onTap: () =>
+                                      controller.duplicate(id: group.id),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                  ],
-                  SizedBox(height: 8),
-                  Row(
-                    mainAxisAlignment: .end,
-                    spacing: 20,
+                        if (isOpen)
+                          _MProductMatrix(group: group, controller: controller),
+                      ],
+                    );
+                  },
+                ),
+        ),
+      );
+    });
+  }
+}
+
+class _MProductMatrix extends StatelessWidget {
+  const _MProductMatrix({required this.group, required this.controller});
+
+  final ProductGroup group;
+  final ProductController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    final sizes = group.sizes;
+
+    return Padding(
+      padding: const .fromLTRB(12, 0, 12, 20),
+      child: Column(
+        crossAxisAlignment: .start,
+        children: [
+          SingleChildScrollView(
+            scrollDirection: .horizontal,
+            child: Column(
+              crossAxisAlignment: .start,
+              children: [
+                Padding(
+                  padding: const .only(bottom: 10),
+                  child: Row(
                     children: [
-                      GestureDetector(
-                        onTap: () => controller.edit(id: items.productId),
-                        child: Icon(
-                          Icons.edit_document,
-                          color: MyColors.secondary,
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () =>
-                            controller.duplicate(id: items.productId),
-                        child: Icon(Icons.copy, color: MyColors.secondary),
-                      ),
-                      GestureDetector(
-                        onTap: () => controller.delete(item: items),
-                        child: Icon(
-                          Icons.delete_outline_rounded,
-                          color: MyColors.secondary,
+                      SizedBox(width: 150, child: MyTableLabel(text: "Warna")),
+                      ...sizes.map(
+                        (size) => SizedBox(
+                          width: 62,
+                          child: MyTableLabel(text: size),
                         ),
                       ),
                     ],
                   ),
-                ],
+                ),
+                ...group.colors.map((color) => _row(color, sizes)),
+              ],
+            ),
+          ),
+          if (sizes.isNotEmpty) ...[
+            SizedBox(height: 14),
+            MyText(
+              text: group.priceSummary,
+              color: MyColors.primary60,
+              fontSize: 12,
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _row(ListProductsModel color, List<String> sizes) {
+    final image = (color.images ?? []).isEmpty
+        ? null
+        : color.images!.first.imageUrl;
+
+    return Container(
+      padding: const .symmetric(vertical: 10),
+      decoration: const BoxDecoration(
+        border: Border(top: BorderSide(color: MyColors.lineSoft)),
+      ),
+      child: Row(
+        children: [
+          SizedBox(
+            width: 150,
+            child: Row(
+              spacing: 10,
+              children: [
+                MyThumbnail(image: image, size: 32),
+                Expanded(
+                  child: MyText(
+                    text: "${color.colorName ?? "-"}",
+                    maxLines: 1,
+                    overflow: .ellipsis,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          ...sizes.map(
+            (size) => SizedBox(
+              width: 62,
+              child: Align(
+                alignment: .centerLeft,
+                child: MyStockCell(
+                  qty: group.qtyOf(color: color, size: size),
+                ),
               ),
-            );
-          },
-          separatorBuilder: (context, index) => SizedBox(height: 12),
-          itemCount: controller.res.length,
-        ),
-      );
-    });
+            ),
+          ),
+          MyIconButton(
+            icon: Icons.delete_outline_rounded,
+            tooltip: "Hapus warna",
+            size: 30,
+            iconSize: 15,
+            color: MyColors.primary60,
+            onTap: () => controller.delete(item: color),
+          ),
+        ],
+      ),
+    );
   }
 }

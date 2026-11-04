@@ -11,6 +11,14 @@ class AthleteApplicationRepo extends BaseRepository {
         .order("created_at", ascending: false),
   );
 
+  Future<ResponseHandler<dynamic>> listAllApplications() async =>
+      ResponseHandler(
+        supabase
+            .from("m_athlete_application")
+            .select()
+            .order("created_at", ascending: false),
+      );
+
   Future<ResponseHandler<dynamic>> detailApplication({
     required String id,
   }) async => ResponseHandler(

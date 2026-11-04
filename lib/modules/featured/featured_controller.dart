@@ -20,7 +20,7 @@ class FeaturedController extends BaseController {
     isLoading.value = true;
 
     final req = await productsRepo.listProducts();
-    req.responseHandler(
+    await req.responseHandler(
       res: (res) {
         this.res.value =
             (res as List).map((e) => ListProductsModel.fromJson(e)).toList()
@@ -40,8 +40,15 @@ class FeaturedController extends BaseController {
     isLoading.value = false;
   }
 
-  Future<void> toggleFeatured({required int index}) async {
-    final item = res[index];
+  List<ListProductsModel> get products {
+    final seen = <dynamic>{};
+    return res.where((e) => seen.add(e.productId)).toList();
+  }
+
+  int colorCount({required ListProductsModel item}) =>
+      res.where((e) => e.productId == item.productId).length;
+
+  Future<void> toggleFeatured({required ListProductsModel item}) async {
     final newValue = !(item.isFeatured == true);
 
     isLoadingAction.value = true;

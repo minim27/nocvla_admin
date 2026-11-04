@@ -24,53 +24,19 @@ class ProductPage extends GetView<ProductController> {
     return Stack(
       children: [
         MyScaffold(
-          body: Padding(
-            padding: const .symmetric(vertical: 24, horizontal: 16),
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                final isDesktop = constraints.maxWidth >= 1280;
-                final isTab = constraints.maxWidth >= 768;
+          body: Builder(
+            builder: (context) {
+              final width = MediaQuery.sizeOf(context).width;
+              final isDesktop = width >= 1280;
+              final isTab = width >= 768;
 
-                if (isDesktop) {
-                  return Column(
-                    crossAxisAlignment: .start,
-                    children: [
-                      ProductHeader(),
-                      SizedBox(height: 24),
-                      ProductFilter(),
-                      SizedBox(height: 24),
-                      ProductColumn(),
-                      ProductData(),
-                    ],
-                  );
-                }
-
-                if (isTab) {
-                  return Column(
-                    crossAxisAlignment: .start,
-                    children: [
-                      TProductHeader(),
-                      SizedBox(height: 24),
-                      TProductFilter(),
-                      SizedBox(height: 24),
-                      TProductColumn(),
-                      TProductData(),
-                    ],
-                  );
-                }
-
-                return Column(
-                  crossAxisAlignment: .start,
-                  children: [
-                    MProductHeader(),
-                    SizedBox(height: 24),
-                    MProductFilter(),
-                    SizedBox(height: 24),
-                    MProductData(),
-                  ],
-                );
-              },
-            ),
+              return Padding(
+                padding: isDesktop
+                    ? const .symmetric(vertical: 32, horizontal: 40)
+                    : const .symmetric(vertical: 20, horizontal: 16),
+                child: _content(isDesktop: isDesktop, isTab: isTab),
+              );
+            },
           ),
         ),
         Obx(
@@ -79,6 +45,47 @@ class ProductPage extends GetView<ProductController> {
             child: const MyLoading(isStack: true),
           ),
         ),
+      ],
+    );
+  }
+
+  Widget _content({required bool isDesktop, required bool isTab}) {
+    if (isDesktop) {
+      return Column(
+        crossAxisAlignment: .start,
+        children: [
+          ProductHeader(),
+          SizedBox(height: 24),
+          ProductFilter(),
+          SizedBox(height: 24),
+          ProductColumn(),
+          ProductData(),
+        ],
+      );
+    }
+
+    if (isTab) {
+      return Column(
+        crossAxisAlignment: .start,
+        children: [
+          TProductHeader(),
+          SizedBox(height: 24),
+          TProductFilter(),
+          SizedBox(height: 24),
+          TProductColumn(),
+          TProductData(),
+        ],
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: .start,
+      children: [
+        MProductHeader(),
+        SizedBox(height: 20),
+        MProductFilter(),
+        SizedBox(height: 20),
+        MProductData(),
       ],
     );
   }

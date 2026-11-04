@@ -19,6 +19,7 @@ class AthleteDetailController extends BaseController {
   var txtName = TextEditingController();
 
   var picture = Rxn<AthletePicture>();
+  var isActive = false.obs;
 
   var productOptions = <ProductNameModel>[].obs;
   var assignments = <AthleteAssignmentRow>[].obs;
@@ -61,6 +62,7 @@ class AthleteDetailController extends BaseController {
           final athlete = AthleteModel.fromJson(res);
           txtCode.text = athlete.code ?? "";
           txtName.text = athlete.name ?? "";
+          isActive.value = athlete.isActive == true;
           if (athlete.picture != null) {
             picture.value = AthletePicture(existingPath: athlete.picture);
           }
@@ -116,6 +118,8 @@ class AthleteDetailController extends BaseController {
 
     picture.value = null;
   }
+
+  void toggleActive({required bool value}) => isActive.value = value;
 
   void addAssignmentRow() => assignments.add(AthleteAssignmentRow());
 
@@ -183,6 +187,7 @@ class AthleteDetailController extends BaseController {
       "code": txtCode.text,
       "name": txtName.text,
       "picture": picturePath,
+      "is_active": isActive.value,
     };
 
     var hasError = false;

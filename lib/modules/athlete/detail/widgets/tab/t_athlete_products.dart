@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../../../shared/utils/my_fonts.dart';
-import '../../../../../shared/widgets/my_button.dart';
+import '../../../../../shared/utils/my_colors.dart';
+import '../../../../../shared/widgets/my_dashed_button.dart';
 import '../../../../../shared/widgets/my_dropdown.dart';
+import '../../../../../shared/widgets/my_icon_button.dart';
+import '../../../../../shared/widgets/my_panel.dart';
 import '../../../../../shared/widgets/my_text.dart';
 import '../../../../../shared/widgets/my_text_form_field.dart';
 import '../../athlete_detail_controller.dart';
@@ -13,90 +15,102 @@ class TAthleteProducts extends StatelessWidget {
 
   final AthleteDetailController controller;
 
+  Widget _product({required int index, required AthleteAssignmentRow row}) {
+    return Obx(
+      () => MyDropdown(
+        showSearchBox: true,
+        items: (filter, loadProps) => controller.productOptions,
+        itemAsString: (item) => item.name,
+        selectedItem: row.selectedProduct.value?.name,
+        onChanged: (value) =>
+            controller.selectAssignmentProduct(index: index, product: value),
+      ),
+    );
+  }
+
+  Widget _link(TextEditingController txt, String hint, {String? label}) {
+    return MyTextFormField(
+      controller: txt,
+      label: label,
+      hintText: hint,
+      keyboardType: .url,
+      textInputAction: .next,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: .start,
-      children: [
-        MyText(
-          text: "ASSIGNED PRODUCTS",
-          fontSize: 22,
-          fontFamily: MyFonts.libreBaskerville,
-        ),
-        SizedBox(height: 20),
-        Obx(
-          () => Column(
-            crossAxisAlignment: .start,
-            children: [
-              ...List.generate(controller.assignments.length, (index) {
-                final row = controller.assignments[index];
+    return MyPanel(
+      child: Column(
+        crossAxisAlignment: .start,
+        spacing: 14,
+        children: [
+          MySectionTitle(text: "Produk & link affiliate"),
+          Obx(
+            () => Column(
+              crossAxisAlignment: .start,
+              spacing: 12,
+              children: [
+                ...List.generate(controller.assignments.length, (index) {
+                  final row = controller.assignments[index];
 
-                return Padding(
-                  padding: .only(bottom: 12),
-                  child: Row(
-                    spacing: 8,
-                    crossAxisAlignment: .end,
-                    children: [
-                      Expanded(
-                        flex: 2,
-                        child: Obx(
-                          () => MyDropdown(
-                            label: "Product",
-                            showSearchBox: true,
-                            items: (filter, loadProps) =>
-                                controller.productOptions,
-                            itemAsString: (item) => item.name,
-                            selectedItem: row.selectedProduct.value?.name,
-                            onChanged: (value) =>
-                                controller.selectAssignmentProduct(
-                                  index: index,
-                                  product: value,
-                                ),
-                          ),
+                  return Container(
+                    padding: const .symmetric(vertical: 12),
+                    decoration: const BoxDecoration(
+                      border: Border(top: BorderSide(color: MyColors.lineSoft)),
+                    ),
+                    child: Column(
+                      spacing: 10,
+                      children: [
+                        Row(
+                          spacing: 8,
+                          children: [
+                            Expanded(
+                              child: _product(index: index, row: row),
+                            ),
+                            MyIconButton(
+                              icon: Icons.close,
+                              tooltip: "Hapus produk",
+                              color: MyColors.primary60,
+                              onTap: () =>
+                                  controller.removeAssignmentRow(index: index),
+                            ),
+                          ],
                         ),
-                      ),
-                      Expanded(
-                        child: MyTextFormField(
-                          controller: row.shopee,
-                          label: "URL Shopee",
-                          keyboardType: .url,
-                          textInputAction: .next,
+                        _link(
+                          row.shopee,
+                          "Tempel link Shopee",
+                          label: "Shopee",
                         ),
-                      ),
-                      Expanded(
-                        child: MyTextFormField(
-                          controller: row.tiktok,
-                          label: "URL TikTok Shop",
-                          keyboardType: .url,
-                          textInputAction: .next,
+                        _link(
+                          row.tiktok,
+                          "Tempel link TikTok",
+                          label: "TikTok Shop",
                         ),
-                      ),
-                      Expanded(
-                        child: MyTextFormField(
-                          controller: row.tokped,
-                          label: "URL Tokopedia",
-                          keyboardType: .url,
-                          textInputAction: .next,
+                        _link(
+                          row.tokped,
+                          "Tempel link Tokopedia",
+                          label: "Tokopedia",
                         ),
-                      ),
-                      IconButton(
-                        onPressed: () =>
-                            controller.removeAssignmentRow(index: index),
-                        icon: Icon(Icons.delete_outline_rounded),
-                      ),
-                    ],
-                  ),
-                );
-              }),
-              MyButton(
-                width: 160,
-                text: "Add Product",
-                onTap: () => controller.addAssignmentRow(),
-              ),
-            ],
+                      ],
+                    ),
+                  );
+                }),
+                MyDashedButton(
+                  width: 150,
+                  text: "+ Tambah produk",
+                  onTap: () => controller.addAssignmentRow(),
+                ),
+              ],
+            ),
           ),
-        ),
-      ],
+          MyText(
+            text: "Link kosong otomatis memakai link toko NOCVLA.",
+            color: MyColors.primary80,
+            fontSize: 12,
+          ),
+        ],
+      ),
     );
   }
 }

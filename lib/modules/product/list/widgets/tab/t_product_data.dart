@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../../../data/models/products/list_products_model.dart';
 import '../../../../../shared/utils/my_colors.dart';
 import '../../../../../shared/utils/my_parsing_currency.dart';
+import '../../../../../shared/widgets/my_empty_state.dart';
+import '../../../../../shared/widgets/my_icon_button.dart';
 import '../../../../../shared/widgets/my_image.dart';
 import '../../../../../shared/widgets/my_loading.dart';
+import '../../../../../shared/widgets/my_panel.dart';
+import '../../../../../shared/widgets/my_stock_cell.dart';
 import '../../../../../shared/widgets/my_text.dart';
 import '../../product_controller.dart';
 
@@ -18,149 +23,205 @@ class TProductData extends StatelessWidget {
     return Obx(() {
       if (controller.isLoading.value) return Expanded(child: MyLoading());
 
+      final groups = controller.groups;
+
       return Expanded(
         child: Container(
-          decoration: BoxDecoration(border: .all(color: MyColors.secondary)),
-          child: ListView.separated(
-            shrinkWrap: true,
-            padding: .all(8),
-            itemBuilder: (context, index) {
-              final items = controller.res[index];
-              final mainImage = items.images!.isEmpty
-                  ? null
-                  : items.images!.first;
+          width: double.infinity,
+          decoration: const BoxDecoration(
+            color: MyColors.primary90,
+            border: Border(
+              left: BorderSide(color: MyColors.line),
+              right: BorderSide(color: MyColors.line),
+              bottom: BorderSide(color: MyColors.line),
+              top: BorderSide(color: MyColors.line),
+            ),
+          ),
+          child: groups.isEmpty
+              ? MyEmptyState(text: "Belum ada produk yang cocok.")
+              : ListView.separated(
+                  itemCount: groups.length,
+                  separatorBuilder: (context, index) => Divider(height: 1),
+                  itemBuilder: (context, index) {
+                    final group = groups[index];
+                    final isOpen = controller.expandedId.value == group.id;
+                    final image = (group.first.images ?? []).isEmpty
+                        ? null
+                        : group.first.images!.first.imageUrl;
 
-              return Column(
-                children: [
-                  Row(
-                    spacing: 8,
-                    mainAxisAlignment: .spaceBetween,
-                    children: [
-                      Expanded(
-                        flex: 2,
-                        child: Row(
-                          spacing: 8,
-                          children: [
-                            if (mainImage != null)
-                              Container(
-                                width: 64,
-                                height: 64,
-                                decoration: BoxDecoration(
-                                  border: .all(color: MyColors.secondary),
+                    return Column(
+                      children: [
+                        InkWell(
+                          onTap: () => controller.toggleExpand(id: group.id),
+                          child: Padding(
+                            padding: const .symmetric(
+                              horizontal: 16,
+                              vertical: 14,
+                            ),
+                            child: Row(
+                              spacing: 10,
+                              children: [
+                                Icon(
+                                  isOpen
+                                      ? Icons.expand_more
+                                      : Icons.chevron_right,
+                                  size: 18,
+                                  color: MyColors.primary60,
                                 ),
-                                child: MyImage(mainImage.imageUrl!),
-                              ),
-                            Flexible(
-                              child: Column(
-                                crossAxisAlignment: .start,
-                                children: [
-                                  MyText(text: items.name, fontWeight: .w500),
-                                  MyText(
-                                    text: "- ${items.colorName}",
-                                    fontWeight: .w500,
+                                MyThumbnail(image: image),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: .start,
+                                    spacing: 3,
+                                    children: [
+                                      MyText(
+                                        text: group.name,
+                                        fontWeight: .w700,
+                                        maxLines: 1,
+                                        overflow: .ellipsis,
+                                      ),
+                                      MyText(
+                                        text:
+                                            "${group.typeName} · ${group.colors.length} warna · ${group.totalStock} pcs",
+                                        color: MyColors.primary60,
+                                        fontSize: 12,
+                                      ),
+                                      MyText(
+                                        text: group.minPrice == null
+                                            ? "-"
+                                            : parsingCurrency(group.minPrice),
+                                        fontSize: 12,
+                                      ),
+                                    ],
                                   ),
-                                ],
-                              ),
+                                ),
+                                MyIconButton(
+                                  icon: Icons.edit_outlined,
+                                  tooltip: "Edit",
+                                  onTap: () => controller.edit(id: group.id),
+                                ),
+                                MyIconButton(
+                                  icon: Icons.copy,
+                                  tooltip: "Duplikat",
+                                  onTap: () =>
+                                      controller.duplicate(id: group.id),
+                                ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
-                      ),
-                      Expanded(child: SizedBox()),
-                      Expanded(child: SizedBox()),
-                      Expanded(child: SizedBox()),
-                      Expanded(
-                        child: Row(
-                          spacing: 14,
-                          children: [
-                            GestureDetector(
-                              onTap: () => controller.edit(id: items.productId),
-                              child: Icon(
-                                Icons.edit_document,
-                                color: MyColors.secondary,
-                              ),
-                            ),
-                            GestureDetector(
-                              onTap: () =>
-                                  controller.duplicate(id: items.productId),
-                              child: Icon(
-                                Icons.copy,
-                                color: MyColors.secondary,
-                              ),
-                            ),
-                            GestureDetector(
-                              onTap: () => controller.delete(item: items),
-                              child: Icon(
-                                Icons.delete_outline_rounded,
-                                color: MyColors.secondary,
-                              ),
-                            ),
-                          ],
+                        if (isOpen)
+                          _TProductMatrix(group: group, controller: controller),
+                      ],
+                    );
+                  },
+                ),
+        ),
+      );
+    });
+  }
+}
+
+class _TProductMatrix extends StatelessWidget {
+  const _TProductMatrix({required this.group, required this.controller});
+
+  final ProductGroup group;
+  final ProductController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    final sizes = group.sizes;
+
+    return Padding(
+      padding: const .fromLTRB(44, 0, 16, 20),
+      child: Column(
+        crossAxisAlignment: .start,
+        children: [
+          SingleChildScrollView(
+            scrollDirection: .horizontal,
+            child: Column(
+              crossAxisAlignment: .start,
+              children: [
+                Padding(
+                  padding: const .only(bottom: 10),
+                  child: Row(
+                    children: [
+                      SizedBox(width: 200, child: MyTableLabel(text: "Warna")),
+                      ...sizes.map(
+                        (size) => SizedBox(
+                          width: 90,
+                          child: MyTableLabel(text: size),
                         ),
                       ),
                     ],
                   ),
-
-                  if (items.variation!.isNotEmpty)
-                    ListView.separated(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      padding: .all(8),
-                      itemBuilder: (context, indexx) {
-                        final varItems = items.variation![indexx];
-
-                        return Row(
-                          spacing: 8,
-                          mainAxisAlignment: .spaceBetween,
-                          children: [
-                            Expanded(
-                              flex: 2,
-                              child: MyText(
-                                text: varItems.size,
-                                fontWeight: .w500,
-                              ),
-                            ),
-                            Expanded(
-                              child: Center(
-                                child: MyText(
-                                  text: "-",
-                                  fontWeight: .w500,
-                                  textAlign: .center,
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              child: Center(
-                                child: MyText(
-                                  text: parsingCurrency(varItems.price),
-                                  fontWeight: .w500,
-                                  textAlign: .center,
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              child: Center(
-                                child: MyText(
-                                  text: varItems.qty.toString(),
-                                  fontWeight: .w500,
-                                  textAlign: .center,
-                                ),
-                              ),
-                            ),
-                            Expanded(child: SizedBox()),
-                          ],
-                        );
-                      },
-                      separatorBuilder: (context, index) => Divider(),
-                      itemCount: items.variation!.length,
-                    ),
-                ],
-              );
-            },
-            separatorBuilder: (context, index) => Divider(),
-            itemCount: controller.res.length,
+                ),
+                ...group.colors.map((color) => _row(color, sizes)),
+              ],
+            ),
           ),
-        ),
-      );
-    });
+          if (sizes.isNotEmpty) ...[
+            SizedBox(height: 14),
+            MyText(
+              text: group.priceSummary,
+              color: MyColors.primary60,
+              fontSize: 12,
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _row(ListProductsModel color, List<String> sizes) {
+    final image = (color.images ?? []).isEmpty
+        ? null
+        : color.images!.first.imageUrl;
+
+    return Container(
+      padding: const .symmetric(vertical: 10),
+      decoration: const BoxDecoration(
+        border: Border(top: BorderSide(color: MyColors.lineSoft)),
+      ),
+      child: Row(
+        children: [
+          SizedBox(
+            width: 200,
+            child: Row(
+              spacing: 10,
+              children: [
+                MyThumbnail(image: image, size: 32),
+                Expanded(
+                  child: MyText(
+                    text: "${color.colorName ?? "-"}",
+                    maxLines: 1,
+                    overflow: .ellipsis,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          ...sizes.map(
+            (size) => SizedBox(
+              width: 90,
+              child: Align(
+                alignment: .centerLeft,
+                child: MyStockCell(
+                  qty: group.qtyOf(color: color, size: size),
+                ),
+              ),
+            ),
+          ),
+          MyIconButton(
+            icon: Icons.delete_outline_rounded,
+            tooltip: "Hapus warna",
+            size: 30,
+            iconSize: 15,
+            color: MyColors.primary60,
+            onTap: () => controller.delete(item: color),
+          ),
+        ],
+      ),
+    );
   }
 }
