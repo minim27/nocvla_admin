@@ -75,6 +75,21 @@ class SettingForm extends StatelessWidget {
                 "Link toko marketplace (default bila produk tidak punya link)",
             keyboardType: .url,
           ),
+          MyTextFormField(
+            controller: controller.txtShopee,
+            label: "Link tombol Beli di Shopee (Home dan footer)",
+            keyboardType: .url,
+          ),
+          MyTextFormField(
+            controller: controller.txtTiktokShop,
+            label: "Link tombol Beli di TikTok Shop (Home dan footer)",
+            keyboardType: .url,
+          ),
+          MyTextFormField(
+            controller: controller.txtTokopedia,
+            label: "Link tombol Beli di Tokopedia (Home dan footer)",
+            keyboardType: .url,
+          ),
           MyButton(
             text: "Simpan pengaturan",
             fontSize: 13,

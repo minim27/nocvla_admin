@@ -13,14 +13,8 @@ class HomeContentController extends BaseController {
 
   var resProducts = <Map<String, dynamic>>[].obs;
 
-  dynamic heroId;
-  var txtEyebrow = TextEditingController();
-  var txtTitle = TextEditingController();
-  var txtDesc = TextEditingController();
-  var heroPath = RxnString();
-  var heroBytes = Rxn<Uint8List>();
-  String? heroFileName;
-  var heroProduct = Rxn<Map<String, dynamic>>();
+  var heroes = <HeroItem>[].obs;
+  final _deletedHeroIds = <dynamic>[];
 
   var series = <SeriesItem>[].obs;
 
@@ -39,18 +33,21 @@ class HomeContentController extends BaseController {
       err: (err) => showErrSnackbar(msg: err),
     );
 
-    final reqHero = await homeContentRepo.getHero();
-    await reqHero.responseHandler(
+    final reqHeroes = await homeContentRepo.listHeroes();
+    await reqHeroes.responseHandler(
       res: (res) {
-        if (res == null) return;
-
-        heroId = res["id"];
-        txtEyebrow.text = res["eyebrow"] ?? "";
-        txtTitle.text = res["title"] ?? "";
-        txtDesc.text = res["description"] ?? "";
-        heroPath.value = res["image_url"];
-        heroBytes.value = null;
-        heroProduct.value = findProduct(res["cta_product_id"]);
+        _deletedHeroIds.clear();
+        heroes.value = (res as List).map((e) {
+          return HeroItem(
+            id: e["id"],
+            eyebrow: e["eyebrow"],
+            title: e["title"],
+            desc: e["description"],
+            path: e["image_url"],
+            product: findProduct(e["cta_product_id"]),
+            isActive: e["is_active"] == true,
+          );
+        }).toList();
       },
       err: (err) => showErrSnackbar(msg: err),
     );
@@ -85,12 +82,37 @@ class HomeContentController extends BaseController {
     return result?.files.firstOrNull;
   }
 
-  Future<void> pickHeroImage() async {
+  Future<void> pickHeroImage({required HeroItem item}) async {
     final file = await pickImage();
     if (file?.bytes == null) return;
 
-    heroBytes.value = file!.bytes;
-    heroFileName = file.name;
+    item.newBytes = file!.bytes;
+    item.newFileName = file.name;
+    heroes.refresh();
+  }
+
+  void addHero() => heroes.add(HeroItem());
+
+  void removeHero({required int index}) {
+    final item = heroes.removeAt(index);
+    if (item.id != null) _deletedHeroIds.add(item.id);
+  }
+
+  void moveHero({required int index, required int offset}) {
+    final target = index + offset;
+    if (target < 0 || target >= heroes.length) return;
+
+    heroes.insert(target, heroes.removeAt(index));
+  }
+
+  void selectHeroProduct({required HeroItem item, dynamic value}) {
+    item.product = value;
+    heroes.refresh();
+  }
+
+  void toggleHero({required HeroItem item, required bool value}) {
+    item.isActive = value;
+    heroes.refresh();
   }
 
   Future<void> pickSeriesImage({required SeriesItem item}) async {
@@ -132,10 +154,10 @@ class HomeContentController extends BaseController {
   }
 
   Future<void> save() async {
-    if (txtTitle.text.trim().isEmpty) {
+    if (heroes.any((e) => e.txtTitle.text.trim().isEmpty)) {
       return showErrSnackbar(msg: "Judul hero wajib diisi");
     }
-    if (heroPath.value == null && heroBytes.value == null) {
+    if (heroes.any((e) => e.path == null && e.newBytes == null)) {
       return showErrSnackbar(msg: "Foto hero wajib diisi");
     }
     if (series.any((e) => e.txtTitle.text.trim().isEmpty)) {
@@ -153,43 +175,60 @@ class HomeContentController extends BaseController {
   }
 
   Future<bool> saveHero() async {
-    var path = heroPath.value;
+    var isSuccess = true;
 
-    if (heroBytes.value != null) {
-      path = await upload(heroBytes.value!, heroFileName!);
-      if (path == null) return false;
+    for (final id in _deletedHeroIds) {
+      final req = await homeContentRepo.deleteHero(id: id);
+      await req.responseHandler(
+        res: (res) {},
+        err: (err) {
+          isSuccess = false;
+          showErrSnackbar(msg: err);
+        },
+      );
+      if (!isSuccess) return false;
     }
 
-    final body = {
-      "eyebrow": txtEyebrow.text.trim(),
-      "title": txtTitle.text.trim(),
-      "description": txtDesc.text.trim(),
-      "image_url": path,
-      "cta_product_id": heroProduct.value?["id"],
-    };
+    for (var i = 0; i < heroes.length; i++) {
+      final item = heroes[i];
+      var path = item.path;
 
-    final req = heroId == null
-        ? await homeContentRepo.addHero(
-            body: {
-              ...body,
-              "is_active": true,
-              "sort_order": 0,
-              "start_date": DateTime.now().toUtc().toIso8601String(),
-              "end_date": "2099-12-31",
-            },
-          )
-        : await homeContentRepo.updateHero(id: heroId, body: body);
+      if (item.newBytes != null) {
+        path = await upload(item.newBytes!, item.newFileName!);
+        if (path == null) return false;
+      }
 
-    var isSuccess = true;
-    await req.responseHandler(
-      res: (res) => heroId = res["id"],
-      err: (err) {
-        isSuccess = false;
-        showErrSnackbar(msg: err);
-      },
-    );
+      final body = {
+        "eyebrow": item.txtEyebrow.text.trim(),
+        "title": item.txtTitle.text.trim(),
+        "description": item.txtDesc.text.trim(),
+        "image_url": path,
+        "cta_product_id": item.product?["id"],
+        "is_active": item.isActive,
+        "sort_order": i,
+      };
 
-    return isSuccess;
+      final req = item.id == null
+          ? await homeContentRepo.addHero(
+              body: {
+                ...body,
+                "start_date": DateTime.now().toUtc().toIso8601String(),
+                "end_date": "2099-12-31",
+              },
+            )
+          : await homeContentRepo.updateHero(id: item.id, body: body);
+
+      await req.responseHandler(
+        res: (res) => item.id = res["id"],
+        err: (err) {
+          isSuccess = false;
+          showErrSnackbar(msg: err);
+        },
+      );
+      if (!isSuccess) return false;
+    }
+
+    return true;
   }
 
   Future<bool> saveSeries() async {
@@ -239,6 +278,32 @@ class HomeContentController extends BaseController {
 
     return isSuccess;
   }
+}
+
+class HeroItem {
+  HeroItem({
+    this.id,
+    String? eyebrow,
+    String? title,
+    String? desc,
+    this.path,
+    this.product,
+    this.isActive = true,
+  }) {
+    txtEyebrow.text = eyebrow ?? "";
+    txtTitle.text = title ?? "";
+    txtDesc.text = desc ?? "";
+  }
+
+  dynamic id;
+  final txtEyebrow = TextEditingController();
+  final txtTitle = TextEditingController();
+  final txtDesc = TextEditingController();
+  String? path;
+  Uint8List? newBytes;
+  String? newFileName;
+  Map<String, dynamic>? product;
+  bool isActive;
 }
 
 class SeriesItem {

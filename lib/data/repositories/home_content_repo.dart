@@ -3,16 +3,16 @@ import 'dart:typed_data';
 import '../../app/core/base_repository.dart';
 
 class HomeContentRepo extends BaseRepository {
-  Future<ResponseHandler<dynamic>> getHero() async => ResponseHandler(
+  Future<ResponseHandler<dynamic>> listHeroes() async => ResponseHandler(
     supabase
         .from("m_banners")
         .select()
-        .eq("is_active", true)
         .gte("end_date", DateTime.now().toUtc().toIso8601String())
-        .order("sort_order", ascending: true)
-        .limit(1)
-        .maybeSingle(),
+        .order("sort_order", ascending: true),
   );
+
+  Future<ResponseHandler<dynamic>> deleteHero({required dynamic id}) async =>
+      ResponseHandler(supabase.from("m_banners").delete().eq("id", id));
 
   Future<ResponseHandler<dynamic>> addHero({
     required Map<String, dynamic> body,

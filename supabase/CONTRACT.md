@@ -38,7 +38,7 @@ Semua tabel punya `id uuid`. Kolom `created_at` dan `updated_at` tidak ditulis u
 | `m_early_access_images` | `image_url`, `sort_order` |
 | `m_configurations` | `name`, `value` |
 
-Kunci `m_configurations`: `LINK_DISCORD`, `WA_NUMBER`, `WA_TEMPLATE`, `INSTAGRAM`, `TIKTOK`, `CONTACT_EMAIL`, `DEFAULT_MARKETPLACE_URL`. Baru `LINK_DISCORD` yang berisi nilai. Semua kunci ini bisa dibaca publik, jadi jangan menyimpan data rahasia di sini.
+Kunci `m_configurations`: `LINK_DISCORD`, `WA_NUMBER`, `WA_TEMPLATE`, `INSTAGRAM`, `TIKTOK`, `CONTACT_EMAIL`, `DEFAULT_MARKETPLACE_URL`, `SHOPEE_URL`, `TIKTOK_SHOP_URL`, `TOKOPEDIA_URL`. Baru `LINK_DISCORD` yang berisi nilai. Semua kunci ini bisa dibaca publik, jadi jangan menyimpan data rahasia di sini.
 
 ### Akses terbatas
 

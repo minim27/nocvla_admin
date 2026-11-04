@@ -28,34 +28,17 @@ class HomeContentForm extends StatelessWidget {
           spacing: 16,
           children: [
             MySectionTitle(text: "Hero Home"),
-            MyTextFormField(
-              controller: controller.txtEyebrow,
-              label: "Eyebrow",
-              hintText: "NEW DROP — FALLENSERAPH™",
-            ),
-            MyTextFormField(
-              controller: controller.txtTitle,
-              label: "Judul",
-              maxLines: 2,
-              required: true,
-            ),
-            MyTextFormField(
-              controller: controller.txtDesc,
-              label: "Deskripsi",
-              maxLines: 3,
-            ),
-            MyDropdown(
-              label: "Produk tombol Shop the Drop",
-              items: (filter, loadProps) => controller.resProducts,
-              itemAsString: (item) => item["name"],
-              selectedItem: controller.heroProduct.value?["name"],
-              onChanged: (value) => controller.heroProduct.value = value,
-            ),
-            MyText(text: "Foto hero", color: MyColors.primary60, fontSize: 13),
-            picture(
-              path: controller.heroPath.value,
-              bytes: controller.heroBytes.value,
-              onTap: controller.pickHeroImage,
+            for (var i = 0; i < controller.heroes.length; i++)
+              heroItem(controller, i),
+            MyDashedButton(
+              width: double.infinity,
+              height: 44,
+              onTap: controller.addHero,
+              child: MyText(
+                text: "+ Tambah hero",
+                color: MyColors.primary60,
+                fontSize: 13,
+              ),
             ),
             SizedBox(height: 8),
             MySectionTitle(text: "The Scriptures"),
@@ -75,6 +58,85 @@ class HomeContentForm extends StatelessWidget {
           ],
         );
       }),
+    );
+  }
+
+  Widget heroItem(HomeContentController controller, int index) {
+    final item = controller.heroes[index];
+
+    return Container(
+      padding: const .all(16),
+      decoration: BoxDecoration(border: .all(color: MyColors.line)),
+      child: Column(
+        crossAxisAlignment: .start,
+        spacing: 12,
+        children: [
+          Row(
+            spacing: 10,
+            children: [
+              Expanded(child: MyText(text: "Hero ${index + 1}", fontSize: 13)),
+              InkWell(
+                onTap: () => controller.moveHero(index: index, offset: -1),
+                child: Icon(
+                  Icons.arrow_upward,
+                  size: 18,
+                  color: MyColors.primary60,
+                ),
+              ),
+              InkWell(
+                onTap: () => controller.moveHero(index: index, offset: 1),
+                child: Icon(
+                  Icons.arrow_downward,
+                  size: 18,
+                  color: MyColors.primary60,
+                ),
+              ),
+              MySwitch(
+                value: item.isActive,
+                onChanged: (value) =>
+                    controller.toggleHero(item: item, value: value),
+              ),
+              InkWell(
+                onTap: () => controller.removeHero(index: index),
+                child: Icon(
+                  Icons.delete_outline_rounded,
+                  size: 18,
+                  color: MyColors.primary60,
+                ),
+              ),
+            ],
+          ),
+          MyTextFormField(
+            controller: item.txtEyebrow,
+            label: "Eyebrow",
+            hintText: "NEW DROP — FALLENSERAPH™",
+          ),
+          MyTextFormField(
+            controller: item.txtTitle,
+            label: "Judul",
+            maxLines: 2,
+            required: true,
+          ),
+          MyTextFormField(
+            controller: item.txtDesc,
+            label: "Deskripsi",
+            maxLines: 3,
+          ),
+          MyDropdown(
+            label: "Produk tombol Shop the Drop",
+            items: (filter, loadProps) => controller.resProducts,
+            itemAsString: (value) => value["name"],
+            selectedItem: item.product?["name"],
+            onChanged: (value) =>
+                controller.selectHeroProduct(item: item, value: value),
+          ),
+          picture(
+            path: item.path,
+            bytes: item.newBytes,
+            onTap: () => controller.pickHeroImage(item: item),
+          ),
+        ],
+      ),
     );
   }
 

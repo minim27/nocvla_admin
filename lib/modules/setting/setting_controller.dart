@@ -15,6 +15,9 @@ class SettingController extends BaseController {
   var txtEmail = TextEditingController();
   var txtDiscord = TextEditingController();
   var txtMarketplace = TextEditingController();
+  var txtShopee = TextEditingController();
+  var txtTiktokShop = TextEditingController();
+  var txtTokopedia = TextEditingController();
 
   static const _noWriteAccess =
       "Pengaturan belum bisa disimpan: izin tulis m_configurations belum aktif.";
@@ -29,6 +32,9 @@ class SettingController extends BaseController {
     "CONTACT_EMAIL": txtEmail,
     "LINK_DISCORD": txtDiscord,
     "DEFAULT_MARKETPLACE_URL": txtMarketplace,
+    "SHOPEE_URL": txtShopee,
+    "TIKTOK_SHOP_URL": txtTiktokShop,
+    "TOKOPEDIA_URL": txtTokopedia,
   };
 
   @override
