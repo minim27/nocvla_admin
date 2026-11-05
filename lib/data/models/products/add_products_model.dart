@@ -8,7 +8,8 @@ class AddProductsModel {
       tiktokUrl,
       tokopediaUrl,
       productTypeId,
-      badge;
+      badge,
+      subtitle;
 
   AddProductsModel({
     this.productId,
@@ -21,6 +22,7 @@ class AddProductsModel {
     this.tokopediaUrl,
     this.productTypeId,
     this.badge,
+    this.subtitle,
   });
 
   AddProductsModel.fromProductJson(Map<String, dynamic> json) {
@@ -34,5 +36,6 @@ class AddProductsModel {
     tokopediaUrl = json["tokopedia_url"];
     productTypeId = json["product_type_id"];
     badge = json["badge"];
+    subtitle = json["subtitle"];
   }
 }

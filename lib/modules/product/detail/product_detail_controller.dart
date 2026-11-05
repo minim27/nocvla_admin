@@ -21,6 +21,7 @@ class ProductDetailController extends BaseController {
 
   var txtName = TextEditingController();
   var txtBadge = TextEditingController();
+  var txtSubtitle = TextEditingController();
   var txtUrlShopee = TextEditingController();
   var txtUrlTiktokShop = TextEditingController();
   var txtUrlTokped = TextEditingController();
@@ -132,6 +133,7 @@ class ProductDetailController extends BaseController {
   void _populateSharedFields(AddProductsModel product) {
     txtName.text = product.productName ?? "";
     txtBadge.text = product.badge ?? "";
+    txtSubtitle.text = product.subtitle ?? "";
     txtUrlShopee.text = product.shopeeUrl ?? "";
     txtUrlTiktokShop.text = product.tiktokUrl ?? "";
     txtUrlTokped.text = product.tokopediaUrl ?? "";
@@ -381,6 +383,9 @@ class ProductDetailController extends BaseController {
   Map<String, dynamic> _sharedFieldsBody(Delta delta) => {
     "name": txtName.text,
     "badge": txtBadge.text.trim().isEmpty ? null : txtBadge.text.trim(),
+    "subtitle": txtSubtitle.text.trim().isEmpty
+        ? null
+        : txtSubtitle.text.trim(),
     "description": jsonEncode(delta.toJson()),
     "shopee_url": txtUrlShopee.text,
     "tiktok_url": txtUrlTiktokShop.text,

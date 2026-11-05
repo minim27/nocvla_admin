@@ -59,6 +59,13 @@ class MPDProdInfo extends StatelessWidget {
           type,
           SizedBox(height: 20),
           MyTextFormField(
+            controller: controller.txtSubtitle,
+            label: "Subtitle (tampil di header Collection)",
+            keyboardType: .text,
+            textInputAction: .next,
+          ),
+          SizedBox(height: 20),
+          MyTextFormField(
             controller: controller.txtBadge,
             label: "Badge (opsional)",
             hintText: "NEW DROP",

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:nocvla_admin/modules/master_data/widgets/mobile/m_master_data_list.dart';
+import 'package:nocvla_admin/modules/master_data/widgets/mobile/m_training_focus_list.dart';
 import 'package:nocvla_admin/modules/master_data/widgets/tab/t_master_data_list.dart';
+import 'package:nocvla_admin/modules/master_data/widgets/tab/t_training_focus_list.dart';
 import 'package:nocvla_admin/modules/master_data/widgets/web/master_data_list.dart';
+import 'package:nocvla_admin/modules/master_data/widgets/web/training_focus_list.dart';
 
 import '../../shared/widgets/my_button.dart';
 import '../../shared/widgets/my_loading.dart';
@@ -48,6 +51,13 @@ class MasterDataPage extends GetView<MasterDataController> {
                   TMasterDataList()
                 else
                   MMasterDataList(),
+                SizedBox(height: 20),
+                if (isDesktop)
+                  TrainingFocusList()
+                else if (isTab)
+                  TTrainingFocusList()
+                else
+                  MTrainingFocusList(),
               ],
             );
           }),

@@ -26,13 +26,14 @@ Semua tabel punya `id uuid`. Kolom `created_at` dan `updated_at` tidak ditulis u
 
 | Tabel | Kolom |
 |---|---|
-| `m_products` | `name`, `description`, `shopee_url`, `tiktok_url`, `tokopedia_url`, `product_type_id`, `is_featured`, `badge` |
+| `m_products` | `name`, `description`, `shopee_url`, `tiktok_url`, `tokopedia_url`, `product_type_id`, `is_featured`, `badge`, `subtitle` |
 | `m_product_color` | `product_id`, `name`, `hex` |
 | `m_product_images` | `product_color_id`, `image_url`, `sort_order` (terkecil = foto utama) |
 | `m_product_stock` | `product_color_id`, `size`, `qty`, `price`, `sort_order` |
 | `m_product_type` | `name`, `value`, `is_active`, `sort_order` |
 | `m_banners` | `image_url`, `title`, `description`, `eyebrow`, `cta_product_id`, `start_date`, `end_date`, `sort_order`, `is_active` |
 | `m_series` | `label`, `title`, `description`, `image_url`, `product_id`, `sort_order`, `is_active` |
+| `m_training_focus` | `name`, `sort_order`, `is_active` |
 | `m_athlete` | `picture`, `code`, `name`, `is_active` |
 | `t_athlete` | `athlete_id`, `product_id`, `link_aff_shopee`, `link_aff_tktkshop`, `link_aff_tokped` |
 | `m_early_access_images` | `image_url`, `sort_order` |
@@ -44,7 +45,7 @@ Kunci `m_configurations`: `LINK_DISCORD`, `WA_NUMBER`, `WA_TEMPLATE`, `INSTAGRAM
 
 | Tabel | Kolom | Akses |
 |---|---|---|
-| `m_athlete_application` | `name`, `email`, `phone`, `instagram_username`, `tiktok_username`, `city`, `reason`, `status` | Publik hanya bisa kirim dengan status `pending`. Baca dan ubah khusus admin |
+| `m_athlete_application` | `name`, `email`, `phone`, `instagram_username`, `tiktok_username`, `city`, `training_focus`, `reason`, `photo_path`, `status` | `email` dan `tiktok_username` tidak lagi diisi form Katalog. `photo_path` menunjuk bucket privat `applications` (publik hanya unggah, admin baca lewat signed URL). Publik hanya bisa kirim dengan status `pending`. Baca dan ubah khusus admin |
 | `m_app_settings` | `is_early_access`, `early_access_end_at`, `early_access_password` (hash bcrypt) | Khusus admin |
 | `t_wa_orders` | `code`, `customer_name`, `customer_phone`, `address`, `athlete_id`, `subtotal`, `discount`, `shipping_fee`, `courier`, `awb`, `status`, `stock_deducted`, `paid_at` | Baca khusus admin, tulis lewat RPC |
 | `t_wa_order_items` | `order_id`, `product_id`, `color_id`, `product_name`, `color_name`, `size`, `qty`, `unit_price` | Baca khusus admin, tulis lewat RPC |
@@ -64,6 +65,7 @@ Simpan produk membuat ulang baris warna, jadi ID warna bisa berubah. Karena itu 
 | RPC | Parameter | Balikan | Akses |
 |---|---|---|---|
 | `check_early_access_password` | `input_password text` | `boolean` | Publik |
+| `application_limit_ok` | `p_phone text` | `boolean` (batas 3 kiriman per nomor per 24 jam, 30 per jam untuk seluruh form; juga dipaksakan trigger saat insert) | Publik |
 | `set_early_access_password` | `new_password text` | - | Admin |
 | `create_wa_order` | `p_items jsonb`, `p_athlete_code text`, `p_customer_name text`, `p_customer_phone text`, `p_address text` | `{ code, wa_text }` | Publik |
 | `update_wa_order` | `p_id uuid`, `p_shipping_fee numeric`, `p_courier text`, `p_awb text`, `p_status text` | - | Admin |
@@ -94,4 +96,4 @@ Rencana di `_docs` yang belum dibuat. Jangan memakainya sebelum dokumen ini dipe
 | Kontak | `t_contact_messages`, `submit_contact_message` |
 | Banner | `image_mobile_url`, `cta_type`, `cta_ref` |
 | Early access | `v_early_access_public`, `verify_early_access` (sekarang memakai `v_early_access_status` dan `check_early_access_password`), rate limit |
-| Storage | Bucket `size-charts` dan `applications` |
+| Storage | Bucket `size-charts` |

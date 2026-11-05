@@ -41,6 +41,15 @@ class MAthleteApplicationDetailView extends StatelessWidget {
               _DetailField(label: "Telepon", value: application?.phone),
               _DetailField(label: "Kota", value: application?.city),
               _DetailField(
+                label: "Fokus latihan",
+                value: application?.trainingFocus,
+              ),
+              _DetailField(
+                label: "Foto diri",
+                value: application?.photoPath == null ? null : "Lihat foto",
+                onTap: controller.openPhoto,
+              ),
+              _DetailField(
                 label: "Instagram",
                 value: application?.instagramUsername,
                 onTap: controller.openInstagram,

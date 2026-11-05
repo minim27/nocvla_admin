@@ -7,7 +7,8 @@ import '../../../app/core/base_controller.dart';
 import '../../../data/models/athlete_application/athlete_application_model.dart';
 import '../../../shared/utils/my_utility.dart';
 import '../../../shared/widgets/my_confirm_dialog.dart';
-import '../../athlete/detail/athlete_detail_controller.dart' show AthletePicture;
+import '../../athlete/detail/athlete_detail_controller.dart'
+    show AthletePicture;
 import 'athlete_application_detail_params.dart';
 import 'widgets/athlete_application_approve_dialog.dart';
 
@@ -64,6 +65,17 @@ class AthleteApplicationDetailController extends BaseController {
     await launchUrl(
       Uri.parse("https://www.tiktok.com/@$username"),
       webOnlyWindowName: "_blank",
+    );
+  }
+
+  Future<void> openPhoto() async {
+    final path = application.value?.photoPath;
+    if (path == null || path.toString().trim().isEmpty) return;
+
+    final req = await athleteApplicationRepo.photoUrl(path: path);
+    await req.responseHandler(
+      res: (res) => launchUrl(Uri.parse(res), webOnlyWindowName: "_blank"),
+      err: (err) => showErrSnackbar(msg: err),
     );
   }
 
