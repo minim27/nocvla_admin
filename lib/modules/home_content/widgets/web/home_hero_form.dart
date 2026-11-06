@@ -12,8 +12,8 @@ import '../../../../shared/widgets/my_text.dart';
 import '../../../../shared/widgets/my_text_form_field.dart';
 import '../../home_content_controller.dart';
 
-class HomeContentForm extends StatelessWidget {
-  const HomeContentForm({super.key});
+class HomeHeroForm extends StatelessWidget {
+  const HomeHeroForm({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -40,21 +40,7 @@ class HomeContentForm extends StatelessWidget {
                 fontSize: 13,
               ),
             ),
-            SizedBox(height: 8),
-            MySectionTitle(text: "The Scriptures"),
-            for (var i = 0; i < controller.series.length; i++)
-              seriesItem(controller, i),
-            MyDashedButton(
-              width: double.infinity,
-              height: 44,
-              onTap: controller.addSeries,
-              child: MyText(
-                text: "+ Tambah seri",
-                color: MyColors.primary60,
-                fontSize: 13,
-              ),
-            ),
-            MyButton(text: "Simpan konten Home", onTap: controller.save),
+            MyButton(text: "Simpan hero", onTap: controller.saveHomeHero),
           ],
         );
       }),
@@ -134,68 +120,6 @@ class HomeContentForm extends StatelessWidget {
             path: item.path,
             bytes: item.newBytes,
             onTap: () => controller.pickHeroImage(item: item),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget seriesItem(HomeContentController controller, int index) {
-    final item = controller.series[index];
-
-    return Container(
-      padding: const .all(16),
-      decoration: BoxDecoration(border: .all(color: MyColors.line)),
-      child: Column(
-        crossAxisAlignment: .start,
-        spacing: 12,
-        children: [
-          Row(
-            spacing: 10,
-            children: [
-              Expanded(child: MyText(text: "Seri ${index + 1}", fontSize: 13)),
-              MySwitch(
-                value: item.isActive,
-                onChanged: (value) =>
-                    controller.toggleSeries(item: item, value: value),
-              ),
-              InkWell(
-                onTap: () => controller.removeSeries(index: index),
-                child: Icon(
-                  Icons.delete_outline_rounded,
-                  size: 18,
-                  color: MyColors.primary60,
-                ),
-              ),
-            ],
-          ),
-          MyTextFormField(
-            controller: item.txtLabel,
-            label: "Label",
-            hintText: "OVERSIZE · HEAVYWEIGHT",
-          ),
-          MyTextFormField(
-            controller: item.txtTitle,
-            label: "Judul",
-            required: true,
-          ),
-          MyTextFormField(
-            controller: item.txtDesc,
-            label: "Deskripsi",
-            maxLines: 3,
-          ),
-          MyDropdown(
-            label: "Produk",
-            items: (filter, loadProps) => controller.resProducts,
-            itemAsString: (value) => value["name"],
-            selectedItem: item.product?["name"],
-            onChanged: (value) =>
-                controller.selectSeriesProduct(item: item, value: value),
-          ),
-          picture(
-            path: item.path,
-            bytes: item.newBytes,
-            onTap: () => controller.pickSeriesImage(item: item),
           ),
         ],
       ),

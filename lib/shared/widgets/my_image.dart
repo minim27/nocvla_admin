@@ -33,6 +33,7 @@ class MyImage extends StatelessWidget {
       child: CachedNetworkImage(
         width: width,
         imageUrl: "${MyConfig.apiUrl}/${dotenv.env["API_STORAGE"]}/$image",
+        imageRenderMethodForWeb: .HttpGet,
         fit: fit,
         scale: scale,
         alignment: alignment,

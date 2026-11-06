@@ -14,8 +14,25 @@ class DashboardController extends BaseController {
     {"name": "Produk & Stok", "route": MyRoutes.product},
     {"name": "Atlet & Pendaftar", "route": MyRoutes.athlete, "hasBadge": true},
     {"name": "Order WhatsApp", "route": MyRoutes.order},
-    {"name": "Konten & Drop", "route": MyRoutes.earlyAccess},
-    {"name": "Master Data", "route": MyRoutes.masterData},
+    {
+      "name": "Konten & Drop",
+      "route": MyRoutes.contentHero,
+      "children": [
+        {"name": "Hero Home", "route": MyRoutes.contentHero},
+        {"name": "Featured", "route": MyRoutes.contentFeatured},
+        {"name": "The Scriptures", "route": MyRoutes.contentSeries},
+        {"name": "Halaman Tentang", "route": MyRoutes.contentAbout},
+        {"name": "Early Access", "route": MyRoutes.earlyAccess},
+      ],
+    },
+    {
+      "name": "Master Data",
+      "route": MyRoutes.masterData,
+      "children": [
+        {"name": "Kategori Produk", "route": MyRoutes.masterData},
+        {"name": "Fokus Latihan", "route": MyRoutes.masterDataFocus},
+      ],
+    },
     {"name": "Pengaturan", "route": MyRoutes.setting},
   ];
 
@@ -60,6 +77,17 @@ class DashboardController extends BaseController {
     Get.delete<MasterDataController>(force: true);
     myRoutes.value = MyRoutes.overview;
   }
+
+  bool isMenuActive(Map<String, dynamic> item) =>
+      myRoutes.value == item["route"] ||
+      ((item["children"] as List?) ?? []).any(
+        (e) => e["route"] == myRoutes.value,
+      );
+
+  List<Map<String, dynamic>> get activeChildren => [
+    for (final item in menu)
+      if (isMenuActive(item)) ...?item["children"] as List?,
+  ].cast<Map<String, dynamic>>();
 
   void changeRoute({required String route}) {
     myRoutes.value = route;

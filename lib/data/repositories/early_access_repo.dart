@@ -16,7 +16,10 @@ class EarlyAccessRepo extends BaseRepository {
   Future<ResponseHandler<dynamic>> setPassword({
     required String newPassword,
   }) async => ResponseHandler(
-    supabase.rpc("set_early_access_password", params: {"new_password": newPassword}),
+    supabase.rpc(
+      "set_early_access_password",
+      params: {"new_password": newPassword},
+    ),
   );
 
   Future<ResponseHandler<dynamic>> listImages() async => ResponseHandler(

@@ -1,11 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:nocvla_admin/modules/featured/widgets/mobile/m_featured_data.dart';
-import 'package:nocvla_admin/modules/featured/widgets/tab/t_featured_data.dart';
-import 'package:nocvla_admin/modules/featured/widgets/web/featured_data.dart';
-import 'package:nocvla_admin/modules/home_content/widgets/mobile/m_home_content_form.dart';
-import 'package:nocvla_admin/modules/home_content/widgets/tab/t_home_content_form.dart';
-import 'package:nocvla_admin/modules/home_content/widgets/web/home_content_form.dart';
 
 import '../../shared/widgets/my_button.dart';
 import '../../shared/widgets/my_loading.dart';
@@ -37,28 +31,9 @@ class EarlyAccessPage extends GetView<EarlyAccessController> {
                 ? const .symmetric(vertical: 32, horizontal: 40)
                 : const .symmetric(vertical: 20, horizontal: 16),
             children: [
-              MyPageHeader(title: "Konten & Drop", titleSize: isTab ? 44 : 36),
+              MyPageHeader(title: "Early Access", titleSize: isTab ? 44 : 36),
               SizedBox(height: 20),
-              isDesktop
-                  ? HomeContentForm()
-                  : isTab
-                  ? THomeContentForm()
-                  : MHomeContentForm(),
-              SizedBox(height: 16),
-              if (isDesktop)
-                Row(
-                  crossAxisAlignment: .start,
-                  spacing: 16,
-                  children: [
-                    Expanded(child: FeaturedData()),
-                    Expanded(child: _earlyAccess(isDesktop, isTab)),
-                  ],
-                )
-              else ...[
-                isTab ? TFeaturedData() : MFeaturedData(),
-                SizedBox(height: 16),
-                _earlyAccess(isDesktop, isTab),
-              ],
+              _earlyAccess(isDesktop, isTab),
             ],
           ),
         ),

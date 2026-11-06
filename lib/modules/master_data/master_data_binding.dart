@@ -6,7 +6,7 @@ class MasterDataBinding extends Bindings {
   @override
   void dependencies() {
     if (Get.isRegistered<MasterDataController>()) {
-      Get.find<MasterDataController>().fetchApi();
+      Future.microtask(Get.find<MasterDataController>().fetchApi);
       return;
     }
 

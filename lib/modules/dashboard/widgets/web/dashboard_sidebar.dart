@@ -58,51 +58,82 @@ class DashboardSidebar extends StatelessWidget {
               () => Column(
                 children: List.generate(controller.menu.length, (index) {
                   final item = controller.menu[index];
-                  final isActive = controller.myRoutes.value == item["route"];
+                  final isActive = controller.isMenuActive(item);
                   final badge = item["hasBadge"] == true
                       ? controller.pendingCount.value
                       : 0;
 
-                  return InkWell(
-                    onTap: () => controller.changeRoute(route: item["route"]),
-                    child: Container(
-                      height: 44,
-                      padding: const .symmetric(horizontal: 12),
-                      color: isActive ? MyColors.selected : null,
-                      child: Row(
-                        spacing: 12,
-                        children: [
-                          Container(
-                            width: 3,
-                            height: 16,
-                            color: isActive ? MyColors.red : null,
+                  return Column(
+                    children: [
+                      InkWell(
+                        onTap: () =>
+                            controller.changeRoute(route: item["route"]),
+                        child: Container(
+                          height: 44,
+                          padding: const .symmetric(horizontal: 12),
+                          color: isActive ? MyColors.selected : null,
+                          child: Row(
+                            spacing: 12,
+                            children: [
+                              Container(
+                                width: 3,
+                                height: 16,
+                                color: isActive ? MyColors.red : null,
+                              ),
+                              Expanded(
+                                child: MyText(
+                                  text: item["name"],
+                                  color: isActive
+                                      ? MyColors.secondary
+                                      : MyColors.primary60,
+                                  fontWeight: isActive ? .w600 : .w500,
+                                ),
+                              ),
+                              if (badge > 0)
+                                Container(
+                                  constraints: const BoxConstraints(
+                                    minWidth: 22,
+                                  ),
+                                  height: 22,
+                                  padding: const .symmetric(horizontal: 6),
+                                  alignment: .center,
+                                  color: MyColors.red,
+                                  child: MyText(
+                                    text: "$badge",
+                                    color: MyColors.white,
+                                    fontSize: 12,
+                                    fontWeight: .w600,
+                                  ),
+                                ),
+                            ],
                           ),
-                          Expanded(
-                            child: MyText(
-                              text: item["name"],
-                              color: isActive
-                                  ? MyColors.secondary
-                                  : MyColors.primary60,
-                              fontWeight: isActive ? .w600 : .w500,
-                            ),
-                          ),
-                          if (badge > 0)
-                            Container(
-                              constraints: const BoxConstraints(minWidth: 22),
-                              height: 22,
-                              padding: const .symmetric(horizontal: 6),
-                              alignment: .center,
-                              color: MyColors.red,
+                        ),
+                      ),
+                      if (isActive)
+                        for (final child in (item["children"] as List?) ?? [])
+                          InkWell(
+                            onTap: () =>
+                                controller.changeRoute(route: child["route"]),
+                            child: Container(
+                              height: 36,
+                              width: double.infinity,
+                              padding: const .only(left: 39),
+                              alignment: .centerLeft,
                               child: MyText(
-                                text: "$badge",
-                                color: MyColors.white,
-                                fontSize: 12,
-                                fontWeight: .w600,
+                                text: child["name"],
+                                fontSize: 13,
+                                color:
+                                    controller.myRoutes.value == child["route"]
+                                    ? MyColors.secondary
+                                    : MyColors.primary60,
+                                fontWeight:
+                                    controller.myRoutes.value == child["route"]
+                                    ? .w600
+                                    : .w500,
                               ),
                             ),
-                        ],
-                      ),
-                    ),
+                          ),
+                    ],
                   );
                 }),
               ),

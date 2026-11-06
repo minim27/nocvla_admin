@@ -71,7 +71,7 @@ class MDashboardSidebar extends StatelessWidget {
                 () => Row(
                   children: List.generate(controller.menu.length, (index) {
                     final item = controller.menu[index];
-                    final isActive = controller.myRoutes.value == item["route"];
+                    final isActive = controller.isMenuActive(item);
                     final badge = item["hasBadge"] == true
                         ? controller.pendingCount.value
                         : 0;
@@ -120,6 +120,43 @@ class MDashboardSidebar extends StatelessWidget {
               ),
             ),
           ),
+          Obx(() {
+            final children = controller.activeChildren;
+            if (children.isEmpty) return SizedBox();
+
+            return ScrollConfiguration(
+              behavior: const MyDragScrollBehavior(),
+              child: SingleChildScrollView(
+                scrollDirection: .horizontal,
+                padding: const .symmetric(horizontal: 8),
+                child: Row(
+                  children: [
+                    for (final child in children)
+                      InkWell(
+                        onTap: () =>
+                            controller.changeRoute(route: child["route"]),
+                        child: Container(
+                          height: 36,
+                          padding: const .symmetric(horizontal: 12),
+                          alignment: .center,
+                          child: MyText(
+                            text: child["name"],
+                            fontSize: 13,
+                            color: controller.myRoutes.value == child["route"]
+                                ? MyColors.secondary
+                                : MyColors.primary60,
+                            fontWeight:
+                                controller.myRoutes.value == child["route"]
+                                ? .w600
+                                : .w500,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            );
+          }),
         ],
       ),
     );

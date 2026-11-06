@@ -1,3 +1,1 @@
-Map<String, String> enEN = {
-  "Home Page": "Home Page",
-};
+Map<String, String> enEN = {"Home Page": "Home Page"};

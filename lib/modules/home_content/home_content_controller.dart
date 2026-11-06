@@ -153,25 +153,37 @@ class HomeContentController extends BaseController {
     return path;
   }
 
-  Future<void> save() async {
+  Future<void> saveHomeHero() async {
     if (heroes.any((e) => e.txtTitle.text.trim().isEmpty)) {
       return showErrSnackbar(msg: "Judul hero wajib diisi");
     }
     if (heroes.any((e) => e.path == null && e.newBytes == null)) {
       return showErrSnackbar(msg: "Foto hero wajib diisi");
     }
-    if (series.any((e) => e.txtTitle.text.trim().isEmpty)) {
-      return showErrSnackbar(msg: "Judul seri wajib diisi");
-    }
 
     isLoadingAction.value = true;
-    final saved = await saveHero() && await saveSeries();
+    final saved = await saveHero();
     isLoadingAction.value = false;
 
     if (!saved) return;
 
     await fetchApi();
-    showSnackbar(msg: "Konten Home berhasil disimpan");
+    showSnackbar(msg: "Hero Home berhasil disimpan");
+  }
+
+  Future<void> saveHomeSeries() async {
+    if (series.any((e) => e.txtTitle.text.trim().isEmpty)) {
+      return showErrSnackbar(msg: "Judul seri wajib diisi");
+    }
+
+    isLoadingAction.value = true;
+    final saved = await saveSeries();
+    isLoadingAction.value = false;
+
+    if (!saved) return;
+
+    await fetchApi();
+    showSnackbar(msg: "The Scriptures berhasil disimpan");
   }
 
   Future<bool> saveHero() async {

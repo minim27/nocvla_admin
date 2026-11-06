@@ -39,7 +39,7 @@ Semua tabel punya `id uuid`. Kolom `created_at` dan `updated_at` tidak ditulis u
 | `m_early_access_images` | `image_url`, `sort_order` |
 | `m_configurations` | `name`, `value` |
 
-Kunci `m_configurations`: `LINK_DISCORD`, `WA_NUMBER`, `WA_TEMPLATE`, `INSTAGRAM`, `TIKTOK`, `CONTACT_EMAIL`, `DEFAULT_MARKETPLACE_URL`, `SHOPEE_URL`, `TIKTOK_SHOP_URL`, `TOKOPEDIA_URL`. Baru `LINK_DISCORD` yang berisi nilai. Semua kunci ini bisa dibaca publik, jadi jangan menyimpan data rahasia di sini.
+Kunci `m_configurations`: `LINK_DISCORD`, `WA_NUMBER`, `WA_TEMPLATE`, `INSTAGRAM`, `TIKTOK`, `CONTACT_EMAIL`, `DEFAULT_MARKETPLACE_URL`, `SHOPEE_URL`, `TIKTOK_SHOP_URL`, `TOKOPEDIA_URL`, `ABOUT_EYEBROW`, `ABOUT_TITLE`, `ABOUT_DESCRIPTION`, `ABOUT_IMAGE` (path di bucket `banners`, hero halaman Tentang), `ABOUT_STORY_EYEBROW`, `ABOUT_STORY_TITLE`, `ABOUT_STORY_BODY` (paragraf dipisah baris kosong), `ABOUT_STORY_IMAGE_1`, `ABOUT_STORY_IMAGE_2`, `ABOUT_MISSION`, `ABOUT_VISION`, `ABOUT_VALUES`, `ABOUT_CRAFT_EYEBROW`, `ABOUT_CRAFT_TITLE`, `ABOUT_CRAFT_1_TITLE` sampai `ABOUT_CRAFT_4_TITLE` dan `ABOUT_CRAFT_1_DESC` sampai `ABOUT_CRAFT_4_DESC`, `ABOUT_CTA_TITLE`. Baru `LINK_DISCORD` yang berisi nilai. Semua kunci ini bisa dibaca publik, jadi jangan menyimpan data rahasia di sini.
 
 ### Akses terbatas
 
