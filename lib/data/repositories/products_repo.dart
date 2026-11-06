@@ -38,7 +38,7 @@ class ProductsRepo extends BaseRepository {
         .select('''
       *,
       colors:m_product_color(
-        id, name, hex,
+        id, name, hex, description,
         images:m_product_images(image_url, sort_order),
         variation:m_product_stock(size, qty, price)
       )
@@ -159,6 +159,28 @@ class ProductsRepo extends BaseRepository {
     required String id,
   }) async => ResponseHandler(
     supabase.from("m_product_type").delete().eq("id", id).select(),
+  );
+
+  Future<ResponseHandler<dynamic>> listProductFeatures({
+    required String productId,
+  }) async => ResponseHandler(
+    supabase
+        .from("m_product_features")
+        .select()
+        .eq("product_id", productId)
+        .order("sort_order", ascending: true),
+  );
+
+  Future<ResponseHandler<dynamic>> deleteProductFeatures({
+    required String productId,
+  }) async => ResponseHandler(
+    supabase.from("m_product_features").delete().eq("product_id", productId),
+  );
+
+  Future<ResponseHandler<dynamic>> addProductFeatures({
+    required List<Map<String, dynamic>> body,
+  }) async => ResponseHandler(
+    supabase.from("m_product_features").insert(body).select(),
   );
 
   Future<ResponseHandler<String>> uploadImage({

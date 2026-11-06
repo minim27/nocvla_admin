@@ -22,6 +22,8 @@ class ProductDetailController extends BaseController {
   var txtName = TextEditingController();
   var txtBadge = TextEditingController();
   var txtSubtitle = TextEditingController();
+  var txtMaterial = TextEditingController();
+  var txtCare = TextEditingController();
   var txtUrlShopee = TextEditingController();
   var txtUrlTiktokShop = TextEditingController();
   var txtUrlTokped = TextEditingController();
@@ -32,7 +34,23 @@ class ProductDetailController extends BaseController {
 
   QuillController quillController = QuillController.basic();
 
-  static const tabs = ["Info", "Varian & Stok", "Foto", "Marketplace"];
+  static const tabs = [
+    "Info",
+    "Varian & Stok",
+    "Foto",
+    "Marketplace",
+    "Halaman Produk",
+  ];
+  static const featureIcons = {
+    "layers": "Lapisan (bahan)",
+    "shirt": "Kaos (potongan)",
+    "drop": "Tetes (sablon)",
+    "collar": "Kerah",
+    "bolt": "Petir (performa)",
+    "shield": "Perisai (daya tahan)",
+    "stitch": "Gunting (jahitan)",
+    "feather": "Bulu (ringan)",
+  };
   static const sizePresets = {
     "Huruf S–XXL": ["S", "M", "L", "XL", "XXL"],
     "M–XXL": ["M", "L", "XL", "XXL"],
@@ -49,6 +67,11 @@ class ProductDetailController extends BaseController {
 
   var sizeTags = <TextEditingController>[].obs;
   var colorTags = <ProductColorTag>[].obs;
+  var features = <FeatureItem>[].obs;
+
+  var sizeChartPath = RxnString();
+  var sizeChartBytes = Rxn<Uint8List>();
+  String? sizeChartName;
 
   ProductDetailParams get params => ProductDetailParams.fromMap(Get.parameters);
   bool get isEditing => params.id != null;
@@ -109,6 +132,7 @@ class ProductDetailController extends BaseController {
                 id: isEditing ? c["id"] : null,
                 name: c["name"],
                 hex: c["hex"],
+                description: c["description"],
                 images: (c["images"] as List?)
                     ?.map((e) => ProductImagesModel.fromJson(e))
                     .toList(),
@@ -119,6 +143,21 @@ class ProductDetailController extends BaseController {
             );
           }
         },
+        err: (err) => showErrSnackbar(msg: err),
+      );
+
+      final reqFeatures = await productsRepo.listProductFeatures(
+        productId: sourceId,
+      );
+      await reqFeatures.responseHandler(
+        res: (res) => features.value = [
+          for (final e in (res as List))
+            FeatureItem(
+              icon: e["icon"],
+              title: e["title"],
+              description: e["description"],
+            ),
+        ],
         err: (err) => showErrSnackbar(msg: err),
       );
     }
@@ -134,6 +173,9 @@ class ProductDetailController extends BaseController {
     txtName.text = product.productName ?? "";
     txtBadge.text = product.badge ?? "";
     txtSubtitle.text = product.subtitle ?? "";
+    txtMaterial.text = product.material ?? "";
+    txtCare.text = product.careText ?? "";
+    sizeChartPath.value = product.sizeChartUrl;
     txtUrlShopee.text = product.shopeeUrl ?? "";
     txtUrlTiktokShop.text = product.tiktokUrl ?? "";
     txtUrlTokped.text = product.tokopediaUrl ?? "";
@@ -176,6 +218,7 @@ class ProductDetailController extends BaseController {
     String? id,
     String? name,
     String? hex,
+    String? description,
     List<ProductImagesModel>? images,
     List<ProductVariationModel>? variation,
   }) {
@@ -187,6 +230,7 @@ class ProductDetailController extends BaseController {
     final tag = ProductColorTag()..id = id;
     tag.txtName.text = name ?? "";
     tag.txtHex.text = hex ?? "";
+    tag.txtDesc.text = description ?? "";
     for (final image in images ?? []) {
       tag.gallery.add(GalleryImage(existingPath: image.imageUrl));
     }
@@ -335,6 +379,40 @@ class ProductDetailController extends BaseController {
     colorTags.add(tag);
   }
 
+  Future<void> pickSizeChart() async {
+    final result = await FilePicker.pickFiles(
+      type: FileType.image,
+      withData: true,
+    );
+    final file = result?.files.firstOrNull;
+    if (file?.bytes == null) return;
+
+    sizeChartName = file!.name;
+    sizeChartBytes.value = file.bytes;
+  }
+
+  void removeSizeChart() {
+    sizeChartPath.value = null;
+    sizeChartBytes.value = null;
+  }
+
+  void addFeature() => features.add(FeatureItem(icon: featureIcons.keys.first));
+
+  void removeFeature({required int index}) => features.removeAt(index);
+
+  void moveFeature({required int index, required int offset}) {
+    final target = index + offset;
+    if (target < 0 || target >= features.length) return;
+
+    final item = features.removeAt(index);
+    features.insert(target, item);
+  }
+
+  void selectFeatureIcon({required FeatureItem item, required String icon}) {
+    item.icon = icon;
+    features.refresh();
+  }
+
   Future<void> removeColorTag({required int index}) async {
     final confirmed = await showMyConfirmDialog(title: "Hapus Warna Ini?");
     if (!confirmed) return;
@@ -386,6 +464,10 @@ class ProductDetailController extends BaseController {
     "subtitle": txtSubtitle.text.trim().isEmpty
         ? null
         : txtSubtitle.text.trim(),
+    "material": txtMaterial.text.trim().isEmpty
+        ? null
+        : txtMaterial.text.trim(),
+    "care_text": txtCare.text.trim().isEmpty ? null : txtCare.text.trim(),
     "description": jsonEncode(delta.toJson()),
     "shopee_url": txtUrlShopee.text,
     "tiktok_url": txtUrlTiktokShop.text,
@@ -421,11 +503,35 @@ class ProductDetailController extends BaseController {
       }
     }
 
+    if (features.any((e) => e.txtTitle.text.trim().isEmpty)) {
+      return showErrSnackbar(msg: "Judul fitur wajib diisi");
+    }
+
     isLoadingAction.value = true;
     var hasError = false;
 
     final delta = quillController.document.toDelta();
     final productBody = _sharedFieldsBody(delta);
+
+    var sizeChart = sizeChartPath.value;
+    if (sizeChartBytes.value != null) {
+      final reqUpload = await productsRepo.uploadImage(
+        bytes: sizeChartBytes.value!,
+        fileName: "${DateTime.now().millisecondsSinceEpoch}_$sizeChartName",
+      );
+      await reqUpload.responseHandler(
+        res: (res) => sizeChart = res,
+        err: (err) {
+          hasError = true;
+          showErrSnackbar(msg: err);
+        },
+      );
+      if (hasError) {
+        isLoadingAction.value = false;
+        return;
+      }
+    }
+    productBody["size_chart_url"] = sizeChart;
 
     String? productId = params.id;
 
@@ -458,6 +564,42 @@ class ProductDetailController extends BaseController {
     }
 
     final String resolvedProductId = productId!;
+
+    final reqDelFeatures = await productsRepo.deleteProductFeatures(
+      productId: resolvedProductId,
+    );
+    await reqDelFeatures.responseHandler(
+      res: (res) {},
+      err: (err) {
+        hasError = true;
+        showErrSnackbar(msg: err);
+      },
+    );
+    if (!hasError && features.isNotEmpty) {
+      final reqFeatures = await productsRepo.addProductFeatures(
+        body: [
+          for (final (i, item) in features.indexed)
+            {
+              "product_id": resolvedProductId,
+              "icon": item.icon,
+              "title": item.txtTitle.text.trim(),
+              "description": item.txtDesc.text.trim(),
+              "sort_order": i,
+            },
+        ],
+      );
+      await reqFeatures.responseHandler(
+        res: (res) {},
+        err: (err) {
+          hasError = true;
+          showErrSnackbar(msg: err);
+        },
+      );
+    }
+    if (hasError) {
+      isLoadingAction.value = false;
+      return;
+    }
 
     if (isEditing) {
       var oldColorIds = <String>[];
@@ -531,6 +673,9 @@ class ProductDetailController extends BaseController {
           "product_id": resolvedProductId,
           "name": tag.txtName.text,
           "hex": tag.txtHex.text.trim().isEmpty ? null : tag.txtHex.text.trim(),
+          "description": tag.txtDesc.text.trim().isEmpty
+              ? null
+              : tag.txtDesc.text.trim(),
         },
       );
 
@@ -647,14 +792,27 @@ class ProductColorTag {
   String? id;
   var txtName = TextEditingController();
   var txtHex = TextEditingController();
+  var txtDesc = TextEditingController();
   var gallery = <GalleryImage>[].obs;
   var stockCells = <StockCell>[].obs;
 
   void dispose() {
     txtName.dispose();
     txtHex.dispose();
+    txtDesc.dispose();
     for (final cell in stockCells) {
       cell.dispose();
     }
   }
+}
+
+class FeatureItem {
+  FeatureItem({this.icon, String? title, String? description}) {
+    txtTitle.text = title ?? "";
+    txtDesc.text = description ?? "";
+  }
+
+  String? icon;
+  final txtTitle = TextEditingController();
+  final txtDesc = TextEditingController();
 }

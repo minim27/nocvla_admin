@@ -9,7 +9,10 @@ class AddProductsModel {
       tokopediaUrl,
       productTypeId,
       badge,
-      subtitle;
+      subtitle,
+      material,
+      careText,
+      sizeChartUrl;
 
   AddProductsModel({
     this.productId,
@@ -23,6 +26,9 @@ class AddProductsModel {
     this.productTypeId,
     this.badge,
     this.subtitle,
+    this.material,
+    this.careText,
+    this.sizeChartUrl,
   });
 
   AddProductsModel.fromProductJson(Map<String, dynamic> json) {
@@ -37,5 +43,8 @@ class AddProductsModel {
     productTypeId = json["product_type_id"];
     badge = json["badge"];
     subtitle = json["subtitle"];
+    material = json["material"];
+    careText = json["care_text"];
+    sizeChartUrl = json["size_chart_url"];
   }
 }

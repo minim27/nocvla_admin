@@ -10,6 +10,7 @@ class SettingController extends BaseController {
 
   var txtWaNumber = TextEditingController();
   var txtWaTemplate = TextEditingController();
+  var txtOrderGuide = TextEditingController();
   var txtInstagram = TextEditingController();
   var txtTiktok = TextEditingController();
   var txtEmail = TextEditingController();
@@ -27,6 +28,7 @@ class SettingController extends BaseController {
   Map<String, TextEditingController> get _fields => {
     "WA_NUMBER": txtWaNumber,
     "WA_TEMPLATE": txtWaTemplate,
+    "ORDER_GUIDE": txtOrderGuide,
     "INSTAGRAM": txtInstagram,
     "TIKTOK": txtTiktok,
     "CONTACT_EMAIL": txtEmail,

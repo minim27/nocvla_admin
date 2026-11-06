@@ -12,14 +12,17 @@ import '../../../shared/widgets/my_text.dart';
 import 'product_detail_controller.dart';
 import 'widgets/mobile/m_pd_prodinfo.dart';
 import 'widgets/mobile/m_pd_prodmarket.dart';
+import 'widgets/mobile/m_pd_prodpage.dart';
 import 'widgets/mobile/m_pd_prodphoto.dart';
 import 'widgets/mobile/m_pd_prodvar.dart';
 import 'widgets/tab/t_pd_prodinfo.dart';
 import 'widgets/tab/t_pd_prodmarket.dart';
+import 'widgets/tab/t_pd_prodpage.dart';
 import 'widgets/tab/t_pd_prodphoto.dart';
 import 'widgets/tab/t_pd_prodvar.dart';
 import 'widgets/web/pd_prodinfo.dart';
 import 'widgets/web/pd_prodmarket.dart';
+import 'widgets/web/pd_prodpage.dart';
 import 'widgets/web/pd_prodphoto.dart';
 import 'widgets/web/pd_prodvar.dart';
 
@@ -46,6 +49,7 @@ class ProductDetailPage extends GetView<ProductDetailController> {
                   PDProdVar(controller: controller),
                   PDProdPhoto(controller: controller),
                   PDProdMarket(controller: controller),
+                  PDProdPage(controller: controller),
                 ];
               } else if (isTab) {
                 sections = [
@@ -53,6 +57,7 @@ class ProductDetailPage extends GetView<ProductDetailController> {
                   TPDProdVar(controller: controller),
                   TPDProdPhoto(controller: controller),
                   TPDProdMarket(controller: controller),
+                  TPDProdPage(controller: controller),
                 ];
               } else {
                 sections = [
@@ -60,6 +65,7 @@ class ProductDetailPage extends GetView<ProductDetailController> {
                   MPDProdVar(controller: controller),
                   MPDProdPhoto(controller: controller),
                   MPDProdMarket(controller: controller),
+                  MPDProdPage(controller: controller),
                 ];
               }
 

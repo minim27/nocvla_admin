@@ -56,6 +56,15 @@ class TSettingForm extends StatelessWidget {
             maxLines: 8,
             keyboardType: .multiline,
           ),
+          MyTextFormField(
+            controller: controller.txtOrderGuide,
+            label:
+                "Cara order (tampil di detail produk, satu baris = satu poin)",
+            hintText:
+                "Pilih warna, ukuran, dan jumlah.\nTambah ke keranjang atau langsung order via WhatsApp.",
+            maxLines: 5,
+            keyboardType: .multiline,
+          ),
           Row(
             spacing: 12,
             children: [

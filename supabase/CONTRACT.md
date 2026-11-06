@@ -26,8 +26,9 @@ Semua tabel punya `id uuid`. Kolom `created_at` dan `updated_at` tidak ditulis u
 
 | Tabel | Kolom |
 |---|---|
-| `m_products` | `name`, `description`, `shopee_url`, `tiktok_url`, `tokopedia_url`, `product_type_id`, `is_featured`, `badge`, `subtitle` |
-| `m_product_color` | `product_id`, `name`, `hex` |
+| `m_products` | `name`, `description`, `shopee_url`, `tiktok_url`, `tokopedia_url`, `product_type_id`, `is_featured`, `badge`, `subtitle`, `material`, `care_text`, `size_chart_url` (path di bucket `products`) |
+| `m_product_color` | `product_id`, `name`, `hex`, `description` |
+| `m_product_features` | `product_id`, `icon` (`layers`, `shirt`, `drop`, `collar`, `bolt`, `shield`, `stitch`, `feather`), `title`, `description`, `sort_order` |
 | `m_product_images` | `product_color_id`, `image_url`, `sort_order` (terkecil = foto utama) |
 | `m_product_stock` | `product_color_id`, `size`, `qty`, `price`, `sort_order` |
 | `m_product_type` | `name`, `value`, `is_active`, `sort_order` |
@@ -41,7 +42,7 @@ Semua tabel punya `id uuid`. Kolom `created_at` dan `updated_at` tidak ditulis u
 | `m_early_access_images` | `image_url`, `sort_order` |
 | `m_configurations` | `name`, `value` |
 
-Kunci `m_configurations`: `LINK_DISCORD`, `WA_NUMBER`, `WA_TEMPLATE`, `INSTAGRAM`, `TIKTOK`, `CONTACT_EMAIL`, `DEFAULT_MARKETPLACE_URL`, `SHOPEE_URL`, `TIKTOK_SHOP_URL`, `TOKOPEDIA_URL`, `ABOUT_EYEBROW`, `ABOUT_TITLE`, `ABOUT_DESCRIPTION`, `ABOUT_IMAGE` (path di bucket `banners`, hero halaman Tentang), `ABOUT_STORY_EYEBROW`, `ABOUT_STORY_TITLE`, `ABOUT_STORY_BODY` (paragraf dipisah baris kosong), `ABOUT_STORY_IMAGE_1`, `ABOUT_STORY_IMAGE_2`, `ABOUT_MISSION`, `ABOUT_VISION`, `ABOUT_VALUES`, `ABOUT_CRAFT_EYEBROW`, `ABOUT_CRAFT_TITLE`, `ABOUT_CRAFT_1_TITLE` sampai `ABOUT_CRAFT_4_TITLE` dan `ABOUT_CRAFT_1_DESC` sampai `ABOUT_CRAFT_4_DESC`, `ABOUT_CTA_TITLE`, `CONTACT_EYEBROW`, `CONTACT_TITLE`, `CONTACT_DESCRIPTION` (judul halaman Kontak). Baru `LINK_DISCORD` yang berisi nilai. Semua kunci ini bisa dibaca publik, jadi jangan menyimpan data rahasia di sini.
+Kunci `m_configurations`: `LINK_DISCORD`, `WA_NUMBER`, `WA_TEMPLATE`, `INSTAGRAM`, `TIKTOK`, `CONTACT_EMAIL`, `DEFAULT_MARKETPLACE_URL`, `SHOPEE_URL`, `TIKTOK_SHOP_URL`, `TOKOPEDIA_URL`, `ABOUT_EYEBROW`, `ABOUT_TITLE`, `ABOUT_DESCRIPTION`, `ABOUT_IMAGE` (path di bucket `banners`, hero halaman Tentang), `ABOUT_STORY_EYEBROW`, `ABOUT_STORY_TITLE`, `ABOUT_STORY_BODY` (paragraf dipisah baris kosong), `ABOUT_STORY_IMAGE_1`, `ABOUT_STORY_IMAGE_2`, `ABOUT_MISSION`, `ABOUT_VISION`, `ABOUT_VALUES`, `ABOUT_CRAFT_EYEBROW`, `ABOUT_CRAFT_TITLE`, `ABOUT_CRAFT_1_TITLE` sampai `ABOUT_CRAFT_4_TITLE` dan `ABOUT_CRAFT_1_DESC` sampai `ABOUT_CRAFT_4_DESC`, `ABOUT_CTA_TITLE`, `ORDER_GUIDE` (accordion Cara order di detail produk, satu baris satu poin), `CONTACT_EYEBROW`, `CONTACT_TITLE`, `CONTACT_DESCRIPTION` (judul halaman Kontak). Baru `LINK_DISCORD` yang berisi nilai. Semua kunci ini bisa dibaca publik, jadi jangan menyimpan data rahasia di sini.
 
 ### Akses terbatas
 
@@ -92,10 +93,10 @@ Rencana di `_docs` yang belum dibuat. Jangan memakainya sebelum dokumen ini dipe
 
 | Area | Yang belum ada |
 |---|---|
-| Produk | `v_catalog`, `m_product_size`, `slug`, `status`, `archived_at`, `series_label`, `material`, `care_text`, `size_chart_url`, dan `kind` |
-| Fitur dan featured | `m_features`, `m_product_features`, `m_featured` (sekarang memakai `m_products.is_featured`) |
+| Produk | `v_catalog`, `m_product_size`, `slug`, `status`, `archived_at`, `series_label`, dan `kind` |
+| Fitur dan featured | `m_features`, `m_featured` (sekarang memakai `m_products.is_featured`) |
 | Atlet | `validate_athlete_code`, `submit_athlete_application`, `approve_athlete_application`, `reject_athlete_application`, `instagram`, `archived_at`, `review_note`, dan `reviewed_at` |
 | Order | `v_product_sold` |
 | Banner | `image_mobile_url`, `cta_type`, `cta_ref` |
 | Early access | `v_early_access_public`, `verify_early_access` (sekarang memakai `v_early_access_status` dan `check_early_access_password`), rate limit |
-| Storage | Bucket `size-charts` |
+| Storage | Bucket `size-charts` (size chart memakai bucket `products`) |
