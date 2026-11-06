@@ -1,4 +1,8 @@
 import 'package:get/get.dart';
+import 'package:nocvla_admin/modules/contact_content/contact_content_binding.dart';
+import 'package:nocvla_admin/modules/contact_content/contact_content_page.dart';
+import 'package:nocvla_admin/modules/contact_message/contact_message_binding.dart';
+import 'package:nocvla_admin/modules/contact_message/contact_message_page.dart';
 import 'package:nocvla_admin/modules/about_content/about_content_binding.dart';
 import 'package:nocvla_admin/modules/about_content/about_content_page.dart';
 import 'package:nocvla_admin/modules/athlete/detail/athlete_detail_binding.dart';
@@ -21,6 +25,7 @@ import 'package:nocvla_admin/modules/login/login_binding.dart';
 import 'package:nocvla_admin/modules/login/login_page.dart';
 import 'package:nocvla_admin/modules/master_data/master_data_binding.dart';
 import 'package:nocvla_admin/modules/master_data/master_data_page.dart';
+import 'package:nocvla_admin/modules/master_data/contact_topic_page.dart';
 import 'package:nocvla_admin/modules/master_data/training_focus_page.dart';
 import 'package:nocvla_admin/modules/order/order_binding.dart';
 import 'package:nocvla_admin/modules/order/order_page.dart';
@@ -72,6 +77,24 @@ class MyPages {
       name: MyRoutes.masterDataFocus,
       page: () => TrainingFocusPage(),
       binding: MasterDataBinding(),
+    ),
+    GetPage(
+      middlewares: [MyAuthMiddleware()],
+      name: MyRoutes.masterDataTopic,
+      page: () => ContactTopicPage(),
+      binding: MasterDataBinding(),
+    ),
+    GetPage(
+      middlewares: [MyAuthMiddleware()],
+      name: MyRoutes.contentContact,
+      page: () => ContactContentPage(),
+      binding: ContactContentBinding(),
+    ),
+    GetPage(
+      middlewares: [MyAuthMiddleware()],
+      name: MyRoutes.contactMessage,
+      page: () => ContactMessagePage(),
+      binding: ContactMessageBinding(),
     ),
     GetPage(
       middlewares: [MyAuthMiddleware()],

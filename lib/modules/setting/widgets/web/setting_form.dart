@@ -49,10 +49,11 @@ class SettingForm extends StatelessWidget {
           ),
           MyTextFormField(
             controller: controller.txtWaTemplate,
-            label: "Template pesan WhatsApp",
+            label:
+                "Template pesan WhatsApp. Pakai {item} {warna} {ukuran} {qty} {harga} (diulang per barang), {nama penerima} {WA penerima} {alamat penerima} {notes} {kode} {subtotal} {diskon} {total}. Baris yang isiannya kosong tidak ditampilkan",
             hintText:
-                "Halo NOCVLA, saya mau order:\n{item} — {warna} / {ukuran} × {qty}\nKode atlet: {kode}",
-            maxLines: 4,
+                "Halo NOCVLA, saya mau order:\n\n• {item} [{warna}, {ukuran}] x{qty}\n\nNama Penerima: {nama penerima}",
+            maxLines: 8,
             keyboardType: .multiline,
           ),
           Row(

@@ -59,9 +59,11 @@ class DashboardSidebar extends StatelessWidget {
                 children: List.generate(controller.menu.length, (index) {
                   final item = controller.menu[index];
                   final isActive = controller.isMenuActive(item);
-                  final badge = item["hasBadge"] == true
-                      ? controller.pendingCount.value
-                      : 0;
+                  final badge = switch (item["hasBadge"]) {
+                    true => controller.pendingCount.value,
+                    "message" => controller.unreadCount.value,
+                    _ => 0,
+                  };
 
                   return Column(
                     children: [

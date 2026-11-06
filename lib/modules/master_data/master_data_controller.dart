@@ -3,11 +3,13 @@ import 'package:get/get.dart';
 
 import '../../app/core/base_controller.dart';
 import '../../data/models/athlete_application/training_focus_model.dart';
+import '../../data/models/contact/contact_topic_model.dart';
 import '../../data/models/products/product_type_model.dart';
 import '../../shared/utils/my_utility.dart';
 import '../../shared/widgets/my_confirm_dialog.dart';
 import '../product/list/product_controller.dart';
 import 'widgets/master_data_form_dialog.dart';
+import 'widgets/contact_topic_form_dialog.dart';
 import 'widgets/training_focus_form_dialog.dart';
 
 class MasterDataController extends BaseController {
@@ -17,15 +19,19 @@ class MasterDataController extends BaseController {
   var resTypes = <ProductTypeModel>[].obs;
 
   var resFocuses = <TrainingFocusModel>[].obs;
+  var resTopics = <ContactTopicModel>[].obs;
 
   var txtName = TextEditingController();
   var txtFocusName = TextEditingController();
+  var txtTopicName = TextEditingController();
 
   static const _noWriteAccess =
       "Kategori belum bisa disimpan: akun ini tidak punya izin menulis.";
 
   static const _noFocusWriteAccess =
       "Fokus latihan belum bisa disimpan: akun ini tidak punya izin menulis.";
+  static const _noTopicWriteAccess =
+      "Topik pesan belum bisa disimpan: akun ini tidak punya izin menulis.";
 
   @override
   void onInit() {
@@ -36,7 +42,7 @@ class MasterDataController extends BaseController {
   fetchApi() async {
     isLoading.value = true;
 
-    await Future.wait([_fetchTypes(), _fetchFocuses()]);
+    await Future.wait([_fetchTypes(), _fetchFocuses(), _fetchTopics()]);
 
     isLoading.value = false;
   }
@@ -341,6 +347,149 @@ class MasterDataController extends BaseController {
       res: (res) {},
       err: (err) {
         resFocuses.value = previous;
+        showErrSnackbar(msg: err);
+      },
+    );
+  }
+
+  Future<void> _fetchTopics() async {
+    final req = await contactRepo.listAllContactTopic();
+    await req.responseHandler(
+      res: (res) {
+        resTopics.value = (res as List)
+            .map((e) => ContactTopicModel.fromJson(e))
+            .toList();
+      },
+      err: (err) => showErrSnackbar(msg: err),
+    );
+  }
+
+  void openTopicForm({ContactTopicModel? topic}) {
+    txtTopicName.text = topic?.name ?? "";
+    Get.dialog(ContactTopicFormDialog(topic: topic));
+  }
+
+  Future<void> saveTopic({ContactTopicModel? topic}) async {
+    if (isLoadingAction.value) return;
+
+    final name = txtTopicName.text.trim();
+
+    if (name.isEmpty) {
+      return showErrSnackbar(msg: "Nama topik pesan wajib diisi");
+    }
+    if (resTopics.any(
+      (e) =>
+          e.id != topic?.id && "${e.name}".toLowerCase() == name.toLowerCase(),
+    )) {
+      return showErrSnackbar(msg: "Topik pesan $name sudah ada");
+    }
+
+    isLoadingAction.value = true;
+    var hasError = false;
+
+    final lastOrder = resTopics.fold<int>(
+      -1,
+      (last, e) => (e.sortOrder ?? 0) > last ? e.sortOrder ?? 0 : last,
+    );
+    final req = topic == null
+        ? await contactRepo.addContactTopic(
+            body: {"name": name, "sort_order": lastOrder + 1},
+          )
+        : await contactRepo.updateContactTopic(
+            id: topic.id,
+            body: {"name": name},
+          );
+    await req.responseHandler(
+      res: (res) {
+        if ((res as List).isEmpty) {
+          hasError = true;
+          showErrSnackbar(msg: _noTopicWriteAccess);
+        }
+      },
+      err: (err) {
+        hasError = true;
+        showErrSnackbar(msg: err);
+      },
+    );
+
+    if (!hasError) {
+      await _fetchTopics();
+      Get.back();
+      showSnackbar(msg: "Topik pesan berhasil disimpan");
+    }
+
+    isLoadingAction.value = false;
+  }
+
+  Future<void> toggleTopicActive({
+    required ContactTopicModel topic,
+    required bool value,
+  }) async {
+    isLoadingAction.value = true;
+    var isSaved = false;
+
+    final req = await contactRepo.updateContactTopic(
+      id: topic.id,
+      body: {"is_active": value},
+    );
+    await req.responseHandler(
+      res: (res) {
+        isSaved = (res as List).isNotEmpty;
+        if (!isSaved) showErrSnackbar(msg: _noTopicWriteAccess);
+      },
+      err: (err) => showErrSnackbar(msg: err),
+    );
+
+    if (isSaved) await _fetchTopics();
+
+    isLoadingAction.value = false;
+  }
+
+  Future<void> deleteTopic({required ContactTopicModel topic}) async {
+    final confirmed = await showMyConfirmDialog(
+      title: "Hapus topik pesan ${topic.name}?",
+    );
+    if (!confirmed) return;
+
+    isLoadingAction.value = true;
+    var isDeleted = false;
+
+    final req = await contactRepo.deleteContactTopic(id: topic.id);
+    await req.responseHandler(
+      res: (res) {
+        isDeleted = (res as List).isNotEmpty;
+        if (!isDeleted) showErrSnackbar(msg: _noTopicWriteAccess);
+      },
+      err: (err) => showErrSnackbar(msg: err),
+    );
+
+    if (isDeleted) {
+      await _fetchTopics();
+      showSnackbar(msg: "Topik pesan berhasil dihapus");
+    }
+
+    isLoadingAction.value = false;
+  }
+
+  Future<void> reorderTopics({
+    required int oldIndex,
+    required int newIndex,
+  }) async {
+    final previous = [...resTopics];
+
+    final item = resTopics.removeAt(oldIndex);
+    resTopics.insert(newIndex, item);
+
+    final req = await contactRepo.updateContactTopicOrders(
+      body: [
+        for (final (index, topic) in resTopics.indexed)
+          {"id": topic.id, "name": topic.name, "sort_order": index},
+      ],
+    );
+    await req.responseHandler(
+      res: (res) {},
+      err: (err) {
+        resTopics.value = previous;
         showErrSnackbar(msg: err);
       },
     );

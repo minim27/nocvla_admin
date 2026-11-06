@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:nocvla_admin/app/routes/my_routes.dart';
+import 'package:nocvla_admin/modules/contact_message/contact_message_controller.dart';
 import 'package:nocvla_admin/modules/master_data/master_data_controller.dart';
 import 'package:nocvla_admin/modules/order/order_controller.dart';
 import 'package:nocvla_admin/modules/setting/setting_controller.dart';
@@ -15,6 +16,11 @@ class DashboardController extends BaseController {
     {"name": "Atlet & Pendaftar", "route": MyRoutes.athlete, "hasBadge": true},
     {"name": "Order WhatsApp", "route": MyRoutes.order},
     {
+      "name": "Pesan Masuk",
+      "route": MyRoutes.contactMessage,
+      "hasBadge": "message",
+    },
+    {
       "name": "Konten & Drop",
       "route": MyRoutes.contentHero,
       "children": [
@@ -22,6 +28,7 @@ class DashboardController extends BaseController {
         {"name": "Featured", "route": MyRoutes.contentFeatured},
         {"name": "The Scriptures", "route": MyRoutes.contentSeries},
         {"name": "Halaman Tentang", "route": MyRoutes.contentAbout},
+        {"name": "Halaman Kontak", "route": MyRoutes.contentContact},
         {"name": "Early Access", "route": MyRoutes.earlyAccess},
       ],
     },
@@ -31,6 +38,7 @@ class DashboardController extends BaseController {
       "children": [
         {"name": "Kategori Produk", "route": MyRoutes.masterData},
         {"name": "Fokus Latihan", "route": MyRoutes.masterDataFocus},
+        {"name": "Topik Pesan", "route": MyRoutes.masterDataTopic},
       ],
     },
     {"name": "Pengaturan", "route": MyRoutes.setting},
@@ -38,11 +46,13 @@ class DashboardController extends BaseController {
 
   var myRoutes = MyRoutes.overview.obs;
   var pendingCount = 0.obs;
+  var unreadCount = 0.obs;
 
   @override
   void onInit() {
     super.onInit();
     fetchPendingCount();
+    fetchUnreadCount();
   }
 
   fetchPendingCount() async {
@@ -51,6 +61,14 @@ class DashboardController extends BaseController {
     );
     await req.responseHandler(
       res: (res) => pendingCount.value = (res as List).length,
+      err: (err) => showErrSnackbar(msg: err),
+    );
+  }
+
+  fetchUnreadCount() async {
+    final req = await contactRepo.listUnreadMessages();
+    await req.responseHandler(
+      res: (res) => unreadCount.value = (res as List).length,
       err: (err) => showErrSnackbar(msg: err),
     );
   }
@@ -75,6 +93,7 @@ class DashboardController extends BaseController {
     Get.delete<OrderController>(force: true);
     Get.delete<SettingController>(force: true);
     Get.delete<MasterDataController>(force: true);
+    Get.delete<ContactMessageController>(force: true);
     myRoutes.value = MyRoutes.overview;
   }
 

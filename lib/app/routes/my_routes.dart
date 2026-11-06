@@ -5,6 +5,9 @@ class MyRoutes {
   static const order = '/order';
   static const masterData = '/master-data';
   static const masterDataFocus = '/master-data/training-focus';
+  static const masterDataTopic = '/master-data/contact-topic';
+  static const contentContact = '/content/contact';
+  static const contactMessage = '/contact-message';
   static const setting = '/setting';
   static const product = '/product';
   static const productDetail = '/product/detail';

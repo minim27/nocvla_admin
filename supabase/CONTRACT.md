@@ -34,18 +34,21 @@ Semua tabel punya `id uuid`. Kolom `created_at` dan `updated_at` tidak ditulis u
 | `m_banners` | `image_url`, `title`, `description`, `eyebrow`, `cta_product_id`, `start_date`, `end_date`, `sort_order`, `is_active` |
 | `m_series` | `label`, `title`, `description`, `image_url`, `product_id`, `sort_order`, `is_active` |
 | `m_training_focus` | `name`, `sort_order`, `is_active` |
+| `m_faq` | `question`, `answer`, `sort_order`, `is_active` |
+| `m_contact_topic` | `name`, `sort_order`, `is_active` |
 | `m_athlete` | `picture`, `code`, `name`, `is_active` |
 | `t_athlete` | `athlete_id`, `product_id`, `link_aff_shopee`, `link_aff_tktkshop`, `link_aff_tokped` |
 | `m_early_access_images` | `image_url`, `sort_order` |
 | `m_configurations` | `name`, `value` |
 
-Kunci `m_configurations`: `LINK_DISCORD`, `WA_NUMBER`, `WA_TEMPLATE`, `INSTAGRAM`, `TIKTOK`, `CONTACT_EMAIL`, `DEFAULT_MARKETPLACE_URL`, `SHOPEE_URL`, `TIKTOK_SHOP_URL`, `TOKOPEDIA_URL`, `ABOUT_EYEBROW`, `ABOUT_TITLE`, `ABOUT_DESCRIPTION`, `ABOUT_IMAGE` (path di bucket `banners`, hero halaman Tentang), `ABOUT_STORY_EYEBROW`, `ABOUT_STORY_TITLE`, `ABOUT_STORY_BODY` (paragraf dipisah baris kosong), `ABOUT_STORY_IMAGE_1`, `ABOUT_STORY_IMAGE_2`, `ABOUT_MISSION`, `ABOUT_VISION`, `ABOUT_VALUES`, `ABOUT_CRAFT_EYEBROW`, `ABOUT_CRAFT_TITLE`, `ABOUT_CRAFT_1_TITLE` sampai `ABOUT_CRAFT_4_TITLE` dan `ABOUT_CRAFT_1_DESC` sampai `ABOUT_CRAFT_4_DESC`, `ABOUT_CTA_TITLE`. Baru `LINK_DISCORD` yang berisi nilai. Semua kunci ini bisa dibaca publik, jadi jangan menyimpan data rahasia di sini.
+Kunci `m_configurations`: `LINK_DISCORD`, `WA_NUMBER`, `WA_TEMPLATE`, `INSTAGRAM`, `TIKTOK`, `CONTACT_EMAIL`, `DEFAULT_MARKETPLACE_URL`, `SHOPEE_URL`, `TIKTOK_SHOP_URL`, `TOKOPEDIA_URL`, `ABOUT_EYEBROW`, `ABOUT_TITLE`, `ABOUT_DESCRIPTION`, `ABOUT_IMAGE` (path di bucket `banners`, hero halaman Tentang), `ABOUT_STORY_EYEBROW`, `ABOUT_STORY_TITLE`, `ABOUT_STORY_BODY` (paragraf dipisah baris kosong), `ABOUT_STORY_IMAGE_1`, `ABOUT_STORY_IMAGE_2`, `ABOUT_MISSION`, `ABOUT_VISION`, `ABOUT_VALUES`, `ABOUT_CRAFT_EYEBROW`, `ABOUT_CRAFT_TITLE`, `ABOUT_CRAFT_1_TITLE` sampai `ABOUT_CRAFT_4_TITLE` dan `ABOUT_CRAFT_1_DESC` sampai `ABOUT_CRAFT_4_DESC`, `ABOUT_CTA_TITLE`, `CONTACT_EYEBROW`, `CONTACT_TITLE`, `CONTACT_DESCRIPTION` (judul halaman Kontak). Baru `LINK_DISCORD` yang berisi nilai. Semua kunci ini bisa dibaca publik, jadi jangan menyimpan data rahasia di sini.
 
 ### Akses terbatas
 
 | Tabel | Kolom | Akses |
 |---|---|---|
 | `m_athlete_application` | `name`, `email`, `phone`, `instagram_username`, `tiktok_username`, `city`, `training_focus`, `reason`, `photo_path`, `status` | `email` dan `tiktok_username` tidak lagi diisi form Katalog. `photo_path` menunjuk bucket privat `applications` (publik hanya unggah, admin baca lewat signed URL). Publik hanya bisa kirim dengan status `pending`. Baca dan ubah khusus admin |
+| `t_contact_messages` | `name`, `contact`, `topic`, `message`, `status` (`unread`, `read`) | Publik hanya bisa kirim dengan status `unread` (maks 3 per kontak per 24 jam, 30 per jam). Baca dan ubah khusus admin |
 | `m_app_settings` | `is_early_access`, `early_access_end_at`, `early_access_password` (hash bcrypt) | Khusus admin |
 | `t_wa_orders` | `code`, `customer_name`, `customer_phone`, `address`, `athlete_id`, `subtotal`, `discount`, `shipping_fee`, `courier`, `awb`, `status`, `stock_deducted`, `paid_at` | Baca khusus admin, tulis lewat RPC |
 | `t_wa_order_items` | `order_id`, `product_id`, `color_id`, `product_name`, `color_name`, `size`, `qty`, `unit_price` | Baca khusus admin, tulis lewat RPC |
@@ -93,7 +96,6 @@ Rencana di `_docs` yang belum dibuat. Jangan memakainya sebelum dokumen ini dipe
 | Fitur dan featured | `m_features`, `m_product_features`, `m_featured` (sekarang memakai `m_products.is_featured`) |
 | Atlet | `validate_athlete_code`, `submit_athlete_application`, `approve_athlete_application`, `reject_athlete_application`, `instagram`, `archived_at`, `review_note`, dan `reviewed_at` |
 | Order | `v_product_sold` |
-| Kontak | `t_contact_messages`, `submit_contact_message` |
 | Banner | `image_mobile_url`, `cta_type`, `cta_ref` |
 | Early access | `v_early_access_public`, `verify_early_access` (sekarang memakai `v_early_access_status` dan `check_early_access_password`), rate limit |
 | Storage | Bucket `size-charts` |
