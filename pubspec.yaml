@@ -31,23 +31,16 @@ dependencies:
   flutter:
     sdk: flutter
 
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.8
   get: ^4.7.3
   get_storage: ^2.1.1
   intl: ^0.20.2
   cached_network_image: ^3.4.1
   flutter_spinkit: ^5.2.1
   flutter_dotenv: ^6.0.1
-  image_picker: ^1.1.2
-  image_picker_for_web: ^3.0.6
   file_picker: ^12.0.0-beta.7
   dropdown_search: ^7.0.0
   flutter_quill: ^11.5.1
-  vsc_quill_delta_to_html: ^1.0.5
   supabase_flutter: ^2.15.0
-  flutter_dynamic_launcher_icon: ^0.0.2
   url_launcher: ^6.3.2
   web: ^1.1.1
 
@@ -78,7 +71,6 @@ flutter:
     - .env
 
     - assets/images/
-    - assets/icons/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
@@ -118,62 +110,6 @@ flutter:
           weight: 600
         - asset: assets/fonts/Archivo/Archivo-Bold.ttf
           weight: 700
-    - family: LibreBaskerville
-      fonts:
-        - asset: assets/fonts/LibreBaskerville/LibreBaskerville-Italic.ttf
-          weight: 400
-          style: italic
-        - asset: assets/fonts/LibreBaskerville/LibreBaskerville-Regular.ttf
-          weight: 400
-        - asset: assets/fonts/LibreBaskerville/LibreBaskerville-Bold.ttf
-          weight: 700
-    - family: Montserrat
-      fonts:
-        - asset: assets/fonts/Montserrat/Montserrat-Thin.ttf
-          weight: 100
-        - asset: assets/fonts/Montserrat/Montserrat-ThinItalic.ttf
-          weight: 100
-          style: italic
-        - asset: assets/fonts/Montserrat/Montserrat-ExtraLight.ttf
-          weight: 200
-        - asset: assets/fonts/Montserrat/Montserrat-ExtraLightItalic.ttf
-          weight: 200
-          style: italic
-        - asset: assets/fonts/Montserrat/Montserrat-Light.ttf
-          weight: 300
-        - asset: assets/fonts/Montserrat/Montserrat-LightItalic.ttf
-          weight: 300
-          style: italic
-        - asset: assets/fonts/Montserrat/Montserrat-Regular.ttf
-          weight: 400
-        - asset: assets/fonts/Montserrat/Montserrat-Italic.ttf
-          weight: 400
-          style: italic
-        - asset: assets/fonts/Montserrat/Montserrat-Medium.ttf
-          weight: 500
-        - asset: assets/fonts/Montserrat/Montserrat-MediumItalic.ttf
-          weight: 500
-          style: italic
-        - asset: assets/fonts/Montserrat/Montserrat-SemiBold.ttf
-          weight: 600
-        - asset: assets/fonts/Montserrat/Montserrat-SemiBoldItalic.ttf
-          weight: 600
-          style: italic
-        - asset: assets/fonts/Montserrat/Montserrat-Bold.ttf
-          weight: 700
-        - asset: assets/fonts/Montserrat/Montserrat-BoldItalic.ttf
-          weight: 700
-          style: italic
-        - asset: assets/fonts/Montserrat/Montserrat-ExtraBold.ttf
-          weight: 800
-        - asset: assets/fonts/Montserrat/Montserrat-ExtraBoldItalic.ttf
-          weight: 800
-          style: italic
-        - asset: assets/fonts/Montserrat/Montserrat-Black.ttf
-          weight: 900
-        - asset: assets/fonts/Montserrat/Montserrat-BlackItalic.ttf
-          weight: 900
-          style: italic
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package

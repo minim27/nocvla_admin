@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 
 import '../utils/my_colors.dart';
 import '../utils/my_fonts.dart';
-import 'my_text.dart';
 
 class MyDropdown extends StatefulWidget {
   const MyDropdown({
@@ -124,7 +123,6 @@ class _MyDropdownState extends State<MyDropdown> {
                       fontFamily: MyFonts.archivo,
                       color: MyColors.primary80,
                     ),
-                    // prefixIcon: const MyImageAssets(assets: MyIcons.icSearch),
                     contentPadding: const EdgeInsets.only(left: 12, top: 12),
                     border: InputBorder.none,
                     enabledBorder: InputBorder.none,
@@ -135,10 +133,6 @@ class _MyDropdownState extends State<MyDropdown> {
                   ),
                 ),
               ),
-              // dropdownBuilder: (context, selectedItem) => MyText(
-              //   text: widget.selectedItem ?? "",
-              //   color: MyColors.primary,
-              // ),
               decoratorProps: DropDownDecoratorProps(
                 decoration: InputDecoration(
                   hintText: (widget.selectedItem ?? widget.hintText.tr),
@@ -151,12 +145,6 @@ class _MyDropdownState extends State<MyDropdown> {
                   border: InputBorder.none,
                 ),
               ),
-              // suffixProps: DropdownSuffixProps(
-              //   dropdownButtonProps: DropdownButtonProps(
-              //     iconClosed: MyImageAssets(assets: MyIcons.icDropdown),
-              //     iconOpened: MyImageAssets(assets: MyIcons.icDropdown),
-              //   ),
-              // ),
               onSelected: widget.onChanged,
             ),
           ),

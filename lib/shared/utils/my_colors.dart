@@ -16,8 +16,6 @@ class MyColors {
 
   static const Color red = Color(0xFFC8302A);
   static const Color redText = Color(0xFFE5574C);
-  static const Color purple = Color(0xFF8B55D6);
   static const Color yellow = Color(0xFFF0A35E);
   static const Color green = Color(0xFF8FC9A0);
-  static const Color pink = Color(0xFFff91a4);
 }
