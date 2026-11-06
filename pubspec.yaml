@@ -49,6 +49,7 @@ dependencies:
   supabase_flutter: ^2.15.0
   flutter_dynamic_launcher_icon: ^0.0.2
   url_launcher: ^6.3.2
+  web: ^1.1.1
 
 dev_dependencies:
   flutter_test:

@@ -5,6 +5,7 @@ class ListProductsModel {
       colorName,
       type,
       isFeatured,
+      featuredSortOrder,
       shopeeUrl,
       tiktokUrl,
       tokopediaUrl,
@@ -32,6 +33,7 @@ class ListProductsModel {
     if (product != null) {
       name = product["name"];
       isFeatured = product["is_featured"];
+      featuredSortOrder = product["featured_sort_order"];
       shopeeUrl = product["shopee_url"];
       tiktokUrl = product["tiktok_url"];
       tokopediaUrl = product["tokopedia_url"];

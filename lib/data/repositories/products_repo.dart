@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import '../../app/core/base_repository.dart';
+import '../../shared/utils/my_image_compress.dart';
 
 class ProductsRepo extends BaseRepository {
   Future<ResponseHandler<dynamic>> listProducts({
@@ -10,7 +11,7 @@ class ProductsRepo extends BaseRepository {
     var query = supabase.from("m_product_color").select('''
       id, name, product_id,
       product:m_products!inner(
-        id, name, is_featured, product_type_id, created_at,
+        id, name, is_featured, featured_sort_order, product_type_id, created_at,
         shopee_url, tiktok_url, tokopedia_url,
         type:m_product_type(name)
       ),
@@ -70,6 +71,11 @@ class ProductsRepo extends BaseRepository {
   }) async => ResponseHandler(
     supabase.from("m_products").update(body).eq("id", id).select().single(),
   );
+
+  Future<ResponseHandler<dynamic>> updateFeaturedOrders({
+    required List<Map<String, dynamic>> body,
+  }) async =>
+      ResponseHandler(supabase.from("m_products").upsert(body).select());
 
   Future<ResponseHandler<dynamic>> addColor({
     required Map<String, dynamic> body,
@@ -186,10 +192,14 @@ class ProductsRepo extends BaseRepository {
   Future<ResponseHandler<String>> uploadImage({
     required Uint8List bytes,
     required String fileName,
-  }) async => ResponseHandler(
-    supabase.storage
-        .from("products")
-        .uploadBinary(fileName, bytes)
-        .then((_) => "products/$fileName"),
-  );
+  }) async {
+    final image = await compressImage(bytes: bytes, fileName: fileName);
+
+    return ResponseHandler(
+      supabase.storage
+          .from("products")
+          .uploadBinary(image.fileName, image.bytes)
+          .then((_) => "products/${image.fileName}"),
+    );
+  }
 }

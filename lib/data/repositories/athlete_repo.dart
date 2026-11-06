@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import '../../app/core/base_repository.dart';
+import '../../shared/utils/my_image_compress.dart';
 
 class AthleteRepo extends BaseRepository {
   Future<ResponseHandler<dynamic>> listAthletes() async => ResponseHandler(
@@ -38,12 +39,16 @@ class AthleteRepo extends BaseRepository {
   Future<ResponseHandler<String>> uploadPicture({
     required Uint8List bytes,
     required String fileName,
-  }) async => ResponseHandler(
-    supabase.storage
-        .from("athletes")
-        .uploadBinary(fileName, bytes)
-        .then((_) => "athletes/$fileName"),
-  );
+  }) async {
+    final image = await compressImage(bytes: bytes, fileName: fileName);
+
+    return ResponseHandler(
+      supabase.storage
+          .from("athletes")
+          .uploadBinary(image.fileName, image.bytes)
+          .then((_) => "athletes/${image.fileName}"),
+    );
+  }
 
   Future<ResponseHandler<dynamic>> listAssignments({
     required String athleteId,

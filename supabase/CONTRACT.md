@@ -26,7 +26,7 @@ Semua tabel punya `id uuid`. Kolom `created_at` dan `updated_at` tidak ditulis u
 
 | Tabel | Kolom |
 |---|---|
-| `m_products` | `name`, `description`, `shopee_url`, `tiktok_url`, `tokopedia_url`, `product_type_id`, `is_featured`, `badge`, `subtitle`, `material`, `care_text`, `size_chart_url` (path di bucket `products`) |
+| `m_products` | `name`, `description`, `shopee_url`, `tiktok_url`, `tokopedia_url`, `product_type_id`, `is_featured`, `featured_sort_order` (urutan featured, NULL bila tidak featured, maksimal 4 diatur admin), `badge`, `subtitle`, `material`, `care_text`, `size_chart_url` (path di bucket `products`) |
 | `m_product_color` | `product_id`, `name`, `hex`, `description` |
 | `m_product_features` | `product_id`, `icon` (`layers`, `shirt`, `drop`, `collar`, `bolt`, `shield`, `stitch`, `feather`), `title`, `description`, `sort_order` |
 | `m_product_images` | `product_color_id`, `image_url`, `sort_order` (terkecil = foto utama) |
