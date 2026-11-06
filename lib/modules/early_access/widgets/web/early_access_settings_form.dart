@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 
 import '../../../../shared/utils/my_colors.dart';
 import '../../../../shared/widgets/my_button.dart';
+import '../../../../shared/widgets/my_dashed_button.dart';
+import '../../../../shared/widgets/my_image.dart';
 import '../../../../shared/widgets/my_panel.dart';
 import '../../../../shared/widgets/my_switch.dart';
 import '../../../../shared/widgets/my_text.dart';
@@ -95,6 +97,43 @@ class EarlyAccessSettingsForm extends StatelessWidget {
               ),
             ],
           ),
+        ),
+        MySectionTitle(text: "Halaman gate"),
+        Obx(() {
+          final bytes = controller.background.newBytes.value;
+          final path = controller.background.path.value;
+
+          return MyDashedButton(
+            width: 200,
+            height: 120,
+            onTap: controller.pickBackground,
+            child: bytes != null
+                ? Image.memory(bytes, fit: .cover, width: double.infinity)
+                : path != null
+                ? MyImage(path)
+                : MyText(
+                    text: "Gambar latar",
+                    color: MyColors.primary60,
+                    fontSize: 12,
+                  ),
+          );
+        }),
+        MyTextFormField(
+          controller: controller.texts["EARLY_ACCESS_EYEBROW"],
+          label: "Eyebrow",
+          hintText: "Early access · Drop berikutnya",
+        ),
+        MyTextFormField(
+          controller: controller.texts["EARLY_ACCESS_TITLE"],
+          label: "Judul",
+          hintText: "The Gate Opens Soon",
+        ),
+        MyTextFormField(
+          controller: controller.texts["EARLY_ACCESS_DESCRIPTION"],
+          label: "Deskripsi",
+          hintText: "Akses lebih awal hanya untuk yang punya kata sandi.",
+          maxLines: 3,
+          keyboardType: .multiline,
         ),
       ],
     );

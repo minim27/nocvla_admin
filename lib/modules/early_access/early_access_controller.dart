@@ -11,6 +11,7 @@ import '../../data/models/early_access/early_access_image_model.dart';
 import '../../data/models/early_access/early_access_settings_model.dart';
 import '../../shared/utils/my_utility.dart';
 import '../../shared/widgets/my_confirm_dialog.dart';
+import '../about_content/about_content_controller.dart';
 
 class EarlyAccessController extends BaseController {
   var isLoading = false.obs;
@@ -25,6 +26,14 @@ class EarlyAccessController extends BaseController {
   var obscurePassword = true.obs;
 
   var images = <EarlyAccessImageItem>[].obs;
+
+  final texts = {
+    "EARLY_ACCESS_EYEBROW": TextEditingController(),
+    "EARLY_ACCESS_TITLE": TextEditingController(),
+    "EARLY_ACCESS_DESCRIPTION": TextEditingController(),
+  };
+  final background = AboutImage();
+  final _configIds = <String, dynamic>{};
 
   @override
   void onInit() {
@@ -64,7 +73,84 @@ class EarlyAccessController extends BaseController {
       err: (err) => showErrSnackbar(msg: err),
     );
 
+    final reqConfigs = await configRepo.listConfigs();
+    await reqConfigs.responseHandler(
+      res: (res) {
+        for (final row in (res as List)) {
+          final name = row["name"];
+          final value = "${row["value"] ?? ""}";
+
+          if (texts.containsKey(name)) {
+            texts[name]!.text = value;
+          } else if (name == "EARLY_ACCESS_IMAGE") {
+            background.path.value = value.isEmpty ? null : value;
+          } else {
+            continue;
+          }
+          _configIds[name] = row["id"];
+        }
+      },
+      err: (err) => showErrSnackbar(msg: err),
+    );
+
     isLoading.value = false;
+  }
+
+  Future<void> pickBackground() async {
+    final result = await FilePicker.pickFiles(
+      type: FileType.image,
+      withData: true,
+    );
+    final file = result?.files.firstOrNull;
+    if (file?.bytes == null) return;
+
+    background.newFileName = file!.name;
+    background.newBytes.value = file.bytes;
+  }
+
+  Future<bool> saveContent() async {
+    var hasError = false;
+    final fields = {for (final e in texts.entries) e.key: e.value.text.trim()};
+
+    var path = background.path.value;
+    final bytes = background.newBytes.value;
+    if (bytes != null) {
+      final req = await homeContentRepo.uploadImage(
+        bytes: bytes,
+        fileName:
+            "${DateTime.now().millisecondsSinceEpoch}_${background.newFileName}",
+      );
+      await req.responseHandler(
+        res: (res) => path = res,
+        err: (err) {
+          hasError = true;
+          showErrSnackbar(msg: err);
+        },
+      );
+    }
+    fields["EARLY_ACCESS_IMAGE"] = path ?? "";
+
+    for (final field in fields.entries) {
+      if (hasError) break;
+
+      final id = _configIds[field.key];
+      if (id == null && field.value.isEmpty) continue;
+
+      final req = id == null
+          ? await configRepo.addConfig(name: field.key, value: field.value)
+          : await configRepo.updateConfig(id: id, value: field.value);
+      await req.responseHandler(
+        res: (res) {},
+        err: (err) {
+          hasError = true;
+          showErrSnackbar(msg: err);
+        },
+      );
+    }
+
+    if (!hasError) background.newBytes.value = null;
+
+    return !hasError;
   }
 
   void toggleEarlyAccess({required bool value}) => isEarlyAccess.value = value;
@@ -86,11 +172,15 @@ class EarlyAccessController extends BaseController {
 
   Future<void> pickEndDate() async {
     final now = DateTime.now();
+    final firstDate = now.subtract(const Duration(days: 1));
+    final current = endAt.value;
 
     final pickedDate = await showDatePicker(
       context: Get.context!,
-      initialDate: endAt.value ?? now,
-      firstDate: now.subtract(const Duration(days: 1)),
+      initialDate: current == null || current.isBefore(firstDate)
+          ? now
+          : current,
+      firstDate: firstDate,
       lastDate: now.add(const Duration(days: 365)),
     );
     if (pickedDate == null) return;
@@ -253,6 +343,8 @@ class EarlyAccessController extends BaseController {
         },
       );
     }
+
+    if (!hasError) hasError = !await saveContent();
 
     isLoadingAction.value = false;
 
